@@ -153,8 +153,10 @@ class ImageScreenState extends State<ImageScreen> {
                                      ),
                                      ReusingWidgets.bottomLayer(
                                          context: context,
+                                         icon: Icons.download,
+                                         color: ColorsTheme.lightThemeColor,
                                          onSharePress: (){},
-                                         onDownloadPress: (){},
+                                         onDownloadDeletePress: (){},
                                      ),
                                    ],
                                  ),
@@ -216,14 +218,14 @@ class ImageScreenState extends State<ImageScreen> {
              }
            }
            else if (snapshot.hasError) {
-             return Text("ERROR");
+             return ReusingWidgets.circularProgressIndicator();
            }
            else {
-             return Center(child: CircularProgressIndicator());
+             return ReusingWidgets.circularProgressIndicator();
            }
          }
          else {
-           return Center(child: CircularProgressIndicator(),);
+           return ReusingWidgets.circularProgressIndicator();
          }
        },
      ),

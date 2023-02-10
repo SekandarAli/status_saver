@@ -5,6 +5,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:status_saver/generated/assets.dart';
+import '../../app_theme/color.dart';
+import '../../app_theme/reusing_widgets.dart';
 import '../../app_theme/text_styles.dart';
 
 class SavedScreen extends StatefulWidget {
@@ -23,7 +25,7 @@ class SavedScreenState extends State<SavedScreen> {
 
   @override
   void initState() {
-    savedImagesDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+    savedImagesDirectory = Directory('/storage/emulated/0/Pictures/StatusSaver/');
 
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
@@ -78,12 +80,14 @@ class SavedScreenState extends State<SavedScreen> {
     double h = MediaQuery.of(context).size.height;
 
     if (Directory(savedImagesDirectory!.path).existsSync()) {
-      final imageList = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
+      final imageList = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
       if (imageList.isNotEmpty) {
         return Scaffold(
           body: Container(
             margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: GridView.builder(
+              // reverse: true,
+              // shrinkWrap: true,
               key: PageStorageKey(widget.key),
               itemCount: imageList.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -95,34 +99,51 @@ class SavedScreenState extends State<SavedScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
                   onTap: (){},
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: FutureBuilder(
-                        future: storagePermissionChecker,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.done) {
-                            if (snapshot.hasData) {
-                              return Hero(
-                                tag: imageList[index],
-                                child: Image.file(
-                                  File(imageList[index]),
-                                  fit: BoxFit.cover,
+
+                  child: FutureBuilder(
+                      future: storagePermissionChecker,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasData) {
+                            return Stack(
+                              alignment: Alignment.bottomCenter,
+                              fit: StackFit.loose,
+                              children: [
+                                Hero(
+                                  tag: imageList[index],
+                                  child: Container(
+                                    height: h,
+                                    width: w,
+                                    color: Colors.white,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      child: Image.file(
+                                        File(imageList[index]),
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              );
-                            } else {
-                              return  Hero(
-                                tag: imageList[index],
-                                child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
-                              );
-                            }
-                          } else {
-                            return Hero(
-                              tag: imageList[index],
-                              child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                                ReusingWidgets.bottomLayer(
+                                  context: context,
+                                  icon: Icons.delete,
+                                  color: Colors.red,
+                                  onSharePress: (){},
+                                  onDownloadDeletePress: (){},
+                                ),
+                              ],
                             );
+                          } else {
+                            return Center(child: CircularProgressIndicator());
                           }
-                        }),
-                  ),
+                        } else {
+                          return Hero(
+                            tag: imageList[index],
+                            child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                          );
+                        }
+                      }),
                 );
               },
             ),

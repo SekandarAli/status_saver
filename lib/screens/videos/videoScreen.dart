@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/generated/assets.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../app_theme/text_styles.dart';
@@ -60,33 +61,55 @@ class VideoScreenState extends State<VideoScreen> {
                       ),
                     ),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      child: FutureBuilder(
-                          future: getVideo(videoList[index]),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
-                              if (snapshot.hasData) {
-                                return Hero(
-                                  tag: videoList[index],
-                                  child: Image.file(
-                                    File(snapshot.data!),
-                                    fit: BoxFit.cover,
+                    child: FutureBuilder(
+                        future: getVideo(videoList[index]),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.hasData) {
+                              return Stack(
+                                alignment: Alignment.center,
+                                fit: StackFit.loose,
+                                children: [
+                                  Hero(
+                                    tag: videoList[index],
+                                    child: Container(
+                                      height: h,
+                                      width: w,
+                                      color: Colors.white,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        child: Image.file(
+                                          File(snapshot.data!),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.black.withOpacity(0.5)
+                                    ),
+                                      child: Icon(
+                                          Icons.play_arrow_rounded,
+                                          size: 40,
+                                          color: ColorsTheme.white,
+                                      ),
+                                  ),
+                                ],
+                              );
                             } else {
-                              return Hero(
-                                tag: videoList[index],
-                                child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                              return Center(
+                                child: CircularProgressIndicator(),
                               );
                             }
-                          }),
-                    ),
+                          } else {
+                            return Hero(
+                              tag: videoList[index],
+                              child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                            );
+                          }
+                        }),
                   );
                 },
               ),

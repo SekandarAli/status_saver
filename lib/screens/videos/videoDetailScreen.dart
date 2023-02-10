@@ -1,12 +1,10 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_constructors, use_build_context_synchronously
 
 import 'dart:io';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:video_player/video_player.dart';
-
 import '../../app_theme/color.dart';
 import '../../app_theme/reusing_widgets.dart';
 import 'videoController.dart';
@@ -38,13 +36,17 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           IconButton(onPressed: () {}, icon: Icon(Icons.share)),
           IconButton(
               onPressed: () async {
-                final originalVideoFile = File(widget.videoFile);
-                if (!Directory('/storage/emulated/0/status_saver').existsSync()) {
-                  Directory('/storage/emulated/0/status_saver').createSync(recursive: true);
-                }
-                final curDate = DateTime.now().toString();
-                final newFileName = '/storage/emulated/0/status_saver/VIDEO-$curDate.mp4';
-                await originalVideoFile.copy(newFileName);
+                // final originalVideoFile = File(widget.videoFile);
+                // if (!Directory('/storage/emulated/0/status_saver').existsSync()) {
+                //   Directory('/storage/emulated/0/status_saver').createSync(recursive: true);
+                // }
+                // final curDate = DateTime.now().toString();
+                // final newFileName = '/storage/emulated/0/status_saver/VIDEO-$curDate.mp4';
+                // // await originalVideoFile.copy(newFileName);
+
+
+                final myUri = Uri.parse(widget.videoFile);
+                GallerySaver.saveVideo(myUri.path,albumName: "StatusSaver");
 
                 ReusingWidgets.imageSavedDialogue(
                   context: context,

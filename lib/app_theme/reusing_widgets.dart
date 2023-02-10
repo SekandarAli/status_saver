@@ -3,7 +3,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
 import '../generated/assets.dart';
@@ -116,8 +115,10 @@ class ReusingWidgets {
 
   static Widget bottomLayer({
   required BuildContext context,
+  required IconData icon,
+  required Color color,
   required Function() onSharePress,
-  required Function() onDownloadPress,
+  required Function() onDownloadDeletePress,
 }){
     return  SizedBox(
       width: MediaQuery.of(context).size.width,
@@ -126,22 +127,31 @@ class ReusingWidgets {
         children: [
           Expanded(
             child: Container(
-              color: Colors.black38,
+              color: Colors.black.withOpacity(0.6),
               child: IconButton(onPressed: (){onSharePress();},
-                icon: Icon(Icons.share,color: ColorsTheme.darkPrimaryColor,),
+                icon: Icon(Icons.share,color: ColorsTheme.lightThemeColor,),
               ),
             ),
           ),
           SizedBox(width: 1),
           Expanded(
             child: Container(
-              color: Colors.black38,
-              child: IconButton(onPressed: (){onDownloadPress();},
-                icon: Icon(Icons.download, color: ColorsTheme.darkPrimaryColor),
+              color: Colors.black.withOpacity(0.6),
+              child: IconButton(onPressed: (){onDownloadDeletePress();},
+                icon: Icon(icon, color: color),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  static circularProgressIndicator(){
+    return Center(
+      child: CircularProgressIndicator(
+        color: ColorsTheme.primaryColor,
+        strokeWidth: 2,
       ),
     );
   }
