@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_constructors, use_build_context_synchronously
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +11,13 @@ import 'package:video_player/video_player.dart';
 import '../../app_theme/color.dart';
 import '../../app_theme/reusing_widgets.dart';
 import '../../controller/fileController.dart';
+import '../../model/fileModel.dart';
 import 'videoController.dart';
 
 class VideoDetailScreen extends StatefulWidget {
-  String videoFile;
-  int index;
+  int indexNo;
 
-  VideoDetailScreen({Key? key, required this.videoFile, required this.index})
+  VideoDetailScreen({Key? key, required this.indexNo})
       : super(key: key);
 
   @override
@@ -36,8 +37,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   @override
   void initState() {
     super.initState();
-    myUri = Uri.parse(widget.videoFile);
+    myUri = Uri.parse(fileController.allStatusVideos.elementAt(widget.indexNo).filePath);
     // savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver');
+
+    // log("aaaaaaaaaaa${fileController.allStatusVideos.elementAt(widget.indexNo).isSaved.toString()}");
+    log("aaaaaaaaaaa${File(fileController.allStatusVideos.elementAt(widget.indexNo).filePath)}");
+    log("aaaaaaaaaaa${fileController.allStatusVideos.elementAt(widget.indexNo).filePath}");
   }
 
   @override
@@ -54,6 +59,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        title: Text("Video"),
         leading: IconButton(
           color: ColorsTheme.white,
           icon: Icon(
@@ -70,46 +76,58 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           },
         ),
         actions: [
-          IconButton(onPressed: () {
-            Share.shareXFiles(
-              text: "Have a look on this Status",
-              [XFile(myUri!.path)],
-            );
-          }, icon: Icon(Icons.share)),
-          fileController.allStatusVideos.elementAt(widget.index).isSaved == true ?
-          Obx(() {
-            return Visibility(
-              visible: fileController.allStatusVideos.elementAt(widget.index).isSaved,
+          IconButton(
+              onPressed: () {
+                Share.shareXFiles(text: "Have a look on this Status", [XFile(myUri!.path)],);
+          },
+              icon: Icon(Icons.share)),
+          Obx(() =>
+             Visibility(
+              visible: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved,
               child: IconButton(
                   onPressed: () {
-                    ReusingWidgets.snackBar(
-                        context: context, text: "Image Already Saved");
-                  }, icon: Icon(Icons.done)),
-            );
-          }) :
+                    print("bbbbbbbbbb");
 
-          Obx(() {
-            return Visibility(
-              visible: !(fileController.allStatusVideos.elementAt(widget.index).isSaved),
+                    ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                  }, icon: Icon(Icons.done)),
+            )
+          ),
+          Obx(() =>
+             Visibility(
+              visible: !(fileController.allStatusVideos.elementAt(widget.indexNo).isSaved),
               child: IconButton(onPressed: () {
-                GallerySaver.saveVideo(myUri!.path, albumName: "StatusSaver", toDcim: true).then((value) =>
-                fileController.allStatusVideos.elementAt(widget.index).isSaved = true);
+
+
+                GallerySaver.saveVideo(Uri.parse(fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path,albumName: "StatusSaver",toDcim: true ).then((value) =>
+                fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
+                fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusVideos.elementAt(widget.indexNo).filePath, isSaved: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved));
+                fileController.allStatusSaved.refresh();
                 fileController.allStatusVideos.refresh();
-                ReusingWidgets.dialogueAnimated(
+                ReusingWidgets.snackBar(
                   context: context,
-                  dialogType: DialogType.success,
-                  color: ColorsTheme.primaryColor,
-                  title: "Video Saved",
-                  desc: "Video saved to File Manager > Internal Storage > >DCIM > StatusSaver",
+                  text: "Video Saved",
                 );
+
+
+                // GallerySaver.saveVideo(myUri!.path, albumName: "StatusSaver", toDcim: true).then((value) =>
+                // fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
+                // fileController.allStatusVideos.refresh();
+                // print("aaaaaaaaaaaa");
+                // ReusingWidgets.dialogueAnimated(
+                //   context: context,
+                //   dialogType: DialogType.success,
+                //   color: ColorsTheme.primaryColor,
+                //   title: "Video Saved",
+                //   desc: "Video saved to File Manager > Internal Storage > >DCIM > StatusSaver",
+                // );
               }, icon: Icon(Icons.save_alt)),
-            );
-          })
+            )
+          )
         ],
       ),
       body: VideoController(
         videoPlayerController:
-        VideoPlayerController.file(File(widget.videoFile)),
+        VideoPlayerController.file(File(fileController.allStatusVideos.elementAt(widget.indexNo).filePath)),
       ),
     );
   }

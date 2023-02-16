@@ -23,16 +23,29 @@ class VideoScreen extends StatefulWidget {
 
 class VideoScreenState extends State<VideoScreen> {
 
-  Directory? whatsAppDirectory;
   // Directory? whatsAppBusinessDirectory;
   // Directory? savedImagesDirectory;
   final FileController fileController = Get.put(FileController());
+  // late List<String> imageList;
+  late List<String> videoList;
+  late List<String> savedList;
+  // FileModel? fileImages;
+  Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+  Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+
 
   @override
   void initState() {
+
+    print("aaaaaa");
+
     whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+    // imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
+    videoList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
+    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
     // whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
     // savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver');
+    // getVideoData();
     super.initState();
   }
 
@@ -41,13 +54,28 @@ class VideoScreenState extends State<VideoScreen> {
     return thumbnail;
   }
 
+
+  getVideoData(){
+    fileController.allStatusVideos.value = [];
+    if(videoList.isNotEmpty){
+      for (var element in videoList) {
+        if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+        }
+        else{
+          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 
-    if (Directory(whatsAppDirectory!.path).existsSync()) {
+    if (Directory(whatsAppDirectory.path).existsSync()) {
       // final videoList = whatsAppDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
       // List savedImagesFolder = savedImagesDirectory!.listSync().map((item) => item.path).where((item) =>  item.endsWith('.mp4')).toList(growable: false);
       if (fileController.allStatusVideos.isNotEmpty) {
@@ -70,9 +98,9 @@ class VideoScreenState extends State<VideoScreen> {
                   return InkWell(
                     onTap: () {
                       Get.to(()=> VideoDetailScreen(
-                        videoFile: fileController.allStatusVideos.elementAt(index).filePath,
-                        index: index,
+                        indexNo: index,
                       ));
+
                     },
                     //   Navigator.push(context, MaterialPageRoute(
                     // builder: (context) => VideoDetailScreen(
@@ -83,6 +111,7 @@ class VideoScreenState extends State<VideoScreen> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.done) {
                             if (snapshot.hasData) {
+                              print("asasas${snapshot.data}");
                               return ReusingWidgets.getSavedData(
                                 tag: fileController.allStatusVideos.elementAt(index).filePath,
                                 context: context,

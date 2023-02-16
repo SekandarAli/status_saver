@@ -11,16 +11,16 @@ import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/controller/fileController.dart';
 
-class ImageDetailScreen extends StatefulWidget {
-  int indexNo;
+class SavedImageDetailScreen extends StatefulWidget {
+  var imgPath;
 
-  ImageDetailScreen({Key? key, required this.indexNo}) : super(key: key);
+  SavedImageDetailScreen({Key? key, required this.imgPath}) : super(key: key);
 
   @override
-  _ImageDetailScreenState createState() => _ImageDetailScreenState();
+  _SavedImageDetailScreenState createState() => _SavedImageDetailScreenState();
 }
 
-class _ImageDetailScreenState extends State<ImageDetailScreen> {
+class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
   Uri? myUri;
   // bool? imageData;
   // List? savedImagesFolder;
@@ -30,7 +30,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
   @override
   void initState() {
     super.initState();
-    myUri = Uri.parse(fileController.allStatusImages.elementAt(widget.indexNo).filePath);
+    // myUri = Uri.parse(fileController.allStatusImages.elementAt(widget.indexNo).filePath);
     // savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver');
   }
 
@@ -44,7 +44,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
       appBar: AppBar(
         // toolbarHeight: 80,
         backgroundColor: Colors.transparent,
-        title: Text("Image"),
+        title: Text("Saved Image"),
         leading: IconButton(
           color: ColorsTheme.white,
           icon: Icon(
@@ -58,44 +58,44 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
               onPressed: () {
                 Share.shareXFiles(
                   text: "Have a look on this Status",
-                  [XFile(myUri!.path)],
+                  [XFile(widget.imgPath.path)],
                 );
               },
               icon: Icon(Icons.share)),
-          Obx(() => Visibility(
-              visible: fileController.allStatusImages.elementAt(widget.indexNo).isSaved,
-              child: IconButton(
-                  onPressed: () {
-                    ReusingWidgets.snackBar(
-                        context: context, text: "Image Already Saved");
-                  },
-                  icon: Icon(Icons.done)))),
-          Obx(() => Visibility(
-              visible: !(fileController.allStatusImages.elementAt(widget.indexNo).isSaved),
-              child: IconButton(
-                  onPressed: () {
-                      GallerySaver.saveImage(myUri!.path, albumName: "StatusSaver", toDcim: true).then((value) {
-                        fileController.allStatusImages.elementAt(widget.indexNo).isSaved = true;
-                        fileController.allStatusImages.refresh();
-                      });
-                      ReusingWidgets.dialogueAnimated(
-                        context: context,
-                        dialogType: DialogType.success,
-                        color: ColorsTheme.primaryColor,
-                        title: "Image Saved",
-                        desc: "Image saved to File Manager > Internal Storage > >DCIM > StatusSaver",
-                      );
-                  },
-                  icon: Icon(Icons.save_alt)))),
+          // Obx(() => Visibility(
+          //     visible: fileController.allStatusImages.elementAt(widget.indexNo).isSaved,
+          //     child: IconButton(
+          //         onPressed: () {
+          //           ReusingWidgets.snackBar(
+          //               context: context, text: "Image Already Saved");
+          //         },
+          //         icon: Icon(Icons.done)))),
+          // Obx(() => Visibility(
+          //     visible: !(fileController.allStatusImages.elementAt(widget.indexNo).isSaved),
+          //     child: IconButton(
+          //         onPressed: () {
+          //             GallerySaver.saveImage(myUri!.path, albumName: "StatusSaver", toDcim: true).then((value) {
+          //               fileController.allStatusImages.elementAt(widget.indexNo).isSaved = true;
+          //               fileController.allStatusImages.refresh();
+          //             });
+          //             ReusingWidgets.dialogueAnimated(
+          //               context: context,
+          //               dialogType: DialogType.success,
+          //               color: ColorsTheme.primaryColor,
+          //               title: "Image Saved",
+          //               desc: "Image saved to File Manager > Internal Storage > >DCIM > StatusSaver",
+          //             );
+          //         },
+          //         icon: Icon(Icons.save_alt)))),
         ],
       ),
 
       ///
       body: Hero(
-        tag: fileController.allStatusImages.elementAt(widget.indexNo).filePath,
+        tag: widget.imgPath,
         child: Center(
           child: Image.file(
-            File(fileController.allStatusImages.elementAt(widget.indexNo).filePath),
+            widget.imgPath,
             fit: BoxFit.cover,
           ),
         ),

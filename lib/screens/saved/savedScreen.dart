@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:status_saver/generated/assets.dart';
 import 'package:status_saver/model/fileModel.dart';
+import 'package:status_saver/screens/saved/savedVideoDetailScreen.dart';
+import 'package:status_saver/screens/saved/savedImageDetailScreen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../app_theme/color.dart';
 import '../../app_theme/reusing_widgets.dart';
@@ -26,8 +28,7 @@ class SavedScreenState extends State<SavedScreen> {
   Future<int>? storagePermissionChecker;
   int? storagePermissionCheck;
   int? androidSDK;
-  // final FileController fileController = Get.put(FileController());
-
+  final FileController fileController = Get.put(FileController());
 
   @override
   void initState() {
@@ -77,14 +78,20 @@ class SavedScreenState extends State<SavedScreen> {
               ),
               itemBuilder: (BuildContext context, int index) {
                 log("index is $index");
-                return InkWell(
-                  onTap: (){},
-                  child: FutureBuilder(
-                      future: getVideo(imageList[index]),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          if (snapshot.hasData) {
-                            return ReusingWidgets.getSavedData(
+                return FutureBuilder(
+                    future: getVideo(imageList[index]),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          return GestureDetector(
+                            onTap: (){
+                              Get.to(()=> SavedVideoDetailScreen(
+                                videoPath: File(imageList[index]),
+                              ));
+
+                              print("asasas${snapshot.data}");
+                            },
+                            child: ReusingWidgets.getSavedData(
                                 tag: imageList[index],
                                 context: context,
                                 file: File(snapshot.data!),
@@ -100,14 +107,26 @@ class SavedScreenState extends State<SavedScreen> {
                                 onDownloadDeletePress: (){
                                     // deleteFile(File(imageList[index]));
                                     File(imageList[index]).delete().then((value) => setState((){}));
+                                    fileController.allStatusVideos.elementAt(index).isSaved = false;
+                                    fileController.allStatusVideos.refresh();
+                                    fileController.allStatusSaved.refresh();
                                     ReusingWidgets.snackBar(
                                       context: context,
                                       text: "Video Deleted Successfully",
                                     );
                                 },
-                            );
-                          } else {
-                            return ReusingWidgets.getSavedData(
+                            ),
+                          );
+                        } else {
+                          return GestureDetector(
+                            onTap: (){
+                              Get.to(()=> SavedImageDetailScreen(
+                                imgPath: File(imageList[index]),
+                              ));
+                              print("aaaa$index");
+                              print("aaaa${imageList[index]}");
+                            },
+                            child: ReusingWidgets.getSavedData(
                               tag: imageList[index],
                               context: context,
                               file: File(imageList[index]),
@@ -134,6 +153,9 @@ class SavedScreenState extends State<SavedScreen> {
 
                                 // deleteFile(File(fileController.allStatusSaved.elementAt(index).filePath));
                                 File(imageList[index]).delete().then((value) => setState((){}));
+                                fileController.allStatusVideos.elementAt(index).isSaved = false;
+                                fileController.allStatusVideos.refresh();
+                                fileController.allStatusSaved.refresh();
                               //  fileController.allStatusSaved.removeAt(index);
                                /* log(fileController.allStatusSaved.length.toString());
                                 log('remove fileController.allStatusSaved.length.toString()');*/
@@ -159,16 +181,25 @@ class SavedScreenState extends State<SavedScreen> {
                                     text: "Image Deleted Successfully",
                                   );
                               },
-                            );
-                          }
-                        } else {
-                          return Hero(
-                            tag:imageList[index],
-                            child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                            ),
                           );
                         }
-                      }),
-                );
+                      }
+                      else {
+                        return InkWell(
+                          onTap: (){
+                            // Get.to(()=> SavedDetailScreen(
+                            //   indexNo: index,
+                            // ));
+                            print(index);
+                          },
+                          child: Hero(
+                            tag:imageList[index],
+                            child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                          ),
+                        );
+                      }
+                    });
               },
             ),
           ),

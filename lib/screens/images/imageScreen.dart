@@ -25,10 +25,17 @@ class ImageScreenState extends State<ImageScreen> {
   int? storagePermissionCheck;
   Future<int>? storagePermissionChecker;
   int? androidSDK;
-  Directory? whatsAppDirectory;
   Directory? savedImagesDirectory;
   Directory? whatsAppBusinessDirectory;
   final FileController fileController = Get.put(FileController());
+  List<String>? imageList;
+  List<String>? savedList;
+
+  Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+  Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+
+
+
 
   Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -71,7 +78,7 @@ class ImageScreenState extends State<ImageScreen> {
     }
   }
 
-  _createFolder()async {
+  createFolder()async {
     const folderName = "StatusSaver";
     final path = Directory('/storage/emulated/0/DCIM/$folderName');
     if ((await path.exists())) {
@@ -82,13 +89,33 @@ class ImageScreenState extends State<ImageScreen> {
     }
   }
 
+  getImageData(){
+    fileController.allStatusImages.value = [];
+    if(imageList!.isNotEmpty){
+      for (var element in imageList!) {
+        if(savedList!.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+          // print("IF$element");
+          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+        }
+        else{
+          // print("ELSE$element");
+          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+        }
+      }
+    }
+  }
+
   @override
   void initState(){
     super.initState();
-    _createFolder();
-    whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+
+    imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
+    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
     whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
 
+    createFolder();
+    print("hello");
+    getImageData();
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
       int finalPermission;
@@ -112,6 +139,10 @@ class ImageScreenState extends State<ImageScreen> {
     })();
   }
 
+  Future pullRefresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
@@ -125,72 +156,70 @@ class ImageScreenState extends State<ImageScreen> {
          if (snapshot.connectionState == ConnectionState.done) {
            if (snapshot.hasData) {
              if (snapshot.data == 1) {
-               if (Directory(whatsAppDirectory!.path).existsSync()) {
+               if (Directory(whatsAppDirectory.path).existsSync()) {
                  if (fileController.allStatusImages.isNotEmpty) {
-                   return Container(
-                       height: h,
-                       width: w,
-                       margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                       child: Obx(() => GridView.builder(
-                        key: PageStorageKey(widget.key),
-                         itemCount: fileController.allStatusImages.length,
-                         physics: BouncingScrollPhysics(),
-                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                           crossAxisCount: 2,
-                           mainAxisSpacing: 5,
-                           crossAxisSpacing: 5,
-                           childAspectRatio: 0.75
-                         ),
-                         itemBuilder: (BuildContext context, int index) {
-                           return InkWell(
-                             onTap: () {
-                               Get.to(()=> ImageDetailScreen(
-                                 imgPath: fileController.allStatusImages.elementAt(index).filePath,
-                                 indexNo: index,
-                               ));
-                             },
-                             child:
-                             ReusingWidgets.getSavedData(
-                               tag: fileController.allStatusImages.elementAt(index).filePath,
-                               context: context,
-                               file: File(fileController.allStatusImages.elementAt(index).filePath),
-                               showPlayIcon: true,
-                               icon:
-                               fileController.allStatusImages.elementAt(index).isSaved == false
-                                   ? Icons.save_alt : Icons.done,
-                               color: ColorsTheme.themeColor,
-                               onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                   (){
-                                 GallerySaver.saveImage(Uri.parse(
-                                     fileController.allStatusImages.elementAt(index).filePath).path,albumName: "StatusSaver",toDcim: true ).then((value) {
-                                       fileController.allStatusImages.elementAt(index).isSaved = true;
-
-                                       fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusImages.elementAt(index).filePath, isSaved: fileController.allStatusImages.elementAt(index).isSaved, ));
-                                       fileController.allStatusImages.refresh();
-                                       fileController.allStatusSaved.refresh();
-                                   // log(fileController.allStatusSaved.length.toString());
-                                  //     log('fileController.allStatusSaved.length.toString()');
-
-                                 });
-                                 ReusingWidgets.snackBar(
-                                   context: context,
-                                   text: "Image Saved",
-                                 );
-                               }
-                               : () {
-                                 ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                   return RefreshIndicator(
+                     onRefresh: pullRefresh,
+                     child: Container(
+                         height: h,
+                         width: w,
+                         margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                         child: Obx(() => GridView.builder(
+                          key: PageStorageKey(widget.key),
+                           itemCount: fileController.allStatusImages.length,
+                           physics: BouncingScrollPhysics(),
+                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                             crossAxisCount: 2,
+                             mainAxisSpacing: 5,
+                             crossAxisSpacing: 5,
+                             childAspectRatio: 0.75
+                           ),
+                           itemBuilder: (BuildContext context, int index) {
+                             return InkWell(
+                               onTap: () {
+                                 Get.to(()=> ImageDetailScreen(
+                                   indexNo: index,
+                                 ));
                                },
-                               onSharePress: () {
-                                 Share.shareXFiles(
-                                   text: "Have a look on this Status",
-                                   [XFile(Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path)],
-                                 );
-                               },
-                             ),
+                               child:
+                               ReusingWidgets.getSavedData(
+                                 tag: fileController.allStatusImages.elementAt(index).filePath,
+                                 context: context,
+                                 file: File(fileController.allStatusImages.elementAt(index).filePath),
+                                 showPlayIcon: true,
+                                 icon:
+                                 fileController.allStatusImages.elementAt(index).isSaved == false
+                                     ? Icons.save_alt : Icons.done,
+                                 color: ColorsTheme.themeColor,
+                                 onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
+                                     (){
+                                   GallerySaver.saveImage(Uri.parse(
+                                       fileController.allStatusImages.elementAt(index).filePath).path,albumName: "StatusSaver",toDcim: true ).then((value) {
+                                         fileController.allStatusImages.elementAt(index).isSaved = true;
+                                         fileController.allStatusSaved.add(FileModel(
+                                           filePath: fileController.allStatusImages.elementAt(index).filePath,
+                                           isSaved: fileController.allStatusImages.elementAt(index).isSaved,));
+                                         fileController.allStatusImages.refresh();
+                                         fileController.allStatusSaved.refresh();
 
-                           ) ;
-                         },
-                       )),
+                                   });
+                                   ReusingWidgets.snackBar(context: context, text: "Image Saved",);
+                                 }
+                                 : () {
+                                   ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                                 },
+                                 onSharePress: () {
+                                   Share.shareXFiles(
+                                     text: "Have a look on this Status",
+                                     [XFile(Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path)],
+                                   );
+                                 },
+                               ),
+
+                             ) ;
+                           },
+                         )),
+                     ),
                    );
                  } else {
                    return Center(

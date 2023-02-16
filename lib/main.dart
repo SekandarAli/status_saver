@@ -13,7 +13,9 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(
-        GetMaterialApp(home: MyApp()));
+        GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: MyApp()));
   });
 }
 
@@ -42,11 +44,11 @@ class _MyAppState extends State<MyApp> {
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
     getImageData();
     getVideoData();
-    getSavedData();
+    // getSavedData();
 
   }
   getImageData(){
-    // fileController.allStatusImages.value = [];
+    fileController.allStatusImages.value = [];
     if(imageList.isNotEmpty){
       for (var element in imageList) {
         if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
@@ -62,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   getVideoData(){
-    // fileController.allStatusImages.value = [];
+    fileController.allStatusVideos.value = [];
     if(videoList.isNotEmpty){
       for (var element in videoList) {
         if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
@@ -76,7 +78,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   getSavedData(){
-    // fileController.allStatusImages.value = [];
+    fileController.allStatusSaved.value = [];
     if(savedList.isNotEmpty){
       for (var element in savedList) {
         if(savedList.contains(element)){
@@ -91,11 +93,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TabScreen(),
-      // home: CarouselPage()
-      // home: HomeScreen(),
-    );
+    return TabScreen();
   }
 }
