@@ -5,11 +5,9 @@ import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoController extends StatefulWidget {
-   VideoController({Key? key, required this.videoPlayerController, required this.videoSrc, this.aspectRatio}) : super(key: key);
+   VideoController({Key? key, required this.videoPlayerController}) : super(key: key);
 
   VideoPlayerController videoPlayerController;
-  String videoSrc;
-  double? aspectRatio;
 
   @override
   State<VideoController> createState() => _VideoControllerState();
@@ -28,7 +26,7 @@ class _VideoControllerState extends State<VideoController> {
       allowFullScreen: true,
       autoPlay: true,
       showOptions: false,
-      aspectRatio: widget.aspectRatio ?? widget.videoPlayerController.value.aspectRatio,
+      // aspectRatio: widget.aspectRatio ?? widget.videoPlayerController.value.aspectRatio,
       errorBuilder: (context, errorMessage) {
         return Center(
           child: Text(errorMessage),

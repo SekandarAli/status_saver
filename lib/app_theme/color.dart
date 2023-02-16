@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
  class ColorsTheme{
-   static Color textColor = Colors.grey;
+   static Color textColor = Colors.black.withOpacity(0.7);
    static MaterialColor themeColorOld = Colors.deepOrange;
-   static Color themeColor = Color(0xfffe8d48);
-   static Color lightThemeColor = Color(0xffff9e6c);
+   static Color themeColor = Color(0xffc3ff00);
+   static Color dismissColor = Colors.red;
    static  Color primaryColor = Color(0xff067d70);
-   static  Color darkPrimaryColor = Color(0xff007060);
    static Color lightGrey = Colors.grey.shade400;
    static Color black = Colors.black;
    static Color white = Colors.white;
-   static Color backroundColor = Colors.white60;
+   static Color backgroundColor = Colors.grey.shade200;
    static Color buttonColor = Colors.blue.shade400;
  }
 

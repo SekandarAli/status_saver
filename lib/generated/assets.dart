@@ -3,7 +3,10 @@ class Assets {
   Assets._();
 
   static const String imagesPermission = 'assets/images/permission.png';
+  static const String imagesSettingsIcon = 'assets/images/settings_icon.png';
+  static const String imagesStickerIcon = 'assets/images/sticker_icon.png';
   static const String imagesVideoLoader = 'assets/images/video_loader.gif';
-  static const String jsonVideoLoader = 'assets/json/video_loader.json';
+  static const String imagesWhatsappBusinessIcon = 'assets/images/whatsapp_business_icon.png';
+  static const String imagesWhatsappIcon = 'assets/images/whatsapp_icon.png';
 
 }
