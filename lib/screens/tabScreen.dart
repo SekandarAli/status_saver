@@ -8,6 +8,7 @@ import 'package:status_saver/screens/home/homeScreen.dart';
 import 'package:status_saver/screens/saved/savedScreen.dart';
 import '../app_theme/color.dart';
 import '../app_theme/text_styles.dart';
+import '../bottom_navbar/bottom_navbar_screen.dart';
 import 'videos/videoScreen.dart';
 import 'images/imageScreen.dart';
 
@@ -19,7 +20,6 @@ class TabScreen extends StatefulWidget {
 }
 
 class _TabScreenState extends State<TabScreen> {
-
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +51,7 @@ class _TabScreenState extends State<TabScreen> {
             ],
           ),
         ),
+        bottomNavigationBar: BottomNavBarScreen(),
         body: TabBarView(
           children: [
             ImageScreen(),

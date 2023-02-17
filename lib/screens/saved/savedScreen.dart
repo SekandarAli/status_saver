@@ -88,8 +88,6 @@ class SavedScreenState extends State<SavedScreen> {
                               Get.to(()=> SavedVideoDetailScreen(
                                 videoPath: File(imageList[index]),
                               ));
-
-                              print("asasas${snapshot.data}");
                             },
                             child: ReusingWidgets.getSavedData(
                                 tag: imageList[index],
@@ -110,10 +108,7 @@ class SavedScreenState extends State<SavedScreen> {
                                     fileController.allStatusVideos.elementAt(index).isSaved = false;
                                     fileController.allStatusVideos.refresh();
                                     fileController.allStatusSaved.refresh();
-                                    ReusingWidgets.snackBar(
-                                      context: context,
-                                      text: "Video Deleted Successfully",
-                                    );
+                                    ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
                                 },
                             ),
                           );
@@ -122,9 +117,8 @@ class SavedScreenState extends State<SavedScreen> {
                             onTap: (){
                               Get.to(()=> SavedImageDetailScreen(
                                 imgPath: File(imageList[index]),
+                                imgList: imageList[index],
                               ));
-                              print("aaaa$index");
-                              print("aaaa${imageList[index]}");
                             },
                             child: ReusingWidgets.getSavedData(
                               tag: imageList[index],
@@ -140,46 +134,11 @@ class SavedScreenState extends State<SavedScreen> {
                                 );
                               },
                               onDownloadDeletePress: (){
-                                  // File(imageList[index]).delete();
-/*
-
-                                log("aaaaaaaaaaaaa");
-                                log(fileController.allStatusSaved.elementAt(index).filePath.split("StatusSaver/").last.split('.').first);
-                                log("bbbbbbbbbbbb");
-                               // log(fileController.allStatusImages.elementAt(index).filePath.split(".Statuses/").last.split('.').first);
-                                log(fileController.allStatusImages.where((item) => (item.filePath.split(".Statuses/").last.split('.').first) == (fileController.allStatusSaved.elementAt(index).filePath.split("StatusSaver/").last.split('.').first)).first.filePath);
-                                fileController.allStatusImages.where((item) => (item.filePath.split(".Statuses/").last.split('.').first) == (fileController.allStatusSaved.elementAt(index).filePath.split("StatusSaver/").last.split('.').first)).first.isSaved = false;
-*/
-
-                                // deleteFile(File(fileController.allStatusSaved.elementAt(index).filePath));
                                 File(imageList[index]).delete().then((value) => setState((){}));
                                 fileController.allStatusVideos.elementAt(index).isSaved = false;
                                 fileController.allStatusVideos.refresh();
                                 fileController.allStatusSaved.refresh();
-                              //  fileController.allStatusSaved.removeAt(index);
-                               /* log(fileController.allStatusSaved.length.toString());
-                                log('remove fileController.allStatusSaved.length.toString()');*/
-
-                               // fileController.allStatusImages.where((p0) => p0.filePath == fileController.allStatusSaved.elementAt(index).filePath);
-                              // fileController.allStatusSaved.refresh();
-
-
-                                /*if(fileController.allStatusSaved.elementAt(index).isImage){
-                                  log("aaaaaaaaaaaaaaaaaaaaaaa");
-                              //    fileController.allStatusImages.where((element) => (element.filePath.substring(72,104) == fileController.allStatusSaved.elementAt(index).filePath.substring(37,69))).first.isSaved = false;
-                                  log("bbbbbbbbbbbbbbbbbbbbbbb");
-                                  fileController.allStatusSaved.remove(FileModel(filePath: fileController.allStatusSaved.elementAt(index).filePath, isSaved: fileController.allStatusSaved.elementAt(index).isSaved, isImage: fileController.allStatusSaved.elementAt(index).isImage));
-
-                                  fileController.allStatusSaved.refresh();
-                                }*/
-
-                                      //     fileController.allStatusSaved.refresh();
-                                //   fileController.allStatusImages.remove(FileModel(filePath: fileController.allStatusSaved.elementAt(index).filePath, isSaved: fileController.allStatusSaved.elementAt(index).isSaved, isImage: fileController.allStatusSaved.elementAt(index).isImage));
-                                // if(fileController.allStatusSaved.elementAt(index).filePath.split('.').)
-                                  ReusingWidgets.snackBar(
-                                    context: context,
-                                    text: "Image Deleted Successfully",
-                                  );
+                                  ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
                               },
                             ),
                           );
@@ -193,8 +152,7 @@ class SavedScreenState extends State<SavedScreen> {
                             // ));
                             print(index);
                           },
-                          child: Hero(
-                            tag:imageList[index],
+                          child: Hero(tag:imageList[index],
                             child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
                           ),
                         );

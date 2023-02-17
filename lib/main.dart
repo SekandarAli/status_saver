@@ -8,14 +8,13 @@ import 'package:status_saver/controller/fileController.dart';
 import 'package:status_saver/model/fileModel.dart';
 import 'package:status_saver/screens/tabScreen.dart';
 
+import 'bottom_navbar/bottom_navbar_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
-    runApp(
-        GetMaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: MyApp()));
+    runApp(GetMaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
   });
 }
 
@@ -25,12 +24,12 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-class _MyAppState extends State<MyApp> {
 
+class _MyAppState extends State<MyApp> {
   late List<String> imageList;
   late List<String> videoList;
   late List<String> savedList;
-  // FileModel? fileImages;
+
   Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
   Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
   final FileController fileController = Get.put(FileController());
@@ -38,24 +37,22 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // fileImages = FileModel(filePath: whatsAppDirectory.path, isSaved: true);
     imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
     videoList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
     getImageData();
     getVideoData();
-    // getSavedData();
-
+    getSavedData();
   }
-  getImageData(){
+
+  getImageData() {
     fileController.allStatusImages.value = [];
-    if(imageList.isNotEmpty){
+    if (imageList.isNotEmpty) {
       for (var element in imageList) {
-        if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+        if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
           // print("IF$element");
           fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-        }
-        else{
+        } else {
           // print("ELSE$element");
           fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
         }
@@ -63,14 +60,13 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  getVideoData(){
+  getVideoData() {
     fileController.allStatusVideos.value = [];
-    if(videoList.isNotEmpty){
+    if (videoList.isNotEmpty) {
       for (var element in videoList) {
-        if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+        if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
           fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-        }
-        else{
+        } else {
           fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
         }
       }
@@ -93,6 +89,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return TabScreen();
+    return BottomNavBarScreen();
   }
 }

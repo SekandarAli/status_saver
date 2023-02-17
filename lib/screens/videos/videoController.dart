@@ -23,10 +23,26 @@ class _VideoControllerState extends State<VideoController> {
       videoPlayerController: widget.videoPlayerController,
       autoInitialize: true,
       looping: true,
-      allowFullScreen: true,
       autoPlay: true,
+      allowFullScreen: true,
       showOptions: false,
-      // aspectRatio: widget.aspectRatio ?? widget.videoPlayerController.value.aspectRatio,
+      aspectRatio: widget.videoPlayerController.value.aspectRatio,
+      showControls: true,
+      additionalOptions: (context) {
+        return [
+          OptionItem(
+            onTap: () => debugPrint('My option works!'),
+            iconData: Icons.chat,
+            title: 'My localized title',
+          ),
+          OptionItem(
+            onTap: () =>
+                debugPrint('Another option working!'),
+            iconData: Icons.chat,
+            title: 'Another localized title',
+          ),
+        ];
+      },
       errorBuilder: (context, errorMessage) {
         return Center(
           child: Text(errorMessage),

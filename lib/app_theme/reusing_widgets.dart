@@ -70,8 +70,14 @@ class ReusingWidgets {
     required var text,
   }) {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.05,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * 0.05,
       margin: EdgeInsets.all(0),
       padding: EdgeInsets.all(0),
       child: ElevatedButton(
@@ -115,11 +121,12 @@ class ReusingWidgets {
       autoDismiss: true,
       title: title,
       titleTextStyle:
-          TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       desc: desc,
       descTextStyle: TextStyle(color: Colors.white),
       autoHide: Duration(milliseconds: 2000),
-    )..show();
+    )
+      ..show();
   }
 
   static circularProgressIndicator() {
@@ -193,8 +200,14 @@ class ReusingWidgets {
             Hero(
               tag: tag,
               child: Container(
-                height: MediaQuery.of(context).size.width,
-                width: MediaQuery.of(context).size.height,
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .height,
                 color: ColorsTheme.backgroundColor,
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -206,74 +219,66 @@ class ReusingWidgets {
                 ),
               ),
             ),
-            // ReusingWidgets.bottomLayer(
-            //   context: context,
-            //   icon: Icons.delete,
-            //   color: Colors.red,
-            //   onSharePress: (){
-            //     Share.shareFiles([file.path], text: 'Have a look on this Status');
-            //   },
-            //   onDownloadDeletePress: (){
-            //     onDownloadDeletePress();
-            //   },
-            // ),
             Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                // color: Colors.yellow,
-                borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(10),
-                  bottomLeft: Radius.circular(10),
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                decoration: BoxDecoration(
+                  // color: Colors.yellow,
+                  borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                  ),
                 ),
-              ),
-              // height: 40,
-              child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          color: Colors.black.withOpacity(0.6),
-                          child: IconButton(
-                            onPressed: () {
-                              onSharePress();
-                            },
-                            icon: Icon(
-                              Icons.share,
-                              color: ColorsTheme.themeColor,
-                            ),
+                // height: 40,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        color: Colors.black.withOpacity(0.6),
+                        child: IconButton(
+                          onPressed: () {
+                            onSharePress();
+                          },
+                          icon: Icon(
+                            Icons.share,
+                            color: ColorsTheme.themeColor,
                           ),
                         ),
                       ),
-                      SizedBox(width: 1),
-                      Expanded(
-                        child: Container(
-                          color: Colors.black.withOpacity(0.6),
-                          child: IconButton(
-                            onPressed: () {
-                              onDownloadDeletePress();
-                            },
-                            icon: Icon(icon, color: color),
-                          ),
+                    ),
+                    SizedBox(width: 1),
+                    Expanded(
+                      child: Container(
+                        color: Colors.black.withOpacity(0.6),
+                        child: IconButton(
+                          onPressed: () {
+                            onDownloadDeletePress();
+                          },
+                          icon: Icon(icon, color: color),
                         ),
                       ),
-                    ],
-                  )),
+                    ),
+                  ],
+                )),
 
           ],
         ),
         showPlayIcon == true
             ? Container()
             : Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black.withOpacity(0.5)),
-                  child: Icon(
-                    Icons.play_arrow_rounded,
-                    size: 40,
-                    color: ColorsTheme.white,
-                  ),
-                ),
-              ),
+          child: Container(
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black.withOpacity(0.5)),
+            child: Icon(
+              Icons.play_arrow_rounded,
+              size: 40,
+              color: ColorsTheme.white,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -322,6 +327,53 @@ class ReusingWidgets {
           ),
         ));
   }
+
+  static Future<String?> exitDialogueBox({
+    required String title,
+    required String subTitle,
+    required BuildContext context,
+    required Function() onPress,
+
+  }) =>
+      showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              titlePadding: EdgeInsets.all(0),
+              contentPadding: EdgeInsets.all(0),
+              title: Container(
+                  padding: EdgeInsets.all(15),
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  decoration: BoxDecoration(
+                    color: ColorsTheme.primaryColor,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(5),
+                      topLeft: Radius.circular(5),
+                    ),
+                  ),
+                  child: Text(title, style: ThemeTexts.textStyleTitle2,)),
+              content: Container(
+                  padding: EdgeInsets.all(15),
+                  child: Text(subTitle)),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('CANCEL')),
+                TextButton(
+                    onPressed: () {
+                      onPress();
+                    },
+                    child: Text('OK')),
+              ],
+            );
+          });
 }
 
 // Share.shareFiles([Uri.parse(imageList[index]).path], text: 'Have a look on this Status');

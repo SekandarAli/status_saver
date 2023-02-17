@@ -34,9 +34,6 @@ class ImageScreenState extends State<ImageScreen> {
   Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
   Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
 
-
-
-
   Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
@@ -114,7 +111,6 @@ class ImageScreenState extends State<ImageScreen> {
     whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
 
     createFolder();
-    print("hello");
     getImageData();
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
@@ -224,8 +220,8 @@ class ImageScreenState extends State<ImageScreen> {
                  } else {
                    return Center(
                      child: Container(
-                       padding: const EdgeInsets.only(bottom: 60.0),
-                       child: const Text(
+                       padding: EdgeInsets.only(bottom: 60.0),
+                       child: Text(
                          'You have not watched any status yet!',
                          style: ThemeTexts.textStyleTitle2,
                        ),

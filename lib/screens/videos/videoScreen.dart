@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
@@ -23,29 +22,19 @@ class VideoScreen extends StatefulWidget {
 
 class VideoScreenState extends State<VideoScreen> {
 
-  // Directory? whatsAppBusinessDirectory;
-  // Directory? savedImagesDirectory;
   final FileController fileController = Get.put(FileController());
-  // late List<String> imageList;
   late List<String> videoList;
   late List<String> savedList;
-  // FileModel? fileImages;
-  Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+  Directory? whatsAppDirectory;
   Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
 
 
   @override
   void initState() {
-
-    print("aaaaaa");
-
     whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-    // imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
-    videoList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
+    videoList = whatsAppDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
-    // whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-    // savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver');
-    // getVideoData();
+    getVideoData();
     super.initState();
   }
 
@@ -61,9 +50,11 @@ class VideoScreenState extends State<VideoScreen> {
       for (var element in videoList) {
         if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
           fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+          print("aaa");
         }
         else{
           fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+          print("bbb");
         }
       }
     }
@@ -75,7 +66,7 @@ class VideoScreenState extends State<VideoScreen> {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 
-    if (Directory(whatsAppDirectory.path).existsSync()) {
+    if (Directory(whatsAppDirectory!.path).existsSync()) {
       // final videoList = whatsAppDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
       // List savedImagesFolder = savedImagesDirectory!.listSync().map((item) => item.path).where((item) =>  item.endsWith('.mp4')).toList(growable: false);
       if (fileController.allStatusVideos.isNotEmpty) {
@@ -94,25 +85,19 @@ class VideoScreenState extends State<VideoScreen> {
                 ),
                 itemBuilder: (BuildContext context, int index) {
                   // var imageData = savedImagesFolder.map((e) => e.substring(37,69).toString()).contains(videoList[index].substring(72,104));
-                  // log(videoList[index].substring(72,104).toString());
-                  return InkWell(
+                   return InkWell(
                     onTap: () {
                       Get.to(()=> VideoDetailScreen(
                         indexNo: index,
                       ));
-
                     },
-                    //   Navigator.push(context, MaterialPageRoute(
-                    // builder: (context) => VideoDetailScreen(
-                    //   videoFile: fileController.allStatusVideos.elementAt(index).filePath,
-                    // ))).then((value) => setState((){})),
                     child: FutureBuilder(
                         future: getVideo(fileController.allStatusVideos.elementAt(index).filePath),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.done) {
                             if (snapshot.hasData) {
-                              print("asasas${snapshot.data}");
-                              return ReusingWidgets.getSavedData(
+                              return
+                                ReusingWidgets.getSavedData(
                                 tag: fileController.allStatusVideos.elementAt(index).filePath,
                                 context: context,
                                 file: File(snapshot.data!),
@@ -121,8 +106,7 @@ class VideoScreenState extends State<VideoScreen> {
                                     ? Icons.save_alt : Icons.done,
                                 color: ColorsTheme.themeColor,
                                 onSharePress: (){
-                                  Share.shareXFiles(
-                                    text: "Have a look on this Status",
+                                  Share.shareXFiles(text: "Have a look on this Status",
                                     [XFile(Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path)],
                                   );
                                 },
@@ -132,11 +116,7 @@ class VideoScreenState extends State<VideoScreen> {
                                     fileController.allStatusVideos.elementAt(index).isSaved = true);
                                     fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusVideos.elementAt(index).filePath, isSaved: fileController.allStatusVideos.elementAt(index).isSaved));
                                     fileController.allStatusVideos.refresh();
-                                    ReusingWidgets.snackBar(
-                                      context: context,
-                                      text: "Video Saved",
-                                    );
-
+                                    ReusingWidgets.snackBar(context: context, text: "Video Saved");
                                 }
                                     : () {
                                   ReusingWidgets.snackBar(context: context, text: "Video Already Saved");

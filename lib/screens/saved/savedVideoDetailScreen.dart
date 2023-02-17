@@ -25,39 +25,9 @@ class SavedVideoDetailScreen extends StatefulWidget {
 
 class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
 
-  Uri? myUri;
-
-  // bool? imageData;
-  // List? savedImagesFolder;
-  // Directory? savedImagesDirectory;
-  FileController fileController = Get.put(FileController());
-
-
-  @override
-  void initState() {
-    super.initState();
-    // myUri = Uri.parse(fileController.allStatusSaved.elementAt(widget.indexNo).filePath);
-    // savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver');
-
-    // log("aaaaaaaaaaa${fileController.allStatusSaved.elementAt(widget.indexNo).isSaved.toString()}");
-
-    print(widget.videoPath);
-
-    log("aaaaaaaaaaa${widget.videoPath}");
-
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    // VideoPlayerController.file(File(widget.videoFile)).dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    // savedImagesFolder = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') ||item.endsWith('.mp4') || item.endsWith('.jpeg')).toList(growable: false);
-    // imageData = savedImagesFolder!.map((e) => e.substring(37,69).toString()).contains(widget.videoFile.substring(72,104));
-    return Scaffold(
+   return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -68,12 +38,6 @@ class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
             Icons.arrow_back_ios,
           ),
           onPressed: () {
-            // if (VideoPlayerController.file(File(widget.videoFile)).value.isPlaying) {
-            //   VideoPlayerController.file(File(widget.videoFile)).pause();
-            // }
-            // else {
-            //   Navigator.pop(context);
-            // }
             Get.back();
           },
         ),
@@ -83,48 +47,6 @@ class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
                 Share.shareXFiles(text: "Have a look on this Status", [XFile(widget.videoPath.path)],);
           },
               icon: Icon(Icons.share)),
-          // Obx(() =>
-          //    Visibility(
-          //     visible: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved,
-          //     child: IconButton(
-          //         onPressed: () {
-          //           print("bbbbbbbbbb");
-          //
-          //           ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
-          //         }, icon: Icon(Icons.done)),
-          //   )
-          // ),
-          // Obx(() =>
-          //    Visibility(
-          //     visible: !(fileController.allStatusVideos.elementAt(widget.indexNo).isSaved),
-          //     child: IconButton(onPressed: () {
-          //
-          //
-          //       GallerySaver.saveVideo(Uri.parse(fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path,albumName: "StatusSaver",toDcim: true ).then((value) =>
-          //       fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
-          //       fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusVideos.elementAt(widget.indexNo).filePath, isSaved: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved));
-          //       fileController.allStatusSaved.refresh();
-          //       fileController.allStatusVideos.refresh();
-          //       ReusingWidgets.snackBar(
-          //         context: context,
-          //         text: "Video Saved",
-          //       );
-
-
-                // GallerySaver.saveVideo(myUri!.path, albumName: "StatusSaver", toDcim: true).then((value) =>
-                // fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
-                // fileController.allStatusVideos.refresh();
-                // print("aaaaaaaaaaaa");
-                // ReusingWidgets.dialogueAnimated(
-                //   context: context,
-                //   dialogType: DialogType.success,
-                //   color: ColorsTheme.primaryColor,
-                //   title: "Video Saved",
-                //   desc: "Video saved to File Manager > Internal Storage > >DCIM > StatusSaver",
-                // );
-              // }, icon: Icon(Icons.save_alt)),
-            // )
-          // )
         ],
       ),
       body: SavedController(
