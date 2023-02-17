@@ -6,9 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:status_saver/controller/fileController.dart';
 import 'package:status_saver/model/fileModel.dart';
-import 'package:status_saver/screens/tabScreen.dart';
-
-import 'bottom_navbar/bottom_navbar_screen.dart';
+import 'package:status_saver/screens/whatsapp/home/homeScreen.dart';
+import 'bottomNavbar/bottomNavbarScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,6 +88,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavBarScreen();
+    // return BottomNavBarScreen();
+    return HomeScreen();
   }
 }

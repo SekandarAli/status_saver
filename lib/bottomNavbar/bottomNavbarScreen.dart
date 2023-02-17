@@ -3,12 +3,11 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:status_saver/screens/images/imageScreen.dart';
-import 'package:status_saver/screens/saved/savedScreen.dart';
-import 'package:status_saver/screens/tabScreen.dart';
-import 'package:status_saver/screens/videos/videoScreen.dart';
 import '../app_theme/color.dart';
 import '../app_theme/reusing_widgets.dart';
+import '../screens/whatsapp/saved/savedTabBar.dart';
+import '../screens/whatsapp/setting/settingScreen.dart';
+import '../screens/whatsapp/status/statusTabBar.dart';
 
 class BottomNavBarScreen extends StatefulWidget {
   const BottomNavBarScreen({Key? key}) : super(key: key);
@@ -22,7 +21,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
   DateTime? currentTime;
 
   int tabIndex = 0;
-  late TabController tabController = TabController(length: 4, vsync: this,animationDuration: Duration(microseconds: 1));
+  late TabController tabController = TabController(length: 3, vsync: this,animationDuration: Duration(microseconds: 1));
 
   @override
   void initState() {
@@ -48,12 +47,6 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
           tabController.index = tabIndex;
         });
       }
-      else if (tabController.index == 3) {
-        setState(() {
-          tabIndex = 3;
-          tabController.index = tabIndex;
-        });
-      }
     });
   }
 
@@ -73,8 +66,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                   exit(0);
                 });
               },
-              title: "Exit",
-              subTitle: "Are you sure you want to Exit?");
+          );
       }
       else {
         tabIndex = 0;
@@ -84,7 +76,6 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
       },
       child: Scaffold(
         key: scaffoldKey,
-        // drawer: DrawerScreen(),
         bottomNavigationBar: BottomAppBar(
             color: Colors.white,
             clipBehavior: Clip.antiAlias,
@@ -104,8 +95,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                       },
                       child: bottomWidget(
                         0,
-                        "Search",
-                        Icons.search,
+                        "Status",
+                        Icons.lightbulb_circle_outlined,
                       ),
                     ),
                   ),
@@ -117,8 +108,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                       },
                       child: bottomWidget(
                         1,
-                        "My Flights",
-                          Icons.flight_takeoff,
+                        "Saved",
+                          Icons.save,
                       ),
                     ),
                   ),
@@ -130,28 +121,15 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                         },
                         child: bottomWidget(
                           2,
-                          "Airports",
-                          Icons.houseboat_rounded,
+                          "Settings",
+                          Icons.settings,
                         )),
-                  ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        tabIndex = 3;
-                        tabController.index = tabIndex;
-                      },
-                      child: bottomWidget(
-                        3,
-                        "Airlines",
-                        Icons.line_style_outlined,
-                      ),
-                    ),
                   ),
                 ],
               ),
             )),
         body: DefaultTabController(
-          length: 4,
+          length: 3,
           child: Scaffold(
             body: Column(
               children: [
@@ -164,19 +142,19 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                         width: double.infinity,
                         height: double.infinity,
                         alignment: Alignment.center,
-                        child: ImageScreen(),
+                        child: StatusTabScreen(),
                       ),
                       Container(
                         width: double.infinity,
                         height: double.infinity,
                         alignment: Alignment.center,
-                        child: VideoScreen(),
+                        child: SavedTabScreen(),
                       ),
                       Container(
                         width: double.infinity,
                         height: double.infinity,
                         alignment: Alignment.center,
-                        child: SavedScreen(),
+                        child: SettingsScreen(),
                       ),
                     ],
                   ),

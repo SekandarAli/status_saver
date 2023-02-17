@@ -3,10 +3,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
-import 'package:status_saver/screens/tabScreen.dart';
-import '../../app_theme/color.dart';
-import '../../app_theme/text_styles.dart';
-import '../../generated/assets.dart';
+
+import '../../../app_theme/color.dart';
+import '../../../app_theme/text_styles.dart';
+import '../../../bottomNavbar/bottomNavbarScreen.dart';
+import '../../../generated/assets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: "WhatsApp Status",
                   subTitle: "Download Photo and Video Status",
                 onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>TabScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
                 }
               ),
               ReusingWidgets.homeScreenCards(

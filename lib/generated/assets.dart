@@ -2,6 +2,8 @@
 class Assets {
   Assets._();
 
+  static const String imagesEmpty = 'assets/images/empty.png';
+  static const String imagesExitApp = 'assets/images/exitApp.png';
   static const String imagesPermission = 'assets/images/permission.png';
   static const String imagesSettingsIcon = 'assets/images/settings_icon.png';
   static const String imagesStickerIcon = 'assets/images/sticker_icon.png';

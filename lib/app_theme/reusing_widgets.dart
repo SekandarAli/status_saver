@@ -329,8 +329,6 @@ class ReusingWidgets {
   }
 
   static Future<String?> exitDialogueBox({
-    required String title,
-    required String subTitle,
     required BuildContext context,
     required Function() onPress,
 
@@ -345,35 +343,45 @@ class ReusingWidgets {
               contentPadding: EdgeInsets.all(0),
               title: Container(
                   padding: EdgeInsets.all(15),
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
+                  width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                    color: ColorsTheme.primaryColor,
+                    color: ColorsTheme.black,
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(5),
                       topLeft: Radius.circular(5),
                     ),
                   ),
-                  child: Text(title, style: ThemeTexts.textStyleTitle2,)),
+                  child: Text("Exit", style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.white),)),
               content: Container(
                   padding: EdgeInsets.all(15),
-                  child: Text(subTitle)),
+                  child: Text("Are you sure you want to Exit?")),
               actions: [
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('CANCEL')),
+                    child: Text('CANCEL',style: ThemeTexts.textStyleTitle3,)),
                 TextButton(
                     onPressed: () {
                       onPress();
                     },
-                    child: Text('OK')),
+                    child: Text('OK',style: ThemeTexts.textStyleTitle3)),
               ],
             );
           });
+
+
+  static emptyData({required BuildContext context}){
+    return Center(
+      child: Image.asset(
+        Assets.imagesEmpty,
+        filterQuality: FilterQuality.high,
+        fit: BoxFit.cover,
+        height: MediaQuery.of(context).size.width / 3,
+        width: MediaQuery.of(context).size.width / 3,
+      ),
+    );
+  }
 }
 
 // Share.shareFiles([Uri.parse(imageList[index]).path], text: 'Have a look on this Status');

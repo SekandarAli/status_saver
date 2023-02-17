@@ -1,31 +1,27 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_constructors, use_build_context_synchronously
 
-import 'dart:developer';
 import 'dart:io';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
-import '../../app_theme/color.dart';
-import '../../app_theme/reusing_widgets.dart';
-import '../../controller/fileController.dart';
-import '../../model/fileModel.dart';
-import 'videoController.dart';
+import '../../../../app_theme/color.dart';
+import '../../../../app_theme/reusing_widgets.dart';
+import '../../../../controller/fileController.dart';
+import '../../../../model/fileModel.dart';
 
-class VideoDetailScreen extends StatefulWidget {
+class StatusVideoDetailScreen extends StatefulWidget {
   int indexNo;
 
-  VideoDetailScreen({Key? key, required this.indexNo})
-      : super(key: key);
+  StatusVideoDetailScreen({Key? key, required this.indexNo}) : super(key: key);
 
   @override
-  _VideoDetailScreenState createState() => _VideoDetailScreenState();
+  _StatusVideoDetailScreenState createState() => _StatusVideoDetailScreenState();
 }
 
-class _VideoDetailScreenState extends State<VideoDetailScreen> {
+class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
 
   Uri? myUri;
   FileController fileController = Get.put(FileController());
@@ -96,5 +92,79 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     );
   }
 }
+
+
+
+class VideoController extends StatefulWidget {
+  VideoController({Key? key, required this.videoPlayerController}) : super(key: key);
+
+  VideoPlayerController videoPlayerController;
+
+  @override
+  State<VideoController> createState() => _VideoControllerState();
+}
+
+class _VideoControllerState extends State<VideoController> {
+
+  ChewieController? chewieController;
+  @override
+  void initState() {
+    super.initState();
+    chewieController = ChewieController(
+      videoPlayerController: widget.videoPlayerController,
+      autoInitialize: true,
+      looping: true,
+      autoPlay: true,
+      allowFullScreen: true,
+      showOptions: false,
+      aspectRatio: widget.videoPlayerController.value.aspectRatio,
+      showControls: true,
+      additionalOptions: (context) {
+        return [
+          OptionItem(
+            onTap: () => debugPrint('My option works!'),
+            iconData: Icons.chat,
+            title: 'My localized title',
+          ),
+          OptionItem(
+            onTap: () =>
+                debugPrint('Another option working!'),
+            iconData: Icons.chat,
+            title: 'Another localized title',
+          ),
+        ];
+      },
+      errorBuilder: (context, errorMessage) {
+        return Center(
+          child: Text(errorMessage),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    widget.videoPlayerController.dispose();
+    chewieController!.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Container(
+          padding: EdgeInsets.only(top: 0),
+          child: Chewie(
+            controller: chewieController!,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 

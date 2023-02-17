@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, avoid_print
 
-import 'dart:developer';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -13,15 +12,15 @@ import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
 import 'package:status_saver/controller/fileController.dart';
 import 'package:status_saver/model/fileModel.dart';
-import 'imageDetailScreen.dart';
+import 'statusImageDetailScreen.dart';
 
-class ImageScreen extends StatefulWidget {
-  const ImageScreen({Key? key}) : super(key: key);
+class StatusImageScreen extends StatefulWidget {
+  const StatusImageScreen({Key? key}) : super(key: key);
   @override
-  ImageScreenState createState() => ImageScreenState();
+  StatusImageScreenState createState() => StatusImageScreenState();
 }
 
-class ImageScreenState extends State<ImageScreen> {
+class StatusImageScreenState extends State<StatusImageScreen> {
   int? storagePermissionCheck;
   Future<int>? storagePermissionChecker;
   int? androidSDK;
@@ -173,7 +172,7 @@ class ImageScreenState extends State<ImageScreen> {
                            itemBuilder: (BuildContext context, int index) {
                              return InkWell(
                                onTap: () {
-                                 Get.to(()=> ImageDetailScreen(
+                                 Get.to(()=> StatusImageDetailScreen(
                                    indexNo: index,
                                  ));
                                },
