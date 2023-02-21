@@ -1,10 +1,10 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_single_cascade_in_expression_statements, use_build_context_synchronously, avoid_print
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:status_saver/app_theme/color.dart';
@@ -12,12 +12,12 @@ import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/controller/fileController.dart';
 
 class SavedImageDetailScreen extends StatefulWidget {
-  File imgPath;
-  String imgListIndex;
+  // File imgPath;
+  // String imgListIndex;
   int indexNo;
   List imgList;
 
-  SavedImageDetailScreen({Key? key, required this.imgList,required this.imgPath,required this.imgListIndex,required this.indexNo}) : super(key: key);
+  SavedImageDetailScreen({Key? key, required this.imgList,required this.indexNo}) : super(key: key);
 
   @override
   _SavedImageDetailScreenState createState() => _SavedImageDetailScreenState();
@@ -26,6 +26,14 @@ class SavedImageDetailScreen extends StatefulWidget {
 class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
 
   FileController fileController = Get.put(FileController());
+  Uri? myUri;
+
+  @override
+  void initState() {
+    super.initState();
+    myUri = Uri.parse(File(widget.imgList[widget.indexNo]).path);
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +41,7 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black,
         title: Text("Saved Image"),
         leading: IconButton(
           color: ColorsTheme.white,
@@ -48,17 +56,20 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
               onPressed: () {
                 Share.shareXFiles(
                   text: "Have a look on this Status",
-                  [XFile(widget.imgPath.path)],
+                  [XFile(myUri!.path)],
                 );
               },
               icon: Icon(Icons.share)),
           IconButton(
               onPressed: () {
-                  widget.imgPath.delete();
-                  fileController.allStatusImages.elementAt(widget.indexNo).isSaved = false;
-                  fileController.allStatusImages.refresh();
-                  fileController.allStatusSaved.refresh();
-                  ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
+                log("aaaa${widget.imgList[widget.indexNo].toString()}");
+                log("aaaa${widget.indexNo.toString()}");
+                File(widget.imgList[widget.indexNo]).delete();
+                  // fileController.allStatusImages.elementAt(widget.indexNo).isSaved = false;
+                  // fileController.allStatusImages.refresh();
+                  // fileController.allStatusSaved.refresh();
+                  // ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
+                  ReusingWidgets.toast(text: "Image Deleted Successfully");
                   Navigator.pop(context);
               }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),
         ],
@@ -75,35 +86,52 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
        body: Container(
          color: Colors.black,
          height: h ,
-         child: CarouselSlider.builder(
-           itemCount: widget.imgList.length,
-           itemBuilder: (BuildContext context, int index,_) {
-             return InteractiveViewer(
-               panEnabled: false,
-               boundaryMargin: EdgeInsets.all(100),
-               minScale: 0.5,
-               maxScale: 2,
-               child: Hero(
-                 tag: widget.imgListIndex,
-                 child: Center(
-                   child: Image.file(
-                     File(widget.imgList[index]),
-                     fit: BoxFit.contain,
-                     // width: double.infinity,
+         child: CarouselSlider(
+           // itemCount: widget.imgList.length,
+           // itemBuilder: (BuildContext context, int index,_) {
+            items: widget.imgList.map((index) {
+             return Builder(
+               builder: (context) {
+                 return InteractiveViewer(
+                   panEnabled: false,
+                   minScale: 0.5,
+                   maxScale: 5,
+                   child: Hero(
+                     tag: widget.indexNo,
+                     child: Padding(
+                       padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                       child: ClipRRect(
+                         borderRadius: BorderRadius.circular(20),
+                         child: Image.file(
+                           File(widget.imgList[widget.indexNo]),
+                           fit: BoxFit.fill,
+                           // width: double.infinity,
+                         ),
+                       ),
+                     ),
                    ),
-                 ),
-               ),
+                 );
+               }
              );
-           },
+           }).toList(),
            options: CarouselOptions(
-             animateToClosest: false,
+             animateToClosest: true,
              autoPlay: false,
-             enlargeCenterPage: true,
+             enlargeCenterPage: false,
+             enlargeFactor: 0,
              enableInfiniteScroll: true,
              disableCenter: false,
              viewportFraction: 1.0,
              aspectRatio: 0.75,
+             clipBehavior: Clip.antiAlias,
              initialPage: widget.indexNo,
+             padEnds: true,
+             onPageChanged: (index, reason) {
+               log('index $index');
+               widget.indexNo = index;
+               myUri = Uri.parse(File(widget.imgList[widget.indexNo]).path);
+               setState(() {});
+             },
            ),
          ),
        )

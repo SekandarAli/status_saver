@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
@@ -48,7 +49,8 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
     fileController.allStatusVideos.value = [];
     if(videoList.isNotEmpty){
       for (var element in videoList) {
-        if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+        // if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
           fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
           print("aaa");
         }
@@ -70,14 +72,17 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 
-    print("aaaaaaaaaaa");
     if (Directory(whatsAppDirectory!.path).existsSync()) {
       // final videoList = whatsAppDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
       // List savedImagesFolder = savedImagesDirectory!.listSync().map((item) => item.path).where((item) =>  item.endsWith('.mp4')).toList(growable: false);
       if (fileController.allStatusVideos.isNotEmpty) {
           return Scaffold(
+            backgroundColor: ColorsTheme.backgroundColor,
             body: RefreshIndicator(
               onRefresh: pullRefresh,
+              backgroundColor: ColorsTheme.primaryColor,
+              color: ColorsTheme.white,
+              strokeWidth: 2,
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 child: Obx(()=> GridView.builder(
@@ -102,16 +107,19 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                           future: getVideo(fileController.allStatusVideos.elementAt(index).filePath),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.done) {
+                              log("done2");
                               if (snapshot.hasData) {
-                                return
-                                  ReusingWidgets.getSavedData(
+                                return ReusingWidgets.getSavedData(
                                   tag: fileController.allStatusVideos.elementAt(index).filePath,
                                   context: context,
                                   file: File(snapshot.data!),
                                   showPlayIcon: false,
+                                    bgColor: fileController.allStatusVideos.elementAt(index).isSaved == false ?
+                                    ColorsTheme.primaryColor : ColorsTheme.doneColor,
                                   icon: fileController.allStatusVideos.elementAt(index).isSaved == false
                                       ? Icons.save_alt : Icons.done,
-                                  color: ColorsTheme.themeColor,
+                                    color: fileController.allStatusVideos.elementAt(index).isSaved == false ?
+                                    ColorsTheme.white : ColorsTheme.doneColor,
                                   onSharePress: (){
                                     Share.shareXFiles(text: "Have a look on this Status",
                                       [XFile(Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path)],
@@ -128,21 +136,31 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                                           isSaved: fileController.allStatusVideos.elementAt(index).isSaved));
                                       fileController.allStatusVideos.refresh();
                                       fileController.allStatusSaved.refresh();
-                                      ReusingWidgets.snackBar(context: context, text: "Video Saved");
-                                  }
+                                      // ReusingWidgets.snackBar(context: context, text: "Video Saved");
+                                      ReusingWidgets.toast(text: "Video Saved");
+                                      }
                                       : () {
-                                    ReusingWidgets.snackBar(context: context, text: "Video Already Saved");
+                                    // ReusingWidgets.snackBar(context: context, text: "Video Already Saved");
+                                    ReusingWidgets.toast(text: "Video Already Saved");
                                   },
                                 );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
                               }
-                            } else {
+
+                                else {
+                                  return Center(
+                                    child: Text(
+                                      'No WhatsApp Found!',
+                                      style: ThemeTexts.textStyleTitle3,
+                                    ),
+                                  );
+                                }
+
+                            }
+                            else {
                               return Hero(
                                 tag: fileController.allStatusVideos.elementAt(index).filePath,
-                                child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                                // child: Image.asset(Assets.imagesLoadingAnimation,width: 5,height: 5),
+                                child: ReusingWidgets.loadingAnimation(),
                               );
                             }
                           }),
@@ -154,19 +172,25 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
           );
         }
         else {
-          return Center(
-            child: Text(
-              'Sorry, No Videos Found.',
-              style: ThemeTexts.textStyleTitle2,
+          return Scaffold(
+            backgroundColor: ColorsTheme.backgroundColor,
+            body: Center(
+              child: Text(
+                'Sorry, No Videos Found.',
+                style: ThemeTexts.textStyleTitle2,
+              ),
             ),
           );
         }
     }
     else {
-      return Center(
-        child: Text(
-          'No WhatsApp Found!',
-          style: ThemeTexts.textStyleTitle3,
+      return Scaffold(
+        backgroundColor: ColorsTheme.backgroundColor,
+        body: Center(
+          child: Text(
+            'No WhatsApp Found!',
+            style: ThemeTexts.textStyleTitle3,
+          ),
         ),
       );
     }

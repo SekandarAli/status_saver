@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:status_saver/generated/assets.dart';
 import 'package:status_saver/screens/whatsapp/saved/savedVideo/savedVideoDetailScreen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../app_theme/color.dart';
@@ -59,6 +58,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
       final videoList = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
       if (videoList.isNotEmpty) {
         return Scaffold(
+          backgroundColor: ColorsTheme.backgroundColor,
           body: Container(
             margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: GridView.builder(
@@ -91,6 +91,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                 context: context,
                                 file: File(snapshot.data!),
                                 showPlayIcon: false,
+                                bgColor: ColorsTheme.dismissColor,
                                 icon: Icons.delete,
                                 color: ColorsTheme.dismissColor,
                                 onSharePress: (){
@@ -105,7 +106,8 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                     fileController.allStatusVideos.elementAt(index).isSaved = false;
                                     fileController.allStatusVideos.refresh();
                                     fileController.allStatusSaved.refresh();
-                                    ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
+                                    // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
+                                    ReusingWidgets.toast(text: "Video Deleted Successfully");
                                 },
                             ),
                           );
@@ -117,7 +119,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                       }
                       else {
                         return Hero(tag:videoList[index],
-                          child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
+                          child: ReusingWidgets.loadingAnimation(),
                         );
                       }
                     });

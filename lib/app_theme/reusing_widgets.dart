@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
@@ -38,7 +40,7 @@ class ReusingWidgets {
                 Text(
                   "WhatsApp Permission",
                   style: ThemeTexts.textStyleTitle2.copyWith(
-                      color: ColorsTheme.black, fontWeight: FontWeight.w500),
+                      color: ColorsTheme.primaryColor, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 10),
                 Text("Allow access to .STATUSES Folder to get all Status.",
@@ -96,12 +98,26 @@ class ReusingWidgets {
     );
   }
 
-  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar({
-    required BuildContext context,
+  // static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar({
+  //   required BuildContext context,
+  //   required String text,
+  // }) {
+  //   return ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text(text), duration: Duration(milliseconds: 800)));
+  // }
+
+  static Future<bool?> toast({
     required String text,
-  }) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(text), duration: Duration(milliseconds: 800)));
+}){
+    return Fluttertoast.showToast(
+        msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: ColorsTheme.primaryColor,
+        textColor: Colors.white,
+        fontSize: 16
+    );
   }
 
   static AwesomeDialog dialogueAnimated({
@@ -189,6 +205,7 @@ class ReusingWidgets {
     required Function() onDownloadDeletePress,
     required IconData icon,
     required Color color,
+    required Color bgColor,
     required Function() onSharePress,
   }) {
     return Stack(
@@ -200,14 +217,8 @@ class ReusingWidgets {
             Hero(
               tag: tag,
               child: Container(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .height,
+                height: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.height,
                 color: ColorsTheme.backgroundColor,
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -219,55 +230,47 @@ class ReusingWidgets {
                 ),
               ),
             ),
-            Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                decoration: BoxDecoration(
-                  // color: Colors.yellow,
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
+            ClipRRect(
+              borderRadius: BorderRadius.only(bottomRight: Radius.circular(10),bottomLeft: Radius.circular(10),),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Container(
+                      color: ColorsTheme.black.withOpacity(0.6),
+                      // color:  ColorsTheme.black,
+                      child: IconButton(
+                        onPressed: () {
+                          onSharePress();
+                        },
+                        icon: Icon(
+                          Icons.share,
+                          // color: ColorsTheme.themeColor,
+                          color: ColorsTheme.white,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                // height: 40,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        color: Colors.black.withOpacity(0.6),
-                        child: IconButton(
-                          onPressed: () {
-                            onSharePress();
-                          },
-                          icon: Icon(
-                            Icons.share,
-                            color: ColorsTheme.themeColor,
-                          ),
-                        ),
+                  // SizedBox(width: 1),
+                  Expanded(
+                    child: Container(
+                      color: ColorsTheme.primaryColor.withOpacity(0.6),
+                      // color:  ColorsTheme.black,
+                      child: IconButton(
+                        onPressed: () {
+                          onDownloadDeletePress();
+                        },
+                        icon: Icon(icon, color: color),
                       ),
                     ),
-                    SizedBox(width: 1),
-                    Expanded(
-                      child: Container(
-                        color: Colors.black.withOpacity(0.6),
-                        child: IconButton(
-                          onPressed: () {
-                            onDownloadDeletePress();
-                          },
-                          icon: Icon(icon, color: color),
-                        ),
-                      ),
-                    ),
-                  ],
-                )),
+                  ),
+                ],
+              ),
+            ),
 
           ],
         ),
-        showPlayIcon == true
-            ? Container()
-            : Center(
+        showPlayIcon == true ? Container() : Center(
           child: Container(
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -283,45 +286,167 @@ class ReusingWidgets {
     );
   }
 
+/*  static Widget getSavedData({
+    required String tag,
+    required BuildContext context,
+    required File file,
+    required bool showPlayIcon,
+    bool? dummyWidget,
+    bool? isVisible,
+    required Function() onDownloadDeletePress,
+    required IconData icon,
+    required Color color,
+    required Color bgColor,
+    required Function() onSharePress,
+  }) {
+    return Stack(
+      children: [
+        Stack(
+          alignment: Alignment.bottomCenter,
+          fit: StackFit.loose,
+          children: [
+            Hero(
+              tag: tag,
+              child: Container(
+                height: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.height,
+                color: ColorsTheme.backgroundColor,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  child: Image.file(
+                    file,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                    colorBlendMode: BlendMode.color,
+                    color: Colors.black.withOpacity(isVisible == true ? 1 : 0),
+                  ),
+                ),
+              ),
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.only(bottomRight: Radius.circular(10),bottomLeft: Radius.circular(10),),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Container(
+                      color: ColorsTheme.black.withOpacity(0.6),
+                      // color:  ColorsTheme.black,
+                      child: IconButton(
+                        onPressed: () {
+                          onSharePress();
+                        },
+                        icon: Icon(
+                          Icons.share,
+                          // color: ColorsTheme.themeColor,
+                          color: ColorsTheme.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // SizedBox(width: 1),
+                  Expanded(
+                    child: Container(
+                      color: ColorsTheme.primaryColor.withOpacity(0.6),
+                      // color:  ColorsTheme.black,
+                      child: IconButton(
+                        onPressed: () {
+                          onDownloadDeletePress();
+                        },
+                        icon: Icon(icon, color: color),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          ],
+        ),
+        showPlayIcon == true ? Container() : Center(
+          child: Container(
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black.withOpacity(0.5)),
+            child: Icon(
+              Icons.play_arrow_rounded,
+              size: 40,
+              color: ColorsTheme.white,
+            ),
+          ),
+        ),
+
+        dummyWidget == false ? Container() :  Visibility(
+            visible: isVisible!,
+            child: const Align(
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 30,
+              ),
+            ))
+      ],
+    );
+  }*/
+
   static Widget homeScreenCards({
     required String iconImage,
     required String title,
     required String subTitle,
+    required BuildContext context,
+    required Color color,
     required Function() onTap,
   }) {
     return InkWell(
         onTap: () {
           onTap();
         },
-        child: Card(
-          elevation: 5,
-          child: Container(
-            padding: EdgeInsets.all(15),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.12,
+          child: Card(
+            elevation: 5,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Image.asset(
-                  iconImage,
-                  fit: BoxFit.cover,
-                  width: 40,
-                  height: 40,
+                Container(
+                  width: 15,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(5),
+                          bottomRight: Radius.circular(5)),
+                    ),
                 ),
-                SizedBox(width: 10),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
-                        style: ThemeTexts.textStyleTitle3.copyWith(
-                            color: ColorsTheme.textColor,
-                            fontWeight: FontWeight.w500)),
-                    SizedBox(height: 5),
-                    Text(subTitle,
-                        style: ThemeTexts.textStyleTitle4.copyWith(
-                            color: ColorsTheme.textColor,
-                            fontWeight: FontWeight.normal)),
-                  ],
-                )
+                Container(
+                  padding: EdgeInsets.all(15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        iconImage,
+                        fit: BoxFit.cover,
+                        width: 50,
+                        height: 50,
+                      ),
+                      SizedBox(width: 10),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title,
+                              style: ThemeTexts.textStyleTitle3.copyWith(
+                                  color: ColorsTheme.textColor,
+                                  fontWeight: FontWeight.w500)),
+                          SizedBox(height: 5),
+                          Text(subTitle,
+                              style: ThemeTexts.textStyleTitle4.copyWith(
+                                  color: ColorsTheme.textColor,
+                                  fontWeight: FontWeight.normal)),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -345,7 +470,7 @@ class ReusingWidgets {
                   padding: EdgeInsets.all(15),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                    color: ColorsTheme.black,
+                    color: ColorsTheme.primaryColor,
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(5),
                       topLeft: Radius.circular(5),
@@ -354,18 +479,20 @@ class ReusingWidgets {
                   child: Text("Exit", style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.white),)),
               content: Container(
                   padding: EdgeInsets.all(15),
-                  child: Text("Are you sure you want to Exit?")),
+                  child: Text("Are you sure you want to Exit?",style: ThemeTexts.textStyleTitle3.copyWith(fontWeight: FontWeight.w500),)),
               actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('CANCEL',style: ThemeTexts.textStyleTitle3,)),
+
                 TextButton(
                     onPressed: () {
                       onPress();
                     },
-                    child: Text('OK',style: ThemeTexts.textStyleTitle3)),
+                    child: Text('OK',style: ThemeTexts.textStyleTitle3.copyWith(color: ColorsTheme.primaryColor))),
+
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('CANCEL',style: ThemeTexts.textStyleTitle3.copyWith(color: ColorsTheme.primaryColor),)),
               ],
             );
           });
@@ -377,11 +504,42 @@ class ReusingWidgets {
         Assets.imagesEmpty,
         filterQuality: FilterQuality.high,
         fit: BoxFit.cover,
+        color: ColorsTheme.primaryColor,
         height: MediaQuery.of(context).size.width / 3,
         width: MediaQuery.of(context).size.width / 3,
       ),
     );
   }
+
+  static Widget elevatedButtons(){
+    return  ElevatedButton(
+      onPressed: () {},
+      style: ButtonStyle(
+          backgroundColor:  MaterialStateProperty.all(Colors.black),
+          foregroundColor:  MaterialStateProperty.all(Colors.white),
+          shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                // side: BorderSide(color: Colors.red)
+              )
+          )
+      ),
+      child: Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Icon(Icons.save_alt),
+            SizedBox(height: 5),
+            Text("Save"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget loadingAnimation(){
+    return SpinKitCircle(color: ColorsTheme.primaryColor);
+  }
 }
 
-// Share.shareFiles([Uri.parse(imageList[index]).path], text: 'Have a look on this Status');
+

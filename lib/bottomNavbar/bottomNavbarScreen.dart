@@ -1,12 +1,13 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, avoid_unnecessary_containers
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, avoid_unnecessary_containers, library_private_types_in_public_api, null_check_always_fails
 
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:status_saver/screens/home/homeScreen.dart';
 import '../app_theme/color.dart';
 import '../app_theme/reusing_widgets.dart';
+import '../screens/setting/settingScreen.dart';
 import '../screens/whatsapp/saved/savedTabBar.dart';
-import '../screens/whatsapp/setting/settingScreen.dart';
 import '../screens/whatsapp/status/statusTabBar.dart';
 
 class BottomNavBarScreen extends StatefulWidget {
@@ -59,14 +60,15 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
           scaffoldKey.currentState!.closeDrawer();
         }
       else if (tabController.index == 0) {
-          ReusingWidgets.exitDialogueBox(
-              context: context,
-              onPress: (){
-                Future.delayed(Duration(milliseconds: 1),() {
-                  exit(0);
-                });
-              },
-          );
+         Get.offAll(()=> HomeScreen());
+          // ReusingWidgets.exitDialogueBox(
+          //     context: context,
+          //     onPress: (){
+          //       Future.delayed(Duration(milliseconds: 1),() {
+          //         exit(0);
+          //       });
+          //     },
+          // );
       }
       else {
         tabIndex = 0;
@@ -78,7 +80,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
         key: scaffoldKey,
         bottomNavigationBar: BottomAppBar(
             color: Colors.white,
-            clipBehavior: Clip.antiAlias,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
             child: Container(
               color: ColorsTheme.white,
               height: 60,

@@ -43,7 +43,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text("Video"),
+        title: Text("Status Video"),
         leading: IconButton(
           color: ColorsTheme.white,
           icon: Icon(
@@ -64,7 +64,8 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
               visible: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved,
               child: IconButton(
                   onPressed: () {
-                    ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                    // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                    ReusingWidgets.toast(text: "Image Already Saved");
                   }, icon: Icon(Icons.done)),
             )
           ),
@@ -76,10 +77,8 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
                 fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
                 fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusVideos.elementAt(widget.indexNo).filePath, isSaved: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved));
                 fileController.allStatusVideos.refresh();
-                ReusingWidgets.snackBar(
-                  context: context,
-                  text: "Video Saved",
-                );
+                // ReusingWidgets.snackBar(context: context, text: "Video Saved");
+                ReusingWidgets.toast(text: "Video Saved");
               }, icon: Icon(Icons.save_alt)),
             )
           )

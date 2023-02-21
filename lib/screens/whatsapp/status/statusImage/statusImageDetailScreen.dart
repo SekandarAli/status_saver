@@ -25,12 +25,14 @@ class StatusImageDetailScreen extends StatefulWidget {
 class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
   Uri? myUri;
   FileController fileController = Get.put(FileController());
-  int currentindex = 0;
+  int currentIndex = 0;
+
+  bool? isTapped;
 
   @override
   void initState() {
     super.initState();
-    currentindex = widget.indexNo;
+    currentIndex = widget.indexNo;
     myUri = Uri.parse(fileController.allStatusImages.elementAt(widget.indexNo).filePath);
   }
 
@@ -43,8 +45,8 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
     return Scaffold(
       backgroundColor: ColorsTheme.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text("Image"),
+        backgroundColor: ColorsTheme.black,
+        title: Text("Status Image"),
         leading: IconButton(
           color: ColorsTheme.white,
           icon: Icon(
@@ -62,19 +64,19 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               },
               icon: Icon(Icons.share)),
           Obx(() => Visibility(
-              visible: fileController.allStatusImages.elementAt(currentindex).isSaved,
+              visible: fileController.allStatusImages.elementAt(currentIndex).isSaved,
               child: IconButton(
                   onPressed: () {
-                    ReusingWidgets.snackBar(
-                        context: context, text: "Image Already Saved");
+                    // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                    ReusingWidgets.toast(text: "Image Already Saved");
                   },
                   icon: Icon(Icons.done)))),
           Obx(() => Visibility(
-              visible: !(fileController.allStatusImages.elementAt(currentindex).isSaved),
+              visible: !(fileController.allStatusImages.elementAt(currentIndex).isSaved),
               child: IconButton(
                   onPressed: () {
                       GallerySaver.saveImage(myUri!.path, albumName: "StatusSaver", toDcim: true).then((value) {
-                        fileController.allStatusImages.elementAt(currentindex).isSaved = true;
+                        fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
                         fileController.allStatusImages.refresh();
                       });
                       ReusingWidgets.dialogueAnimated(
@@ -88,57 +90,60 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
                   icon: Icon(Icons.save_alt)))),
         ],
       ),
-
-      // body: Hero(
-      //   tag: fileController.allStatusImages.elementAt(widget.indexNo).filePath,
-      //   child: Center(
-      //     child: Image.file(
-      //       File(fileController.allStatusImages.elementAt(widget.indexNo).filePath),
-      //       fit: BoxFit.cover,
-      //     ),
-      //   ),
-      // ),
       body: Obx(()=> Container(
-        color: ColorsTheme.backgroundColor,
-        height: h ,
-        child: CarouselSlider.builder(
-
-          itemCount: fileController.allStatusImages.length,
-          itemBuilder: (BuildContext context, int index,_) {
-            return InteractiveViewer(
-              panEnabled: true,
-              // boundaryMargin: EdgeInsets.all(0),
-              minScale: 0.5,
-              maxScale: 5,
-              child: Hero(
-                tag: currentindex,
-                child: Image.file(
-                  File(fileController.allStatusImages.elementAt(currentindex).filePath),
-                  fit: BoxFit.fill,
-                  // width: double.infinity,
-                ),
-              ),
+        color: ColorsTheme.black,
+        height: h,
+        child: CarouselSlider(
+             items: fileController.allStatusImages.map((index) {
+            return Builder(
+            builder: (BuildContext context) {
+                return InteractiveViewer(
+                  panAxis: PanAxis.free,
+                  panEnabled: false,
+                  minScale: 0.5,
+                  maxScale: 5,
+                  child: Hero(
+                    tag: currentIndex,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.file(
+                          File(fileController.allStatusImages.elementAt(currentIndex).filePath),
+                          fit: BoxFit.fill,
+                          // width: double.infinity,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
             );
-          },
+          }).toList(),
           options: CarouselOptions(
-            animateToClosest: false,
+            animateToClosest: true,
             autoPlay: false,
-            enlargeCenterPage: true,
+            enlargeCenterPage: false,
+            // enlargeFactor: 0,
             enableInfiniteScroll: true,
             disableCenter: false,
             viewportFraction: 1.0,
             aspectRatio: 0.75,
-            initialPage: currentindex,
-            padEnds: false,
+            initialPage: currentIndex,
+            padEnds: true,
               onPageChanged: (index, reason) {
               log('index $index');
-              currentindex = index;
-              myUri = Uri.parse(fileController.allStatusImages.elementAt(currentindex).filePath);
+              currentIndex = index;
+              myUri = Uri.parse(fileController.allStatusImages.elementAt(currentIndex).filePath);
               setState(() {});
               },
+            // onScrolled: (value){
+            //   print("object");
+            //   setState(() {});
+            // }
           ),
         ),
-      )),
+      ),),
     );
   }
 }

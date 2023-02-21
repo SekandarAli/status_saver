@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, avoid_print
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,8 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   Future<int>? storagePermissionChecker;
   int? androidSDK;
   Directory? savedImagesDirectory;
-  Directory? whatsAppBusinessDirectory;
+
+  // Directory? whatsAppBusinessDirectory;
   final FileController fileController = Get.put(FileController());
   List<String>? imageList;
   List<String>? savedList;
@@ -74,7 +76,7 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     }
   }
 
-  createFolder()async {
+  createFolder() async {
     const folderName = "StatusSaver";
     final path = Directory('/storage/emulated/0/DCIM/$folderName');
     if ((await path.exists())) {
@@ -85,29 +87,31 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     }
   }
 
-  getImageData(){
+  getImageData() {
     fileController.allStatusImages.value = [];
-    if(imageList!.isNotEmpty){
+    if (imageList!.isNotEmpty) {
       for (var element in imageList!) {
-        if(savedList!.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+        if (savedList!.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
           // print("IF$element");
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+          fileController.allStatusImages.add(
+              FileModel(filePath: element, isSaved: true));
         }
-        else{
+        else {
           // print("ELSE$element");
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          fileController.allStatusImages.add(
+              FileModel(filePath: element, isSaved: false));
         }
       }
     }
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
-    whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+    // whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
 
     createFolder();
     getImageData();
@@ -144,272 +148,158 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     double h = MediaQuery.of(context).size.height;
 
     return Scaffold(
-     backgroundColor: ColorsTheme.backgroundColor,
-     body: FutureBuilder(
-       future: storagePermissionChecker,
-       builder: (context, snapshot) {
-         if (snapshot.connectionState == ConnectionState.done) {
-           if (snapshot.hasData) {
-             if (snapshot.data == 1) {
-               if (Directory(whatsAppDirectory.path).existsSync()) {
-                 if (fileController.allStatusImages.isNotEmpty) {
-                   return RefreshIndicator(
-                     onRefresh: pullRefresh,
-                     child: Container(
-                         height: h,
-                         width: w,
-                         margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                         child: Obx(() => GridView.builder(
-                          key: PageStorageKey(widget.key),
-                           itemCount: fileController.allStatusImages.length,
-                           physics: BouncingScrollPhysics(),
-                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                             crossAxisCount: 2,
-                             mainAxisSpacing: 5,
-                             crossAxisSpacing: 5,
-                             childAspectRatio: 0.75
-                           ),
-                           itemBuilder: (BuildContext context, int index) {
-                             return InkWell(
-                               onTap: () {
-                                 Get.to(()=> StatusImageDetailScreen(
-                                   indexNo: index,
-                                 ));
-                               },
-                               child:
-                               ReusingWidgets.getSavedData(
-                                 tag: fileController.allStatusImages.elementAt(index).filePath,
-                                 context: context,
-                                 file: File(fileController.allStatusImages.elementAt(index).filePath),
-                                 showPlayIcon: true,
-                                 icon:
-                                 fileController.allStatusImages.elementAt(index).isSaved == false
-                                     ? Icons.save_alt : Icons.done,
-                                 color: ColorsTheme.themeColor,
-                                 onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                     (){
-                                   GallerySaver.saveImage(Uri.parse(
-                                       fileController.allStatusImages.elementAt(index).filePath).path,albumName: "StatusSaver",toDcim: true ).then((value) {
-                                         fileController.allStatusImages.elementAt(index).isSaved = true;
-                                         fileController.allStatusSaved.add(FileModel(
-                                           filePath: fileController.allStatusImages.elementAt(index).filePath,
-                                           isSaved: fileController.allStatusImages.elementAt(index).isSaved,));
-                                         fileController.allStatusImages.refresh();
-                                         fileController.allStatusSaved.refresh();
+      backgroundColor: ColorsTheme.backgroundColor,
+      body: FutureBuilder(
+        future: storagePermissionChecker,
+        builder: (context, snapshot) {
+          log(snapshot.toString());
+          if (snapshot.connectionState == ConnectionState.done) {
+            log("done");
+            if (snapshot.hasData) {
+              if (snapshot.data == 1) {
+                if (Directory(whatsAppDirectory.path).existsSync()) {
+                  if (fileController.allStatusImages.isNotEmpty) {
+                    return RefreshIndicator(
+                      backgroundColor: ColorsTheme.primaryColor,
+                      color: ColorsTheme.white,
+                      strokeWidth: 2,
+                      onRefresh: pullRefresh,
+                      child: Container(
+                        height: h,
+                        width: w,
+                        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        child: Obx(() =>
+                            GridView.builder(
+                              key: PageStorageKey(widget.key),
+                              itemCount: fileController.allStatusImages.length,
+                              physics: BouncingScrollPhysics(),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 5,
+                                  crossAxisSpacing: 5,
+                                  childAspectRatio: 0.75
+                              ),
+                              itemBuilder: (BuildContext context, int index) {
+                                return InkWell(
+                                  onTap: () {
+                                    Get.to(() =>
+                                        StatusImageDetailScreen(
+                                          indexNo: index,
+                                        ));
+                                  },
+                                  child:
+                                  ReusingWidgets.getSavedData(
+                                    tag: fileController.allStatusImages.elementAt(index).filePath,
+                                    context: context,
+                                    file: File(fileController.allStatusImages.elementAt(index).filePath),
+                                    showPlayIcon: true,
+                                    bgColor: fileController.allStatusImages.elementAt(index).isSaved == false ?
+                                    ColorsTheme.primaryColor : ColorsTheme.doneColor,
+                                    icon:
+                                    fileController.allStatusImages.elementAt(index).isSaved == false
+                                        ? Icons.save_alt : Icons.done,
+                                    color: fileController.allStatusImages.elementAt(index).isSaved == false ?
+                                    ColorsTheme.white : ColorsTheme.doneColor,
+                                    onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
+                                        () {
+                                      GallerySaver.saveImage(Uri.parse(
+                                          fileController.allStatusImages.elementAt(index).filePath).path,
+                                          albumName: "StatusSaver",
+                                          toDcim: true).then((value) {
+                                        fileController.allStatusImages.elementAt(index).isSaved = true;
+                                        fileController.allStatusSaved.add(
+                                            FileModel(
+                                              filePath: fileController.allStatusImages.elementAt(index).filePath,
+                                              isSaved: fileController.allStatusImages.elementAt(index).isSaved,));
+                                        fileController.allStatusImages.refresh();
+                                        fileController.allStatusSaved.refresh();
+                                      });
+                                      // ReusingWidgets.snackBar(context: context, text: "Image Saved");
+                                      ReusingWidgets.toast(text: "Image Saved");
+                                    }
+                                        : () {
+                                      // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                                      ReusingWidgets.toast(
+                                          text: "Image Already Saved");
+                                    },
+                                    onSharePress: () {
+                                      Share.shareXFiles(
+                                        text: "Have a look on this Status",
+                                        [XFile(Uri.parse(
+                                            fileController.allStatusImages.elementAt(index).filePath).path)
+                                        ],
+                                      );
+                                    },
+                                  ),
 
-                                   });
-                                   ReusingWidgets.snackBar(context: context, text: "Image Saved",);
-                                 }
-                                 : () {
-                                   ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
-                                 },
-                                 onSharePress: () {
-                                   Share.shareXFiles(
-                                     text: "Have a look on this Status",
-                                     [XFile(Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path)],
-                                   );
-                                 },
-                               ),
-
-                             ) ;
-                           },
-                         )),
-                     ),
-                   );
-                 } else {
-                   return Center(
-                     child: Container(
-                       padding: EdgeInsets.only(bottom: 60.0),
-                       child: Text(
-                         'You have not watched any status yet!',
-                         style: ThemeTexts.textStyleTitle2,
-                       ),
-                     ),
-                   );
-                 }
-               }
-               else {
-                 return Center(
-                   child: Text(
-                     'No WhatsApp Found!',
-                     style: ThemeTexts.textStyleTitle3,
-                   ),
-                 );
-               }
-             }
-             else {
-               Future((){
-                 showDialog(
-                   context: context,
-                   barrierDismissible: false,
-                   builder: (context) => ReusingWidgets().permissionDialogue(
-                       context: context,
-                       width: w,
-                       height: h,
-                       onPress: (){
-                         setState(() {
-                           storagePermissionChecker = requestPermission();
-                           Navigator.pop(context);
-                         });
-                       }
-                   ),
-                 );
-               });
-               return Center(child: Padding(
-                 padding: EdgeInsets.all(30),
-                 child: ReusingWidgets.allowPermissionButton(
-                     onPress: (){
-                       setState(() {
-                         storagePermissionChecker = requestPermission();
-                       });
-                     },
-                     context: context,
-                     text: "Allow Permission"),
-               ));
-             }
-           }
-           else if (snapshot.hasError) {
-             return ReusingWidgets.circularProgressIndicator();
-           }
-           else {
-             return ReusingWidgets.circularProgressIndicator();
-           }
-         }
-         else {
-           return ReusingWidgets.circularProgressIndicator();
-         }
-       },
-     ),
-   );
+                                );
+                              },
+                            )),
+                      ),
+                    );
+                  }
+                  else {
+                    return Center(
+                      child: Text(
+                        'You have not watched any status yet!',
+                        style: ThemeTexts.textStyleTitle2,
+                      ),
+                    );
+                  }
+                }
+                else {
+                  return Center(
+                    child: Text(
+                      'No WhatsApp Found!',
+                      style: ThemeTexts.textStyleTitle3,
+                    ),
+                  );
+                }
+              }
+              else {
+                Future(() {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) =>
+                        ReusingWidgets().permissionDialogue(
+                            context: context,
+                            width: w,
+                            height: h,
+                            onPress: () {
+                              setState(() {
+                                storagePermissionChecker = requestPermission();
+                                Navigator.pop(context);
+                              });
+                            }
+                        ),
+                  );
+                });
+                return Center(child: Padding(
+                  padding: EdgeInsets.all(30),
+                  child: ReusingWidgets.allowPermissionButton(
+                      onPress: () {
+                        setState(() {
+                          storagePermissionChecker = requestPermission();
+                        });
+                      },
+                      context: context,
+                      text: "Allow Permission"),
+                ));
+              }
+            }
+            else if (snapshot.hasError) {
+              return ReusingWidgets.circularProgressIndicator();
+            }
+            else {
+              return ReusingWidgets.circularProgressIndicator();
+            }
+          }
+          else {
+            return ReusingWidgets.circularProgressIndicator();
+          }
+        },
+      ),
+    );
   }
 }
-
-//
-//
-// class MyHomePage extends StatefulWidget {
-//   MyHomePage({Key? key}) : super(key: key);
-//
-//   @override
-//   _MyHomePageState createState() => _MyHomePageState();
-// }
-//
-// class _MyHomePageState extends State<MyHomePage> {
-//   List<String> imagePaths = [
-//     'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
-//     'https://images.unsplash.com/photo-1580777187326-d45ec82084d3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=871&q=80',
-//     'https://images.unsplash.com/photo-1531804226530-70f8004aa44e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=869&q=80',
-//     'https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=871&q=80',
-//     'https://images.unsplash.com/photo-1573553256520-d7c529344d67?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80'
-//   ];
-//
-//   HashSet selectItems = HashSet();
-//   bool isMultiSelectionEnabled = false;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(
-//           leading: isMultiSelectionEnabled
-//               ? IconButton(
-//               onPressed: () {
-//                 setState(() {
-//                   isMultiSelectionEnabled = false;
-//                   selectItems.clear();
-//                 });
-//               },
-//               icon: Icon(Icons.close))
-//               : null,
-//           title: Text(isMultiSelectionEnabled
-//               ? getSelectedItemCount()
-//               : "Gridview Select/Unselect All"),
-//           actions: [
-//             Visibility(
-//                 visible: isMultiSelectionEnabled,
-//                 child: IconButton(
-//                   onPressed: () {
-//                     setState(() {
-//                       if (selectItems.length == imagePaths.length) {
-//                         selectItems.clear();
-//                       } else {
-//                         for (int index = 0; index < imagePaths.length; index++) {
-//                           selectItems.add(imagePaths[index]);
-//                         }
-//                       }
-//                     });
-//                   },
-//                   icon: Icon(
-//                     Icons.select_all,
-//                     color: (selectItems.length == imagePaths.length)
-//                         ? Colors.black
-//                         : Colors.white,
-//                   ),
-//                 ))
-//           ],
-//         ),
-//         body: GridView.count(
-//           crossAxisCount: 2,
-//           crossAxisSpacing: 2,
-//           mainAxisSpacing: 2,
-//           childAspectRatio: 1.5,
-//           children: imagePaths.map((String path) {
-//             return GridTile(
-//               child: InkWell(
-//                 onTap: () {
-//                   doMultiSelection(path);
-//                 },
-//                 onLongPress: () {
-//                   isMultiSelectionEnabled = true;
-//                   doMultiSelection(path);
-//                 },
-//                 child: Stack(
-//                   children: [
-//                     Column(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         Expanded(
-//                             child: Image.network(
-//                               path,
-//                               color: Colors.black.withOpacity(selectItems.contains(path) ? 1 : 0),
-//                               colorBlendMode: BlendMode.color,
-//                             )),
-//                       ],
-//                     ),
-//                     Visibility(
-//                         visible: selectItems.contains(path),
-//                         child: const Align(
-//                           alignment: Alignment.center,
-//                           child: Icon(
-//                             Icons.check,
-//                             color: Colors.white,
-//                             size: 30,
-//                           ),
-//                         ))
-//                   ],
-//                 ),
-//               ),
-//             );
-//           }).toList(),
-//         ));
-//   }
-//
-//   String getSelectedItemCount() {
-//     return selectItems.isNotEmpty
-//         ? "${selectItems.length} item selected"
-//         : "No item selected";
-//   }
-//
-//    doMultiSelection(String path) {
-//     if (isMultiSelectionEnabled) {
-//       setState(() {
-//         if (selectItems.contains(path)) {
-//           selectItems.remove(path);
-//         } else {
-//           selectItems.add(path);
-//         }
-//       });
-//     } else {
-//       //
-//     }
-//   }
-//
-// }

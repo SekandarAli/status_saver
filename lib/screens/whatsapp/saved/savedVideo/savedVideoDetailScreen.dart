@@ -52,8 +52,8 @@ class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
             fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = false;
             fileController.allStatusVideos.refresh();
             fileController.allStatusSaved.refresh();
-            ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
-
+            // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
+            ReusingWidgets.toast(text: "Video Deleted Successfully");
 
           }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),
         ],

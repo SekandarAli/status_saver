@@ -5,10 +5,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:status_saver/generated/assets.dart';
 import 'package:status_saver/screens/whatsapp/saved/savedImage/savedImageDetailScreen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-
 import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
 import '../../../../app_theme/text_styles.dart';
@@ -60,6 +58,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
       final imageList = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
       if (imageList.isNotEmpty) {
         return Scaffold(
+          backgroundColor: ColorsTheme.backgroundColor,
           body: Container(
             margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: GridView.builder(
@@ -84,8 +83,8 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (context)=>
                                   SavedImageDetailScreen(
-                                  imgPath: File(imageList[index]),
-                                  imgListIndex: imageList[index],
+                                  // imgPath: File(imageList[index]),
+                                  // imgListIndex: imageList[index],
                                   imgList: imageList,
                                   indexNo: index
                               ))).then((value) => setState((){}));
@@ -95,6 +94,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                               context: context,
                               file: File(imageList[index]),
                               showPlayIcon: true,
+                              bgColor: ColorsTheme.dismissColor,
                               icon: Icons.delete,
                               color: ColorsTheme.dismissColor,
                               onSharePress: (){
@@ -104,11 +104,13 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                                 );
                               },
                               onDownloadDeletePress: (){
+
                                 File(imageList[index]).delete().then((value) => setState((){}));
                                 fileController.allStatusVideos.elementAt(index).isSaved = false;
                                 fileController.allStatusVideos.refresh();
                                 fileController.allStatusSaved.refresh();
-                                  ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
+                                  // ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
+                                ReusingWidgets.toast(text: "Image Deleted Successfully");
                               },
                             ),
                           );
@@ -116,8 +118,9 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                       }
                       else {
                         return Hero(tag:imageList[index],
-                          child: Image.asset(Assets.imagesVideoLoader,fit: BoxFit.cover,width: 30,height: 30),
-                        );
+                          child: ReusingWidgets.loadingAnimation(),
+
+                      );
                       }
                     });
               },
