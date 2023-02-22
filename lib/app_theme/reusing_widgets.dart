@@ -108,7 +108,7 @@ class ReusingWidgets {
 
   static Future<bool?> toast({
     required String text,
-}){
+  }){
     return Fluttertoast.showToast(
         msg: text,
         toastLength: Toast.LENGTH_SHORT,
@@ -410,12 +410,12 @@ class ReusingWidgets {
               children: [
                 Container(
                   width: 15,
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(5),
-                          bottomRight: Radius.circular(5)),
-                    ),
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(5),
+                        bottomRight: Radius.circular(5)),
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.all(15),
@@ -543,3 +543,4 @@ class ReusingWidgets {
 }
 
 
+// Share.shareFiles([Uri.parse(imageList[index]).path], text: 'Have a look on this Status');

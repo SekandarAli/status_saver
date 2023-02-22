@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:status_saver/controller/fileController.dart';
 import 'package:status_saver/model/fileModel.dart';
 import 'package:status_saver/screens/home/homeScreen.dart';
+import 'package:status_saver/screens/whatsapp/status/statusTabBar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,69 +28,70 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late List<String> imageList;
-  late List<String> videoList;
-  late List<String> savedList;
+  // late List<String> imageList;
+  // late List<String> videoList;
+  // late List<String> savedList;
 
-  Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-  Directory businessWhatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-  Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+  // Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+  // Directory businessWhatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+  // Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
   final FileController fileController = Get.put(FileController());
 
   @override
   void initState() {
     super.initState();
-    imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
-    videoList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
-    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
-    getImageData();
-    getVideoData();
-    getSavedData();
+    // imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
+    // videoList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
+    // savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
+    // getImageData();
+    // getVideoData();
+    // getSavedData();
   }
-
-  getImageData() {
-    fileController.allStatusImages.value = [];
-    if (imageList.isNotEmpty) {
-      for (var element in imageList) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-        } else {
-          // print("ELSE${element.substring(72,104)}");
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
-        }
-      }
-    }
-  }
-
-  getVideoData() {
-    fileController.allStatusVideos.value = [];
-    if (videoList.isNotEmpty) {
-      for (var element in videoList) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-        } else {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
-        }
-      }
-    }
-  }
-
-  getSavedData(){
-    fileController.allStatusSaved.value = [];
-    if(savedList.isNotEmpty){
-      for (var element in savedList) {
-        if(savedList.contains(element)){
-          fileController.allStatusSaved.add(FileModel(filePath: element, isSaved: true));
-        }
-        else{
-          fileController.allStatusSaved.add(FileModel(filePath: element, isSaved: false));
-        }
-      }
-    }
-  }
+  //
+  // getImageData() {
+  //   fileController.allStatusImages.value = [];
+  //   if (imageList.isNotEmpty) {
+  //     for (var element in imageList) {
+  //       if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+  //         fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+  //       } else {
+  //         // print("ELSE${element.substring(72,104)}");
+  //         fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+  //       }
+  //     }
+  //   }
+  // }
+  //
+  // getVideoData() {
+  //   fileController.allStatusVideos.value = [];
+  //   if (videoList.isNotEmpty) {
+  //     for (var element in videoList) {
+  //       if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+  //         fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+  //       } else {
+  //         fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+  //       }
+  //     }
+  //   }
+  // }
+  //
+  // getSavedData(){
+  //   fileController.allStatusSaved.value = [];
+  //   if(savedList.isNotEmpty){
+  //     for (var element in savedList) {
+  //       if(savedList.contains(element)){
+  //         fileController.allStatusSaved.add(FileModel(filePath: element, isSaved: true));
+  //       }
+  //       else{
+  //         fileController.allStatusSaved.add(FileModel(filePath: element, isSaved: false));
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
+    // return StatusTabScreen();
     return HomeScreen();
     // return MyHomePage();
   }

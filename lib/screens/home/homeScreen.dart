@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (imageList.isNotEmpty) {
       for (var element in imageList) {
         // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
-        if (savedList.map((e) => e.split(".StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
           fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
         } else {
           // print("ELSE${element.substring(72,104)}");
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (videoList.isNotEmpty) {
       for (var element in videoList) {
         // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
-        if (savedList.map((e) => e.split(".StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
           fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
         } else {
           fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
@@ -113,9 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.greenAccent,
                     context: context,
                     onTap: ()async{
-                       // whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-                       // savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-                       // await getSelectedDetails();
+                       whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+                       savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+                       await getSelectedDetails();
                        Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
                     }
                   ),
@@ -128,10 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
                        color: Colors.green,
                     context: context,
                       onTap: ()async{
-                        // whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-                        // savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-                        // await getSelectedDetails();
-                        // Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
+                        whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+                        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+                        await getSelectedDetails();
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
 
 
                       }

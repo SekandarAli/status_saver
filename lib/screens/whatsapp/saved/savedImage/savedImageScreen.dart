@@ -11,6 +11,7 @@ import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
 import '../../../../app_theme/text_styles.dart';
 import '../../../../controller/fileController.dart';
+import '../../../../model/fileModel.dart';
 
 class SavedImageScreen extends StatefulWidget {
   const SavedImageScreen({Key? key}) : super(key: key);
@@ -21,9 +22,9 @@ class SavedImageScreen extends StatefulWidget {
 class SavedImageScreenState extends State<SavedImageScreen> {
 
   Directory? savedImagesDirectory;
-  Future<int>? storagePermissionChecker;
-  int? storagePermissionCheck;
-  int? androidSDK;
+  // Future<int>? storagePermissionChecker;
+  // int? storagePermissionCheck;
+  // int? androidSDK;
   final FileController fileController = Get.put(FileController());
 
   @override
@@ -32,16 +33,17 @@ class SavedImageScreenState extends State<SavedImageScreen> {
     super.initState();
   }
 
-  Future<void> deleteFile(File file) async {
-    try {
-      if (await file.exists()) {
-         unawaited(file.delete());
-       // file.deleteSync(recursive: false);
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-  }
+  // Future<void> deleteFile(File file) async {
+  //   try {
+  //     if (await file.exists()) {
+  //        unawaited(file.delete());
+  //      // file.deleteSync(recursive: false);
+  //     }
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
+
 
   Future<String?> getVideo(videoPathUrl) async {
     final thumbnail = await VideoThumbnail.thumbnailFile(video: videoPathUrl);
@@ -103,12 +105,60 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                                   [XFile(Uri.parse(imageList[index]).path)],
                                 );
                               },
-                              onDownloadDeletePress: (){
+                              onDownloadDeletePress: ()async{
 
-                                File(imageList[index]).delete().then((value) => setState((){}));
-                                fileController.allStatusVideos.elementAt(index).isSaved = false;
-                                fileController.allStatusVideos.refresh();
-                                fileController.allStatusSaved.refresh();
+                                setState(() {
+                                  print("qqqqqqqqqq${fileController.allStatusImages.elementAt(index).isSaved.toString()}");
+                                  print("ddddddd${fileController.allStatusImages.elementAt(index).filePath.toString().split(".Statuses/").last.split(".").first}");
+                                  print("aaaaaaa${imageList[index].toString().split("StatusSaver/").last.split(".").first}");
+
+                                  File(imageList[index]).delete();
+
+                                  // if(fileController.allStatusImages.elementAt(index).filePath.toString().split(".Statuses/").last.split(".").first ==
+                                  //     File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)
+                                  //   {
+                                  //     // fileController.allStatusImages.elementAt(index).isSaved = false;
+                                  //     // fileController.allStatusImages.refresh();
+                                  //
+                                  //
+                                  //     print("aaaaaaaaaaaaaaaaaa");
+                                  //   }
+                                  //
+                                  // else{
+                                  //   print("bbbbbbbbbbbb");
+                                  // }
+
+
+                                  for (var element in fileController.allStatusImages) {
+
+
+
+                                    if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                                    contains(File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)){
+
+                                      element.isSaved = false;
+
+                                      // fileController.allStatusImages.refresh();
+
+                                      print("qwqwqw${element.filePath.toString().split(".Statuses/").last.split(".").first.
+                                      contains(File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)}");
+
+                                    }
+
+                                  }
+
+
+                                });
+
+                                // File(imageList[index]).delete().then((value) => setState((){
+                                //
+                                //
+                                // }));
+                                // fileController.allStatusImages.elementAt(index).isSaved = false;
+                                // // fileController.allStatusVideos.elementAt(index).isSaved = false;
+                                // fileController.allStatusImages.refresh();
+                                // // fileController.allStatusVideos.refresh();
+                                // // fileController.allStatusSaved.refresh();
                                   // ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
                                 ReusingWidgets.toast(text: "Image Deleted Successfully");
                               },

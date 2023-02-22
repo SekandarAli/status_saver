@@ -29,11 +29,11 @@ class StatusImageScreenState extends State<StatusImageScreen> {
 
   // Directory? whatsAppBusinessDirectory;
   final FileController fileController = Get.put(FileController());
-  List<String>? imageList;
-  List<String>? savedList;
+  // List<String>? imageList;
+  // List<String>? savedList;
 
-  Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-  Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+  // Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+  // Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
 
   Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -87,34 +87,36 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     }
   }
 
-  getImageData() {
-    fileController.allStatusImages.value = [];
-    if (imageList!.isNotEmpty) {
-      for (var element in imageList!) {
-        if (savedList!.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          // print("IF$element");
-          fileController.allStatusImages.add(
-              FileModel(filePath: element, isSaved: true));
-        }
-        else {
-          // print("ELSE$element");
-          fileController.allStatusImages.add(
-              FileModel(filePath: element, isSaved: false));
-        }
-      }
-    }
-  }
+  // getImageData() {
+  //   fileController.allStatusImages.value = [];
+  //   if (imageList!.isNotEmpty) {
+  //     for (var element in imageList!) {
+  //       if (savedList!.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+  //         // print("IF$element");
+  //         fileController.allStatusImages.add(
+  //             FileModel(filePath: element, isSaved: true));
+  //       }
+  //       else {
+  //         // print("ELSE$element");
+  //         fileController.allStatusImages.add(
+  //             FileModel(filePath: element, isSaved: false));
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
 
-    imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
-    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
+    // imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
+    // savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
     // whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
 
+
+    // log(fileController.allStatusImages.map((element) => element.filePath).toString());
     createFolder();
-    getImageData();
+    // getImageData();
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
       int finalPermission;
@@ -152,12 +154,11 @@ class StatusImageScreenState extends State<StatusImageScreen> {
       body: FutureBuilder(
         future: storagePermissionChecker,
         builder: (context, snapshot) {
-          log(snapshot.toString());
           if (snapshot.connectionState == ConnectionState.done) {
             log("done");
             if (snapshot.hasData) {
               if (snapshot.data == 1) {
-                if (Directory(whatsAppDirectory.path).existsSync()) {
+                // if (Directory(whatsAppDirectory.path).existsSync()) {
                   if (fileController.allStatusImages.isNotEmpty) {
                     return RefreshIndicator(
                       backgroundColor: ColorsTheme.primaryColor,
@@ -180,6 +181,9 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                   childAspectRatio: 0.75
                               ),
                               itemBuilder: (BuildContext context, int index) {
+
+                                // log("aaa${(fileController.allStatusImages.elementAt(index).filePath)}");
+                                log("qqqqqqq${(fileController.allStatusImages.elementAt(index).isSaved)}");
                                 return InkWell(
                                   onTap: () {
                                     Get.to(() =>
@@ -203,16 +207,16 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                     onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
                                         () {
                                       GallerySaver.saveImage(Uri.parse(
-                                          fileController.allStatusImages.elementAt(index).filePath).path,
+                                          fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "),
                                           albumName: "StatusSaver",
                                           toDcim: true).then((value) {
                                         fileController.allStatusImages.elementAt(index).isSaved = true;
-                                        fileController.allStatusSaved.add(
-                                            FileModel(
-                                              filePath: fileController.allStatusImages.elementAt(index).filePath,
-                                              isSaved: fileController.allStatusImages.elementAt(index).isSaved,));
+                                        // fileController.allStatusSaved.add(
+                                        //     FileModel(
+                                        //       filePath: fileController.allStatusImages.elementAt(index).filePath.replaceAll("%20"," "),
+                                        //       isSaved: fileController.allStatusImages.elementAt(index).isSaved,));
                                         fileController.allStatusImages.refresh();
-                                        fileController.allStatusSaved.refresh();
+                                        // fileController.allStatusSaved.refresh();
                                       });
                                       // ReusingWidgets.snackBar(context: context, text: "Image Saved");
                                       ReusingWidgets.toast(text: "Image Saved");
@@ -223,15 +227,19 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                           text: "Image Already Saved");
                                     },
                                     onSharePress: () {
-                                      Share.shareXFiles(
-                                        text: "Have a look on this Status",
-                                        [XFile(Uri.parse(
-                                            fileController.allStatusImages.elementAt(index).filePath).path)
-                                        ],
+                                       // Share.shareXFiles(
+                                        // text: "Have a look on this Status",
+                                        // [XFile(Uri.parse(
+                                        //     fileController.allStatusImages.elementAt(index).filePath).path)
+                                        // ],
+                                      // );
+                                      log(Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "));
+                                      Share.shareFiles(
+                                          [Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," ")],
+                                          text: 'Have a look on this Status',
                                       );
                                     },
                                   ),
-
                                 );
                               },
                             )),
@@ -294,10 +302,10 @@ class StatusImageScreenState extends State<StatusImageScreen> {
             else {
               return ReusingWidgets.circularProgressIndicator();
             }
-          }
-          else {
-            return ReusingWidgets.circularProgressIndicator();
-          }
+          // }
+          // else {
+          //   return ReusingWidgets.circularProgressIndicator();
+          // }
         },
       ),
     );
