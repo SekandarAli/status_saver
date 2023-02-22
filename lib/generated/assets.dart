@@ -3,7 +3,6 @@ class Assets {
   Assets._();
 
   static const String imagesEmpty = 'assets/images/empty.png';
-  static const String imagesGbWhatsappIcon = 'assets/images/gb_whatsapp_icon.png';
   static const String imagesPermission = 'assets/images/permission.png';
   static const String imagesSettingsIcon = 'assets/images/settings_icon.png';
   static const String imagesStickerIcon = 'assets/images/sticker_icon.png';

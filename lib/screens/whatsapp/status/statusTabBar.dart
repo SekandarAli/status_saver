@@ -40,6 +40,28 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
           ),
           actions: [
             Tooltip(
+              message: "Open Business WhatsApp",
+              child: GestureDetector(
+                  onTap: ()async {
+                    try {
+                    bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
+                    if (isInstalled) {
+                      DeviceApps.openApp("com.whatsapp.w4b");
+                      print("open");
+                    } else {
+                      print("not");
+                      // launch("market://details?id=com.whatsapp");
+                      launchUrl(Uri.parse("market://details?id=com.whatsapp.w4b"));
+                    }
+                  } catch (e) {e.toString();}
+
+                  },
+                  child: Image.asset(Assets.imagesWhatsappBusinessIcon,height: 30,width: 30,)),
+            ),
+
+            SizedBox(width: 10),
+
+            Tooltip(
               message: "Open WhatsApp",
               child: GestureDetector(
                   onTap: ()async {
@@ -53,12 +75,10 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
                       // launch("market://details?id=com.whatsapp");
                       launchUrl(Uri.parse("market://details?id=com.whatsapp"));
                     }
-                  } catch (e) {
-                    print(e);
-                  }
+                  } catch (e) {e.toString();}
 
                   },
-                  child: Image.asset(Assets.imagesWhatsappIcon,height: 30,width: 30,)),
+                  child: Image.asset(Assets.imagesWhatsappIcon,height: 35,width: 35,)),
             ),
             SizedBox(width: 10),
           ],

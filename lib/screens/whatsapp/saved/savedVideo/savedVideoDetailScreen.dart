@@ -1,20 +1,22 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_constructors, use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
-
 import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
 import '../../../../controller/fileController.dart';
 
 class SavedVideoDetailScreen extends StatefulWidget {
   var videoPath;
+  List videoList;
   int indexNo;
 
-  SavedVideoDetailScreen({Key? key, required this.videoPath,required this.indexNo}) : super(key: key);
+  SavedVideoDetailScreen({Key? key, required this.videoPath,required this.indexNo,required this.videoList}) : super(key: key);
 
   @override
   _SavedVideoDetailScreenState createState() => _SavedVideoDetailScreenState();
@@ -43,16 +45,32 @@ class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Share.shareXFiles(text: "Have a look on this Status", [XFile(widget.videoPath.path)],);
+                Share.shareXFiles(text: "Have a look on this Status",
+                  [XFile(widget.videoPath.path.replaceAll("%20"," "))],);
           },
               icon: Icon(Icons.share)),
           IconButton(onPressed: () {
 
-            widget.videoPath.delete();
-            fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = false;
-            fileController.allStatusVideos.refresh();
-            fileController.allStatusSaved.refresh();
+            // widget.videoPath.delete();
+            // for (var element in fileController.allStatusImages) {
+            //   if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+            //   contains(widget.videoPath.toString().split("StatusSaver/").last.split(".").first)){
+            //     element.isSaved = false;
+            //   }
+            // }
+
+            // fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = false;
+            // fileController.allStatusVideos.refresh();
+            // fileController.allStatusSaved.refresh();
             // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
+
+            File(widget.videoList[widget.indexNo]).delete();
+            for (var element in fileController.allStatusVideos) {
+              if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+              contains( File(widget.videoList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
+                element.isSaved = false;
+              }
+            }
             ReusingWidgets.toast(text: "Video Deleted Successfully");
 
           }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),

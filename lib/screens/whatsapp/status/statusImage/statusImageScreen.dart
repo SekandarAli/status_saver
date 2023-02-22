@@ -183,7 +183,7 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                               itemBuilder: (BuildContext context, int index) {
 
                                 // log("aaa${(fileController.allStatusImages.elementAt(index).filePath)}");
-                                log("qqqqqqq${(fileController.allStatusImages.elementAt(index).isSaved)}");
+                                // log("qqqqqqq${(fileController.allStatusImages.elementAt(index).isSaved)}");
                                 return InkWell(
                                   onTap: () {
                                     Get.to(() =>
@@ -255,14 +255,37 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                     );
                   }
                 }
-                else {
-                  return Center(
-                    child: Text(
-                      'No WhatsApp Found!',
-                      style: ThemeTexts.textStyleTitle3,
-                    ),
+              else {
+                Future(() {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) =>
+                        ReusingWidgets().permissionDialogue(
+                            context: context,
+                            width: w,
+                            height: h,
+                            onPress: () {
+                              setState(() {
+                                storagePermissionChecker = requestPermission();
+                                Navigator.pop(context);
+                              });
+                            }
+                        ),
                   );
-                }
+                });
+                return Center(child: Padding(
+                  padding: EdgeInsets.all(30),
+                  child: ReusingWidgets.allowPermissionButton(
+                      onPress: () {
+                        setState(() {
+                          storagePermissionChecker = requestPermission();
+                        });
+                      },
+                      context: context,
+                      text: "Allow Permission"),
+                ));
+              }
               }
               else {
                 Future(() {
@@ -297,10 +320,12 @@ class StatusImageScreenState extends State<StatusImageScreen> {
               }
             }
             else if (snapshot.hasError) {
-              return ReusingWidgets.circularProgressIndicator();
+              ReusingWidgets.toast(text: snapshot.error.toString());
+              return Container();
+              // return ReusingWidgets.circularProgressIndicator();
             }
             else {
-              return ReusingWidgets.circularProgressIndicator();
+            return ReusingWidgets.circularProgressIndicator();
             }
           // }
           // else {

@@ -82,6 +82,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (context)=>
                                   SavedVideoDetailScreen(
+                                      videoList: videoList,
                                       videoPath: File(videoList[index]),
                                       indexNo: index
                                   ))).then((value) => setState((){}));
@@ -102,12 +103,24 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                 },
                                 onDownloadDeletePress: (){
                                     // deleteFile(File(videoList[index]));
-                                    File(videoList[index]).delete().then((value) => setState((){}));
-                                    fileController.allStatusVideos.elementAt(index).isSaved = false;
-                                    fileController.allStatusVideos.refresh();
-                                    fileController.allStatusSaved.refresh();
-                                    // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
-                                    ReusingWidgets.toast(text: "Video Deleted Successfully");
+                                  // setState(() {
+                                  //   File(videoList[index]).delete();
+                                  //   fileController.allStatusVideos.elementAt(index).isSaved = false;
+                                  //   fileController.allStatusVideos.refresh();
+                                  //   // fileController.allStatusSaved.refresh();
+                                  //   // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
+                                  // });
+
+                                  setState(() {
+                                    File(videoList[index]).delete();
+                                    for (var element in fileController.allStatusVideos) {
+                                      if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                                      contains(File(videoList[index]).toString().split("StatusSaver/").last.split(".").first)){
+                                        element.isSaved = false;
+                                      }
+                                    }
+                                  });
+                                  ReusingWidgets.toast(text: "Video Deleted Successfully");
                                 },
                             ),
                           );

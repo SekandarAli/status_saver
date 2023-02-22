@@ -26,6 +26,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
   // int? storagePermissionCheck;
   // int? androidSDK;
   final FileController fileController = Get.put(FileController());
+  final MediaModel mediaModel = MediaModel();
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
   //     print(e.toString());
   //   }
   // }
+
 
 
   Future<String?> getVideo(videoPathUrl) async {
@@ -105,61 +107,18 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                                   [XFile(Uri.parse(imageList[index]).path)],
                                 );
                               },
-                              onDownloadDeletePress: ()async{
+                              onDownloadDeletePress: (){
 
                                 setState(() {
-                                  print("qqqqqqqqqq${fileController.allStatusImages.elementAt(index).isSaved.toString()}");
-                                  print("ddddddd${fileController.allStatusImages.elementAt(index).filePath.toString().split(".Statuses/").last.split(".").first}");
-                                  print("aaaaaaa${imageList[index].toString().split("StatusSaver/").last.split(".").first}");
-
-                                  File(imageList[index]).delete();
-
-                                  // if(fileController.allStatusImages.elementAt(index).filePath.toString().split(".Statuses/").last.split(".").first ==
-                                  //     File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)
-                                  //   {
-                                  //     // fileController.allStatusImages.elementAt(index).isSaved = false;
-                                  //     // fileController.allStatusImages.refresh();
-                                  //
-                                  //
-                                  //     print("aaaaaaaaaaaaaaaaaa");
-                                  //   }
-                                  //
-                                  // else{
-                                  //   print("bbbbbbbbbbbb");
-                                  // }
-
-
+                                  mediaModel.deleteFile(context, File(imageList[index]));
+                                 // File(imageList[index]).delete();
                                   for (var element in fileController.allStatusImages) {
-
-
-
                                     if(element.filePath.toString().split(".Statuses/").last.split(".").first.
                                     contains(File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)){
-
                                       element.isSaved = false;
-
-                                      // fileController.allStatusImages.refresh();
-
-                                      print("qwqwqw${element.filePath.toString().split(".Statuses/").last.split(".").first.
-                                      contains(File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)}");
-
                                     }
-
                                   }
-
-
                                 });
-
-                                // File(imageList[index]).delete().then((value) => setState((){
-                                //
-                                //
-                                // }));
-                                // fileController.allStatusImages.elementAt(index).isSaved = false;
-                                // // fileController.allStatusVideos.elementAt(index).isSaved = false;
-                                // fileController.allStatusImages.refresh();
-                                // // fileController.allStatusVideos.refresh();
-                                // // fileController.allStatusSaved.refresh();
-                                  // ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
                                 ReusingWidgets.toast(text: "Image Deleted Successfully");
                               },
                             ),
@@ -192,3 +151,14 @@ class SavedImageScreenState extends State<SavedImageScreen> {
     }
   }
 }
+
+
+class MediaModel extends ChangeNotifier {
+
+  Future<void> deleteFile(BuildContext context, File file) async {
+    // await ReusingWidgets().showDeleteDialog(context, file);
+    file.deleteSync();
+    notifyListeners();
+  }
+}
+

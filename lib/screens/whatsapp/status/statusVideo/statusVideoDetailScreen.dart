@@ -56,7 +56,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Share.shareXFiles(text: "Have a look on this Status", [XFile(myUri!.path)],);
+                Share.shareXFiles(text: "Have a look on this Status", [XFile(myUri!.path.replaceAll("%20"," "))],);
           },
               icon: Icon(Icons.share)),
           Obx(() =>
@@ -65,7 +65,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
               child: IconButton(
                   onPressed: () {
                     // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
-                    ReusingWidgets.toast(text: "Image Already Saved");
+                    ReusingWidgets.toast(text: "Video Already Saved");
                   }, icon: Icon(Icons.done)),
             )
           ),
@@ -73,9 +73,11 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
              Visibility(
               visible: !(fileController.allStatusVideos.elementAt(widget.indexNo).isSaved),
               child: IconButton(onPressed: () {
-                GallerySaver.saveVideo(Uri.parse(fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path,albumName: "StatusSaver",toDcim: true ).then((value) =>
+                GallerySaver.saveVideo(Uri.parse(
+                    fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path.replaceAll("%20"," "),
+                    albumName: "StatusSaver",toDcim: true ).then((value) =>
                 fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
-                fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusVideos.elementAt(widget.indexNo).filePath, isSaved: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved));
+                // fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusVideos.elementAt(widget.indexNo).filePath, isSaved: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved));
                 fileController.allStatusVideos.refresh();
                 // ReusingWidgets.snackBar(context: context, text: "Video Saved");
                 ReusingWidgets.toast(text: "Video Saved");

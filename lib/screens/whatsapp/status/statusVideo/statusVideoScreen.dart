@@ -24,18 +24,18 @@ class StatusVideoScreen extends StatefulWidget {
 class StatusVideoScreenState extends State<StatusVideoScreen> {
 
   final FileController fileController = Get.put(FileController());
-  late List<String> videoList;
-  late List<String> savedList;
-  Directory? whatsAppDirectory;
+  // late List<String> videoList;
+  // late List<String> savedList;
+  // Directory? whatsAppDirectory;
   Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
 
 
   @override
   void initState() {
-    whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-    videoList = whatsAppDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
-    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
-    getVideoData();
+    // whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+    // videoList = whatsAppDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
+    // savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
+    // getVideoData();
     super.initState();
   }
 
@@ -44,23 +44,23 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
     return thumbnail;
   }
 
-
-  getVideoData(){
-    fileController.allStatusVideos.value = [];
-    if(videoList.isNotEmpty){
-      for (var element in videoList) {
-        // if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-          print("aaa");
-        }
-        else{
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
-          print("bbb");
-        }
-      }
-    }
-  }
+  //
+  // getVideoData(){
+  //   fileController.allStatusVideos.value = [];
+  //   if(videoList.isNotEmpty){
+  //     for (var element in videoList) {
+  //       // if(savedList.map((e) => e.substring(37,69).toString()).contains(element.substring(72,104))){
+  //       if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+  //         fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+  //         print("aaa");
+  //       }
+  //       else{
+  //         fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+  //         print("bbb");
+  //       }
+  //     }
+  //   }
+  // }
 
   Future pullRefresh() async {
     setState(() {});
@@ -72,7 +72,7 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 
-    if (Directory(whatsAppDirectory!.path).existsSync()) {
+    // if (Directory(whatsAppDirectory!.path).existsSync()) {
       // final videoList = whatsAppDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
       // List savedImagesFolder = savedImagesDirectory!.listSync().map((item) => item.path).where((item) =>  item.endsWith('.mp4')).toList(growable: false);
       if (fileController.allStatusVideos.isNotEmpty) {
@@ -128,14 +128,16 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                                   onDownloadDeletePress: fileController.allStatusVideos.elementAt(index).isSaved == false ?
                                       (){
                                       GallerySaver.saveVideo(
-                                          Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path,
-                                          albumName: "StatusSaver",toDcim: true ).then((value) =>
-                                      fileController.allStatusVideos.elementAt(index).isSaved = true);
-                                      fileController.allStatusSaved.add(FileModel(
-                                          filePath: fileController.allStatusVideos.elementAt(index).filePath,
-                                          isSaved: fileController.allStatusVideos.elementAt(index).isSaved));
+                                          Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path.replaceAll("%20"," "),
+                                          albumName: "StatusSaver",toDcim: true ).then((value)
+                                      {
+                                      fileController.allStatusVideos.elementAt(index).isSaved = true;
+                                      // fileController.allStatusSaved.add(FileModel(
+                                      //     filePath: fileController.allStatusVideos.elementAt(index).filePath,
+                                      //     isSaved: fileController.allStatusVideos.elementAt(index).isSaved));
                                       fileController.allStatusVideos.refresh();
-                                      fileController.allStatusSaved.refresh();
+                                      });
+                                      // fileController.allStatusSaved.refresh();
                                       // ReusingWidgets.snackBar(context: context, text: "Video Saved");
                                       ReusingWidgets.toast(text: "Video Saved");
                                       }
@@ -158,7 +160,7 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                             }
                             else {
                               return Hero(
-                                tag: fileController.allStatusVideos.elementAt(index).filePath,
+                                tag: fileController.allStatusVideos.elementAt(index).filePath.replaceAll("%20"," "),
                                 // child: Image.asset(Assets.imagesLoadingAnimation,width: 5,height: 5),
                                 child: ReusingWidgets.loadingAnimation(),
                               );
@@ -182,17 +184,17 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
             ),
           );
         }
-    }
-    else {
-      return Scaffold(
-        backgroundColor: ColorsTheme.backgroundColor,
-        body: Center(
-          child: Text(
-            'No WhatsApp Found!',
-            style: ThemeTexts.textStyleTitle3,
-          ),
-        ),
-      );
-    }
+    // }
+    // else {
+    //   return Scaffold(
+    //     backgroundColor: ColorsTheme.backgroundColor,
+    //     body: Center(
+    //       child: Text(
+    //         'No WhatsApp Found!',
+    //         style: ThemeTexts.textStyleTitle3,
+    //       ),
+    //     ),
+    //   );
+    // }
   }
 }

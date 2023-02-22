@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 import 'dart:io';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -56,19 +55,20 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
               onPressed: () {
                 Share.shareXFiles(
                   text: "Have a look on this Status",
-                  [XFile(myUri!.path)],
+                  [XFile(myUri!.path.replaceAll("%20"," "))],
                 );
               },
               icon: Icon(Icons.share)),
           IconButton(
               onPressed: () {
-                log("aaaa${widget.imgList[widget.indexNo].toString()}");
-                log("aaaa${widget.indexNo.toString()}");
+
                 File(widget.imgList[widget.indexNo]).delete();
-                  // fileController.allStatusImages.elementAt(widget.indexNo).isSaved = false;
-                  // fileController.allStatusImages.refresh();
-                  // fileController.allStatusSaved.refresh();
-                  // ReusingWidgets.snackBar(context: context, text: "Image Deleted Successfully");
+                for (var element in fileController.allStatusImages) {
+                  if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                  contains( File(widget.imgList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
+                    element.isSaved = false;
+                  }
+                }
                   ReusingWidgets.toast(text: "Image Deleted Successfully");
                   Navigator.pop(context);
               }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),

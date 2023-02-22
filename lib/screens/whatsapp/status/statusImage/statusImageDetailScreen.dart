@@ -59,7 +59,7 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               onPressed: () {
                 Share.shareXFiles(
                   text: "Have a look on this Status",
-                  [XFile(myUri!.path)],
+                  [XFile(myUri!.path.replaceAll("%20"," "))],
                 );
               },
               icon: Icon(Icons.share)),
@@ -75,17 +75,19 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               visible: !(fileController.allStatusImages.elementAt(currentIndex).isSaved),
               child: IconButton(
                   onPressed: () {
-                      GallerySaver.saveImage(myUri!.path, albumName: "StatusSaver", toDcim: true).then((value) {
+                      GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
+                          albumName: "StatusSaver", toDcim: true).then((value) {
                         fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
                         fileController.allStatusImages.refresh();
                       });
-                      ReusingWidgets.dialogueAnimated(
-                        context: context,
-                        dialogType: DialogType.success,
-                        color: ColorsTheme.primaryColor,
-                        title: "Image Saved",
-                        desc: "Image saved to File Manager > Internal Storage > >DCIM > StatusSaver",
-                      );
+                      ReusingWidgets.toast(text: "Image Saved Successfully!");
+                      // ReusingWidgets.dialogueAnimated(
+                      //   context: context,
+                      //   dialogType: DialogType.success,
+                      //   color: ColorsTheme.primaryColor,
+                      //   title: "Image Saved",
+                      //   desc: "Image saved to File Manager > Internal Storage > >DCIM > StatusSaver",
+                      // );
                   },
                   icon: Icon(Icons.save_alt)))),
         ],

@@ -93,15 +93,15 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: ColorsTheme.backgroundColor,
         body: SafeArea(
           child: Container(
-            padding: EdgeInsets.all(15),
+            padding: EdgeInsets.all(5),
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('Status Saver\n',
+                  Text('\nSTATUS SAVER\n',
                     style: ThemeTexts.textStyleTitle1.copyWith(
-                      color: ColorsTheme.primaryColor,
-                      letterSpacing: 2,
+                      color: ColorsTheme.primaryColor.withOpacity(1),
+                      letterSpacing: 3,
                     ),
                   ),
 
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       iconImage: Assets.imagesWhatsappIcon,
                       title: "WhatsApp Status",
                       subTitle: "Download Photo and Video Status",
-                    color: Colors.greenAccent,
+                    color: Colors.green.shade500,
                     context: context,
                     onTap: ()async{
                        whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       iconImage: Assets.imagesWhatsappBusinessIcon,
                       title: "WhatsApp Business Status",
                       subTitle: "Download Photo and Video Status",
-                       color: Colors.green,
+                      color: Colors.green.shade700,
                     context: context,
                       onTap: ()async{
                         whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
@@ -136,6 +136,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       }
                   ),
+
+                  // ///GB WhatsApp
+                  // ReusingWidgets.homeScreenCards(
+                  //     iconImage: Assets.imagesGbWhatsappIcon,
+                  //     title: "GB WhatsApp Status",
+                  //     subTitle: "Download Photo and Video Status",
+                  //     color: Colors.green.shade400,
+                  //     context: context,
+                  //     onTap: ()async{
+                  //       try{
+                  //         whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
+                  //         savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+                  //         await getSelectedDetails();
+                  //         Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
+                  //       }
+                  //       catch(e){
+                  //         ReusingWidgets.toast(text: e.toString());
+                  //       }
+                  //     }
+                  // ),
 
                   ///Stickers
                   ReusingWidgets.homeScreenCards(
@@ -157,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                        color: Colors.orange,
                     context: context,
                       onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> SettingsScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> SettingScreen()));
                       }
                   ),
                 ],

@@ -237,7 +237,7 @@ class ReusingWidgets {
                 children: [
                   Expanded(
                     child: Container(
-                      color: ColorsTheme.black.withOpacity(0.6),
+                      color: ColorsTheme.primaryColor.withOpacity(0.6),
                       // color:  ColorsTheme.black,
                       child: IconButton(
                         onPressed: () {
@@ -254,7 +254,7 @@ class ReusingWidgets {
                   // SizedBox(width: 1),
                   Expanded(
                     child: Container(
-                      color: ColorsTheme.primaryColor.withOpacity(0.6),
+                      color: ColorsTheme.black.withOpacity(0.6),
                       // color:  ColorsTheme.black,
                       child: IconButton(
                         onPressed: () {
@@ -540,6 +540,113 @@ class ReusingWidgets {
   static Widget loadingAnimation(){
     return SpinKitCircle(color: ColorsTheme.primaryColor);
   }
+
+
+  static Widget settingCards({
+    required Icon icon,
+    required String title,
+    required BuildContext context,
+    required Color color,
+    required Function() onTap,
+  }) {
+    return InkWell(
+        onTap: () {
+          onTap();
+        },
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.12,
+          child: Card(
+            elevation: 5,
+            child: Row(
+              children: [
+                Container(
+                  width: 15,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(5),
+                        bottomRight: Radius.circular(5)),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                     icon,
+                      SizedBox(width: 10),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title,
+                              style: ThemeTexts.textStyleTitle2.copyWith(
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.w300)),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
+  }
+
+  Future<void> showDeleteDialog(BuildContext context, File file, {bool photo = true}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          titlePadding: EdgeInsets.all(0),
+          contentPadding: EdgeInsets.all(0),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5))),
+          title: Container(
+              padding: EdgeInsets.all(15),
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: ColorsTheme.primaryColor,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(5),
+                  topLeft: Radius.circular(5),
+                ),
+              ),
+              child: Text("Delete File?", style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.white),)),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Container(
+                    padding: EdgeInsets.all(15),
+                    child: Text("Are you sure you want to delete this file?",style: ThemeTexts.textStyleTitle3.copyWith(fontWeight: FontWeight.w500),)),
+
+              ],
+            ),
+          ),
+
+          actions: [
+            TextButton(
+                onPressed: () {
+                  file.deleteSync();
+                  Navigator.pop(context);
+                  ReusingWidgets.toast(text: 'File Deleted');
+                },
+                child: Text('DELETE',style: ThemeTexts.textStyleTitle3.copyWith(color: ColorsTheme.primaryColor))),
+
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('CANCEL',style: ThemeTexts.textStyleTitle3.copyWith(color: ColorsTheme.primaryColor),)),
+          ],
+        );
+      },
+    );
+  }
+
+
 }
 
 

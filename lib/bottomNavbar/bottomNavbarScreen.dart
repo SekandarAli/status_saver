@@ -98,7 +98,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                       child: bottomWidget(
                         0,
                         "Status",
-                        Icons.lightbulb_circle_outlined,
+                        Icons.data_saver_on_sharp,
+                        Icons.data_saver_off,
                       ),
                     ),
                   ),
@@ -111,7 +112,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                       child: bottomWidget(
                         1,
                         "Saved",
-                          Icons.save,
+                        Icons.save,
+                        Icons.save_outlined,
                       ),
                     ),
                   ),
@@ -125,6 +127,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                           2,
                           "Settings",
                           Icons.settings,
+                          Icons.settings_outlined,
                         )),
                   ),
                 ],
@@ -156,7 +159,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                         width: double.infinity,
                         height: double.infinity,
                         alignment: Alignment.center,
-                        child: SettingsScreen(),
+                        child: SettingScreen(),
                       ),
                     ],
                   ),
@@ -168,11 +171,11 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
       ),
     );
   }
-  Widget bottomWidget(int index, String title, IconData icon) {
+  Widget bottomWidget(int index, String title, IconData icon1, IconData icon2,) {
     return Column(
       children: [
 
-        Icon(icon,
+        Icon(tabIndex == index ? icon1 : icon2,
           color: tabIndex == index
             ? ColorsTheme.primaryColor
             : ColorsTheme.lightGrey,),
