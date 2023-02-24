@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -111,10 +112,10 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
 
+  InAppReview? inAppReview;
+  Directory? savedImagesDirectory;
 
-    InAppReview? inAppReview;
-
-    void _openAppReview() async {
+  void _openAppReview() async {
       final InAppReview inAppReview = InAppReview.instance;
       if (await inAppReview.isAvailable()) {
         inAppReview.openStoreListing(
@@ -132,12 +133,12 @@ class _SettingScreenState extends State<SettingScreen> {
 
     @override
     Widget build(BuildContext context) {
-      double h = MediaQuery.of(context).size.height;
-      double w = MediaQuery.of(context).size.width;
-      inAppReview = InAppReview.instance;
 
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
+    inAppReview = InAppReview.instance;
 
-      Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+    savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
 
     return Scaffold(
         backgroundColor: ColorsTheme.backgroundColor,
@@ -155,11 +156,35 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                   ),
 
+                  // ///Delete Saved Images
+                  // ReusingWidgets.settingCards(
+                  //     icon: Icon(Icons.delete_forever_outlined,color: Colors.redAccent,),
+                  //     title: "Delete Saved Images",
+                  //     color: Colors.redAccent,
+                  //     context: context,
+                  //     onTap: (){
+                  //       if (Directory(savedImagesDirectory!.path).existsSync()) {
+                  //         final imageList = savedImagesDirectory!.listSync().map((item) =>
+                  //         item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
+                  //
+                  //         log(imageList.toString());
+                  //
+                  //         imageList.forEach((element) {
+                  //           File(element).deleteSync(recursive: true);
+                  //           print("watch");
+                  //         });
+                  //       }
+                  //       else{
+                  //         log("s");
+                  //       }
+                  //     }
+                  // ),
+
                   ///Rate
                   ReusingWidgets.settingCards(
-                      icon: Icon(Icons.star_border,color: Colors.deepOrangeAccent,),
+                      icon: Icon(Icons.star_border,color: Colors.greenAccent,),
                       title: "Rate Us",
-                      color: Colors.deepOrangeAccent,
+                      color: Colors.greenAccent,
                       context: context,
                       onTap: (){
                         _openAppReview();

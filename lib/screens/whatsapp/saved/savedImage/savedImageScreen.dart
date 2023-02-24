@@ -2,8 +2,10 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:status_saver/screens/whatsapp/saved/savedImage/savedImageDetailScreen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -22,16 +24,80 @@ class SavedImageScreen extends StatefulWidget {
 class SavedImageScreenState extends State<SavedImageScreen> {
 
   Directory? savedImagesDirectory;
-  // Future<int>? storagePermissionChecker;
-  // int? storagePermissionCheck;
-  // int? androidSDK;
+  Future<int>? storagePermissionChecker;
+  int? storagePermissionCheck;
+  int? androidSDK;
   final FileController fileController = Get.put(FileController());
   final MediaModel mediaModel = MediaModel();
 
   @override
   void initState() {
     savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+
+    storagePermissionChecker = (() async {
+      int storagePermissionCheckInt;
+      int finalPermission;
+
+      if (storagePermissionCheck == null || storagePermissionCheck == 0) {
+        storagePermissionCheck = await loadPermission();
+      } else {
+        storagePermissionCheck = 1;
+      }
+      if (storagePermissionCheck == 1) {
+        storagePermissionCheckInt = 1;
+      } else {
+        storagePermissionCheckInt = 0;
+      }
+      if (storagePermissionCheckInt == 1) {
+        finalPermission = 1;
+      } else {
+        finalPermission = 0;
+      }
+      return finalPermission;
+    })();
+
     super.initState();
+  }
+
+  Future<int> loadPermission() async {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    setState(() {
+      androidSDK = androidInfo.version.sdkInt;
+    });
+    if (androidSDK! >= 30) {
+      final currentStatusManaged = await Permission.manageExternalStorage.status;
+      if (currentStatusManaged.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    } else {
+      final currentStatusStorage = await Permission.storage.status;
+      if (currentStatusStorage.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  Future<int> requestPermission() async {
+    if (androidSDK! >= 30) {
+      final requestStatusManaged =
+      await Permission.manageExternalStorage.request();
+      if (requestStatusManaged.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    } else {
+      final requestStatusStorage = await Permission.storage.request();
+      if (requestStatusStorage.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
   }
 
   // Future<void> deleteFile(File file) async {
@@ -63,78 +129,75 @@ class SavedImageScreenState extends State<SavedImageScreen> {
       if (imageList.isNotEmpty) {
         return Scaffold(
           backgroundColor: ColorsTheme.backgroundColor,
-          body: Container(
-            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: GridView.builder(
-              physics: BouncingScrollPhysics(),
-              key: PageStorageKey(widget.key),
-              itemCount: imageList.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 5,
-                childAspectRatio: 0.75,
-              ),
-              itemBuilder: (BuildContext context, int index) {
-                return FutureBuilder(
-                    future: getVideo(imageList[index]),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasData) {
-                          return CircularProgressIndicator();
-                        } else {
-                          return GestureDetector(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                                  SavedImageDetailScreen(
-                                  // imgPath: File(imageList[index]),
-                                  // imgListIndex: imageList[index],
-                                  imgList: imageList,
-                                  indexNo: index
-                              ))).then((value) => setState((){}));
-                            },
-                            child: ReusingWidgets.getSavedData(
-                              tag: imageList[index],
-                              context: context,
-                              file: File(imageList[index]),
-                              showPlayIcon: true,
-                              bgColor: ColorsTheme.dismissColor,
-                              icon: Icons.delete,
-                              color: ColorsTheme.dismissColor,
-                              onSharePress: (){
-                                Share.shareXFiles(
-                                  text: "Have a look on this Status",
-                                  [XFile(Uri.parse(imageList[index]).path)],
-                                );
+          body: FutureBuilder(
+              future: storagePermissionChecker,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                      child: GridView.builder(
+                          physics: BouncingScrollPhysics(),
+                          key: PageStorageKey(widget.key),
+                          itemCount: imageList.length,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 5,
+                            crossAxisSpacing: 5,
+                            childAspectRatio: 0.75,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                                    SavedImageDetailScreen(
+                                      // imgPath: File(imageList[index]),
+                                      // imgListIndex: imageList[index],
+                                        imgList: imageList,
+                                        indexNo: index
+                                    ))).then((value) => setState((){}));
                               },
-                              onDownloadDeletePress: (){
+                              child: ReusingWidgets.getSavedData(
+                                tag: imageList[index],
+                                context: context,
+                                file: File(imageList[index]),
+                                showPlayIcon: true,
+                                bgColor: ColorsTheme.dismissColor,
+                                icon: Icons.delete,
+                                color: ColorsTheme.dismissColor,
+                                onSharePress: (){
+                                  Share.shareXFiles(
+                                    text: "Have a look on this Status",
+                                    [XFile(Uri.parse(imageList[index]).path)],
+                                  );
+                                },
+                                onDownloadDeletePress: (){
 
-                                setState(() {
-                                  mediaModel.deleteFile(context, File(imageList[index]));
-                                 // File(imageList[index]).delete();
-                                  for (var element in fileController.allStatusImages) {
-                                    if(element.filePath.toString().split(".Statuses/").last.split(".").first.
-                                    contains(File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)){
-                                      element.isSaved = false;
+                                  setState(() {
+                                    mediaModel.deleteFile(context, File(imageList[index]));
+                                    // File(imageList[index]).delete();
+                                    for (var element in fileController.allStatusImages) {
+                                      if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                                      contains(File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)){
+                                        element.isSaved = false;
+                                      }
                                     }
-                                  }
-                                });
-                                ReusingWidgets.toast(text: "Image Deleted Successfully");
-                              },
-                            ),
-                          );
-                        }
-                      }
-                      else {
-                        return Hero(tag:imageList[index],
-                          child: ReusingWidgets.loadingAnimation(),
-
-                      );
-                      }
-                    });
-              },
-            ),
-          ),
+                                  });
+                                  ReusingWidgets.toast(text: "Image Deleted Successfully!");
+                                },
+                              ),
+                            );
+                          }
+                      ),
+                    );
+                  } else {
+                    return ReusingWidgets.loadingAnimation();
+                  }
+                }
+                else {
+                  return ReusingWidgets.loadingAnimation();
+                }
+              }),
         );
       }
       else {

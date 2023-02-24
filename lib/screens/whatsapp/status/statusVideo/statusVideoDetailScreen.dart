@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_constructors, use_build_context_synchronously
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,8 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    log("aaaaaaaaa${fileController.allStatusVideos.elementAt(widget.indexNo).isSaved.toString()}");
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -59,6 +62,29 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
                 Share.shareXFiles(text: "Have a look on this Status", [XFile(myUri!.path.replaceAll("%20"," "))],);
           },
               icon: Icon(Icons.share)),
+
+        /*  fileController.allStatusVideos.elementAt(widget.indexNo).isSaved == false ?
+          IconButton(
+              onPressed: () {
+                  GallerySaver.saveVideo(Uri.parse(
+                      fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path.replaceAll("%20"," "),
+                      albumName: "StatusSaver",toDcim: true ).then((value) =>
+                  fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
+
+                  fileController.allStatusVideos.refresh();
+
+                  ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState(() {}));
+
+              },
+              icon: Icon(Icons.save_alt)) :
+          IconButton(
+              onPressed: () {
+                  ReusingWidgets.toast(text: "Video Already Saved");
+              },
+              icon: Icon(Icons.done)),
+*/
+
+          ///OBX
           Obx(() =>
              Visibility(
               visible: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved,
@@ -66,7 +92,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
                   onPressed: () {
                     // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
                     ReusingWidgets.toast(text: "Video Already Saved");
-                  }, icon: Icon(Icons.done)),
+                  }, icon: Icon(Icons.done,color: ColorsTheme.doneColor,)),
             )
           ),
           Obx(() =>
@@ -77,13 +103,13 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
                     fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path.replaceAll("%20"," "),
                     albumName: "StatusSaver",toDcim: true ).then((value) =>
                 fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
-                // fileController.allStatusSaved.add(FileModel(filePath: fileController.allStatusVideos.elementAt(widget.indexNo).filePath, isSaved: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved));
                 fileController.allStatusVideos.refresh();
                 // ReusingWidgets.snackBar(context: context, text: "Video Saved");
-                ReusingWidgets.toast(text: "Video Saved");
+                ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState((){}));
               }, icon: Icon(Icons.save_alt)),
             )
           )
+
         ],
       ),
       body: VideoController(
@@ -145,6 +171,7 @@ class _VideoControllerState extends State<VideoController> {
 
   @override
   void dispose() {
+    chewieController!.pause();
     widget.videoPlayerController.dispose();
     chewieController!.dispose();
     super.dispose();

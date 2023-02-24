@@ -104,10 +104,11 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                         ));
                       },
                       child: FutureBuilder(
+                     //   initialData:getVideo(fileController.allStatusVideos.elementAt(index).filePath) ,
                           future: getVideo(fileController.allStatusVideos.elementAt(index).filePath),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
-                              log("done2");
+                            // if (snapshot.connectionState == ConnectionState.done) {
+                            //   log("done2");
                               if (snapshot.hasData) {
                                 return ReusingWidgets.getSavedData(
                                   tag: fileController.allStatusVideos.elementAt(index).filePath,
@@ -132,39 +133,26 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                                           albumName: "StatusSaver",toDcim: true ).then((value)
                                       {
                                       fileController.allStatusVideos.elementAt(index).isSaved = true;
-                                      // fileController.allStatusSaved.add(FileModel(
-                                      //     filePath: fileController.allStatusVideos.elementAt(index).filePath,
-                                      //     isSaved: fileController.allStatusVideos.elementAt(index).isSaved));
                                       fileController.allStatusVideos.refresh();
                                       });
-                                      // fileController.allStatusSaved.refresh();
-                                      // ReusingWidgets.snackBar(context: context, text: "Video Saved");
                                       ReusingWidgets.toast(text: "Video Saved");
                                       }
                                       : () {
-                                    // ReusingWidgets.snackBar(context: context, text: "Video Already Saved");
                                     ReusingWidgets.toast(text: "Video Already Saved");
                                   },
                                 );
                               }
-
-                                else {
-                                  return Center(
-                                    child: Text(
-                                      'No WhatsApp Found!',
-                                      style: ThemeTexts.textStyleTitle3,
-                                    ),
-                                  );
-                                }
-
-                            }
-                            else {
-                              return Hero(
-                                tag: fileController.allStatusVideos.elementAt(index).filePath.replaceAll("%20"," "),
-                                // child: Image.asset(Assets.imagesLoadingAnimation,width: 5,height: 5),
-                                child: ReusingWidgets.loadingAnimation(),
-                              );
-                            }
+                              else {
+                                return ReusingWidgets.loadingAnimation();
+                              }
+                            // }
+                            // else {
+                            //   return Hero(
+                            //     tag: fileController.allStatusVideos.elementAt(index).filePath.replaceAll("%20"," "),
+                            //     // child: Image.asset(Assets.imagesLoadingAnimation,width: 5,height: 5),
+                            //     child: ReusingWidgets.loadingAnimation(),
+                            //   );
+                            // }
                           }),
                     );
                   },
@@ -177,24 +165,9 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
           return Scaffold(
             backgroundColor: ColorsTheme.backgroundColor,
             body: Center(
-              child: Text(
-                'Sorry, No Videos Found.',
-                style: ThemeTexts.textStyleTitle2,
-              ),
+              child: ReusingWidgets.emptyData(context: context)
             ),
           );
         }
-    // }
-    // else {
-    //   return Scaffold(
-    //     backgroundColor: ColorsTheme.backgroundColor,
-    //     body: Center(
-    //       child: Text(
-    //         'No WhatsApp Found!',
-    //         style: ThemeTexts.textStyleTitle3,
-    //       ),
-    //     ),
-    //   );
-    // }
   }
 }

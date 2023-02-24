@@ -12,7 +12,7 @@ import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
 import 'package:status_saver/controller/fileController.dart';
-import 'package:status_saver/model/fileModel.dart';
+import 'package:status_saver/generated/assets.dart';
 import 'statusImageDetailScreen.dart';
 
 class StatusImageScreen extends StatefulWidget {
@@ -25,7 +25,7 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   int? storagePermissionCheck;
   Future<int>? storagePermissionChecker;
   int? androidSDK;
-  Directory? savedImagesDirectory;
+  // Directory? savedImagesDirectory;
 
   // Directory? whatsAppBusinessDirectory;
   final FileController fileController = Get.put(FileController());
@@ -34,6 +34,9 @@ class StatusImageScreenState extends State<StatusImageScreen> {
 
   // Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
   // Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+  //
+  // var savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+  // var imageList;
 
   Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -76,16 +79,16 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     }
   }
 
-  createFolder() async {
-    const folderName = "StatusSaver";
-    final path = Directory('/storage/emulated/0/DCIM/$folderName');
-    if ((await path.exists())) {
-      savedImagesDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
-    }
-    else {
-      path.create();
-    }
-  }
+  // createFolder() async {
+  //   const folderName = "StatusSaver";
+  //   final path = Directory('/storage/emulated/0/DCIM/$folderName');
+  //   if ((await path.exists())) {
+  //     savedImagesDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
+  //   }
+  //   else {
+  //     path.create();
+  //   }
+  // }
 
   // getImageData() {
   //   fileController.allStatusImages.value = [];
@@ -109,13 +112,15 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   void initState() {
     super.initState();
 
+
+
     // imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
     // savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
     // whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
 
 
     // log(fileController.allStatusImages.map((element) => element.filePath).toString());
-    createFolder();
+    // createFolder();
     // getImageData();
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
@@ -169,8 +174,8 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                         height: h,
                         width: w,
                         margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        child: Obx(() =>
-                            GridView.builder(
+                        child:
+                        GridView.builder(
                               key: PageStorageKey(widget.key),
                               itemCount: fileController.allStatusImages.length,
                               physics: BouncingScrollPhysics(),
@@ -184,7 +189,7 @@ class StatusImageScreenState extends State<StatusImageScreen> {
 
                                 // log("aaa${(fileController.allStatusImages.elementAt(index).filePath)}");
                                 // log("qqqqqqq${(fileController.allStatusImages.elementAt(index).isSaved)}");
-                                return InkWell(
+                                return Obx(() => InkWell(
                                   onTap: () {
                                     Get.to(() =>
                                         StatusImageDetailScreen(
@@ -240,18 +245,34 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                       );
                                     },
                                   ),
-                                );
+                                ));
                               },
                             )),
-                      ),
                     );
                   }
                   else {
-                    return Center(
-                      child: Text(
-                        'You have not watched any status yet!',
-                        style: ThemeTexts.textStyleTitle2,
-                      ),
+                    return RefreshIndicator(
+                      onRefresh: pullRefresh,
+                      child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(30),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(Assets.imagesPermission,
+                                    width: w, height: h / 3.5),
+                                SizedBox(height: 5),
+                                Text("You haven't seen any Status Yet!",style: ThemeTexts.textStyleTitle3,),
+                                SizedBox(height: 10),
+                                ReusingWidgets.allowPermissionButton(
+                                    onPress: () {
+                                      ReusingWidgets.toast(text: "Not Available");
+                                    },
+                                    context: context,
+                                    text: "Open WhatsApp"),
+                              ],
+                            ),
+                          )),
                     );
                   }
                 }
@@ -274,58 +295,39 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                         ),
                   );
                 });
-                return Center(child: Padding(
-                  padding: EdgeInsets.all(30),
-                  child: ReusingWidgets.allowPermissionButton(
-                      onPress: () {
-                        setState(() {
-                          storagePermissionChecker = requestPermission();
-                        });
-                      },
-                      context: context,
-                      text: "Allow Permission"),
-                ));
+                return Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(30),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(Assets.imagesPermission,
+                              width: w, height: h / 3.5),
+                          SizedBox(height: 15),
+                          ReusingWidgets.allowPermissionButton(
+                              onPress: () {
+                                setState(() {
+                                  storagePermissionChecker = requestPermission();
+                                });
+                              },
+                              context: context,
+                              text: "Allow Permission"),
+                        ],
+                      ),
+                    ));
               }
               }
               else {
-                Future(() {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) =>
-                        ReusingWidgets().permissionDialogue(
-                            context: context,
-                            width: w,
-                            height: h,
-                            onPress: () {
-                              setState(() {
-                                storagePermissionChecker = requestPermission();
-                                Navigator.pop(context);
-                              });
-                            }
-                        ),
-                  );
-                });
-                return Center(child: Padding(
-                  padding: EdgeInsets.all(30),
-                  child: ReusingWidgets.allowPermissionButton(
-                      onPress: () {
-                        setState(() {
-                          storagePermissionChecker = requestPermission();
-                        });
-                      },
-                      context: context,
-                      text: "Allow Permission"),
-                ));
+                return ReusingWidgets.loadingAnimation();
               }
-            }
+          }
             else if (snapshot.hasError) {
               ReusingWidgets.toast(text: snapshot.error.toString());
               return Container();
               // return ReusingWidgets.circularProgressIndicator();
             }
             else {
-            return ReusingWidgets.circularProgressIndicator();
+            return ReusingWidgets.loadingAnimation();
             }
           // }
           // else {

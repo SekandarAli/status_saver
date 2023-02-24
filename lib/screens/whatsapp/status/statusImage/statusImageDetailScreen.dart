@@ -122,28 +122,43 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               }
             );
           }).toList(),
-          options: CarouselOptions(
-            animateToClosest: true,
-            autoPlay: false,
-            enlargeCenterPage: false,
-            // enlargeFactor: 0,
-            enableInfiniteScroll: true,
-            disableCenter: false,
-            viewportFraction: 1.0,
-            aspectRatio: 0.75,
-            initialPage: currentIndex,
-            padEnds: true,
+
+
+          // options: CarouselOptions(
+          //   enlargeCenterPage: false,
+          //   // enlargeFactor: 0,
+          //   enableInfiniteScroll: true,
+          //   disableCenter: false,
+          //   initialPage: currentIndex,
+          //   padEnds: true,
+          //
+          //   onScrolled: (value){
+          //     print("object");
+          //     // setState(() {});
+          //   }
+          // ),
+
+            options: CarouselOptions(
+              aspectRatio: 0.75,
+              viewportFraction: 1,
+              animateToClosest: true,
+              initialPage: currentIndex,
+              enableInfiniteScroll: true,
+              reverse: false,
+              autoPlay: true,
+              autoPlayInterval: Duration(seconds: 5),
+              autoPlayAnimationDuration: Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: true,
               onPageChanged: (index, reason) {
-              log('index $index');
-              currentIndex = index;
-              myUri = Uri.parse(fileController.allStatusImages.elementAt(currentIndex).filePath);
-              setState(() {});
+                setState(() {
+                  log('index $index');
+                  currentIndex = index;
+                  myUri = Uri.parse(fileController.allStatusImages.elementAt(currentIndex).filePath);
+                });
               },
-            // onScrolled: (value){
-            //   print("object");
-            //   setState(() {});
-            // }
-          ),
+              scrollDirection: Axis.horizontal,
+            )
         ),
       ),),
     );

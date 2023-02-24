@@ -3,11 +3,14 @@
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/generated/assets.dart';
 import 'package:status_saver/screens/whatsapp/status/statusImage/statusImageScreen.dart';
 import 'package:status_saver/screens/whatsapp/status/statusVideo/statusVideoScreen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../../app_theme/color.dart';
 import '../../../app_theme/text_styles.dart';
 import '../../home/homeScreen.dart';
@@ -47,14 +50,12 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
                     bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
                     if (isInstalled) {
                       DeviceApps.openApp("com.whatsapp.w4b");
-                      print("open");
                     } else {
-                      print("not");
-                      // launch("market://details?id=com.whatsapp");
                       launchUrl(Uri.parse("market://details?id=com.whatsapp.w4b"));
                     }
-                  } catch (e) {e.toString();}
-
+                  } catch (e) {
+                      ReusingWidgets.toast(text: e.toString());
+                    }
                   },
                   child: Image.asset(Assets.imagesWhatsappBusinessIcon,height: 30,width: 30,)),
             ),
@@ -66,19 +67,17 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
               child: GestureDetector(
                   onTap: ()async {
                     try {
-                    bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
-                    if (isInstalled) {
-                      DeviceApps.openApp("com.whatsapp");
-                      print("open");
-                    } else {
-                      print("not");
-                      // launch("market://details?id=com.whatsapp");
-                      launchUrl(Uri.parse("market://details?id=com.whatsapp"));
+                      bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
+                      if (isInstalled) {
+                        DeviceApps.openApp("com.whatsapp");
+                      } else {
+                        launchUrl(Uri.parse("market://details?id=com.whatsapp"));
+                      }
+                    } catch (e) {
+                      ReusingWidgets.toast(text: e.toString());
                     }
-                  } catch (e) {e.toString();}
-
                   },
-                  child: Image.asset(Assets.imagesWhatsappIcon,height: 35,width: 35,)),
+                  child: Image.asset(Assets.imagesWhatsappIcon,height: 30,width: 30,)),
             ),
             SizedBox(width: 10),
           ],

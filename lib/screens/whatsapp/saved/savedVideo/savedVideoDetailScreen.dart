@@ -65,13 +65,16 @@ class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
             // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
 
             File(widget.videoList[widget.indexNo]).delete();
+
             for (var element in fileController.allStatusVideos) {
               if(element.filePath.toString().split(".Statuses/").last.split(".").first.
               contains( File(widget.videoList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
                 element.isSaved = false;
               }
             }
+
             ReusingWidgets.toast(text: "Video Deleted Successfully");
+            Navigator.pop(context);
 
           }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),
         ],

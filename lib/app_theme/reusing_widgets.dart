@@ -6,6 +6,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:status_saver/app_theme/color.dart';
@@ -72,14 +73,8 @@ class ReusingWidgets {
     required var text,
   }) {
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * 0.05,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height * 0.05,
       margin: EdgeInsets.all(0),
       padding: EdgeInsets.all(0),
       child: ElevatedButton(
@@ -197,6 +192,7 @@ class ReusingWidgets {
     );
   }*/
 
+
   static Widget getSavedData({
     required String tag,
     required BuildContext context,
@@ -225,7 +221,7 @@ class ReusingWidgets {
                   child: Image.file(
                     file,
                     fit: BoxFit.cover,
-                    filterQuality: FilterQuality.high,
+                    filterQuality: FilterQuality.low,
                   ),
                 ),
               ),
@@ -390,6 +386,25 @@ class ReusingWidgets {
     );
   }*/
 
+
+  static Widget homeScreenNewCard(){
+    return  GridView.builder(
+      itemCount: 5,
+      physics: BouncingScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 5,
+          crossAxisSpacing: 5,
+          childAspectRatio: 0.75
+      ),
+      itemBuilder: (BuildContext context, int index) {
+
+
+        return ;
+      },
+    );
+  }
+
   static Widget homeScreenCards({
     required String iconImage,
     required String title,
@@ -451,6 +466,62 @@ class ReusingWidgets {
             ),
           ),
         ));
+  }
+
+  static Widget newHomeCard({
+    required BuildContext context,
+    required String title,
+    required String imageIcon,
+    required Function() onTap,
+  }){
+    return InkWell(
+      onTap: (){
+        onTap();
+      },
+      child: AnimationConfiguration.staggeredGrid(
+        duration: Duration(milliseconds: 500),
+        columnCount: 1,
+        position: 1,
+        child: ScaleAnimation(
+          duration: Duration(milliseconds: 900),
+          curve: Curves.fastLinearToSlowEaseIn,
+          scale: 1.5,
+          child: FadeInAnimation(
+            child: Container(
+              margin: EdgeInsets.only(left: 10,right: 10,bottom: 10,top: 0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 40,
+                    spreadRadius: 10,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    imageIcon,
+                    fit: BoxFit.cover,
+                    width:  MediaQuery.of(context).size.width * 0.15,
+                    height:  MediaQuery.of(context).size.width * 0.15,
+                  ),
+                  SizedBox(height: 10),
+                  Text(title,
+                      style: ThemeTexts.textStyleTitle3.copyWith(
+                          color: ColorsTheme.textColor,
+                          fontWeight: FontWeight.w400)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   static Future<String?> exitDialogueBox({

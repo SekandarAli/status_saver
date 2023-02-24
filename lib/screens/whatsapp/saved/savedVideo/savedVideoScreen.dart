@@ -76,7 +76,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                 return FutureBuilder(
                     future: getVideo(videoList[index]),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
+                      // if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
                           return GestureDetector(
                             onTap: (){
@@ -125,16 +125,14 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                             ),
                           );
                         } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return ReusingWidgets.loadingAnimation();
                         }
-                      }
-                      else {
-                        return Hero(tag:videoList[index],
-                          child: ReusingWidgets.loadingAnimation(),
-                        );
-                      }
+                      // }
+                      // else {
+                      //   return Hero(tag:videoList[index],
+                      //     child: ReusingWidgets.loadingAnimation(),
+                      //   );
+                      // }
                     });
               },
             ),
