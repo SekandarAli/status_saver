@@ -1,8 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, must_be_immutable
 
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -11,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../generated/assets.dart';
 
 class ReusingWidgets {
@@ -49,11 +51,11 @@ class ReusingWidgets {
                     style: ThemeTexts.textStyleTitle3.copyWith(
                         color: Colors.black54, fontWeight: FontWeight.w400)),
                 SizedBox(height: 20),
-                Text("*Require on Android 11 or higher or later",
-                    textAlign: TextAlign.center,
-                    style: ThemeTexts.textStyleTitle3.copyWith(
-                        color: Colors.black54, fontWeight: FontWeight.w200)),
-                SizedBox(height: 10),
+                // Text("*Require on Android 11 or higher or later",
+                //     textAlign: TextAlign.center,
+                //     style: ThemeTexts.textStyleTitle3.copyWith(
+                //         color: Colors.black54, fontWeight: FontWeight.w200)),
+                // SizedBox(height: 10),
                 allowPermissionButton(
                   context: context,
                   text: "Allow permission",
@@ -213,8 +215,8 @@ class ReusingWidgets {
             Hero(
               tag: tag,
               child: Container(
-                height: MediaQuery.of(context).size.width,
-                width: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
                 color: ColorsTheme.backgroundColor,
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -233,6 +235,7 @@ class ReusingWidgets {
                 children: [
                   Expanded(
                     child: Container(
+                      height: MediaQuery.of(context).size.height * 0.05,
                       color: ColorsTheme.primaryColor.withOpacity(0.6),
                       // color:  ColorsTheme.black,
                       child: IconButton(
@@ -250,6 +253,7 @@ class ReusingWidgets {
                   // SizedBox(width: 1),
                   Expanded(
                     child: Container(
+                      height: MediaQuery.of(context).size.height * 0.05,
                       color: ColorsTheme.black.withOpacity(0.6),
                       // color:  ColorsTheme.black,
                       child: IconButton(
@@ -478,28 +482,28 @@ class ReusingWidgets {
       onTap: (){
         onTap();
       },
-      child: AnimationConfiguration.staggeredGrid(
-        duration: Duration(milliseconds: 500),
-        columnCount: 1,
-        position: 1,
-        child: ScaleAnimation(
-          duration: Duration(milliseconds: 900),
-          curve: Curves.fastLinearToSlowEaseIn,
-          scale: 1.5,
-          child: FadeInAnimation(
-            child: Container(
-              margin: EdgeInsets.only(left: 10,right: 10,bottom: 10,top: 0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 40,
-                    spreadRadius: 10,
-                  ),
-                ],
-              ),
+      child: Container(
+        margin: EdgeInsets.only(left: 10,right: 10,bottom: 10,top: 10),
+        decoration: BoxDecoration(
+          color: ColorsTheme.white,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 40,
+              spreadRadius: 10,
+            ),
+          ],
+        ),
+        child: AnimationConfiguration.staggeredGrid(
+          duration: Duration(milliseconds: 500),
+          columnCount: 1,
+          position: 1,
+          child: ScaleAnimation(
+            duration: Duration(milliseconds: 900),
+            curve: Curves.fastLinearToSlowEaseIn,
+            scale: 5,
+            child: FadeInAnimation(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -514,7 +518,7 @@ class ReusingWidgets {
                   Text(title,
                       style: ThemeTexts.textStyleTitle3.copyWith(
                           color: ColorsTheme.textColor,
-                          fontWeight: FontWeight.w400)),
+                          fontWeight: FontWeight.w400),textAlign: TextAlign.center,),
                 ],
               ),
             ),
@@ -718,6 +722,65 @@ class ReusingWidgets {
   }
 
 
+}
+
+
+
+
+class NoWhatsAppFound extends StatelessWidget {
+  NoWhatsAppFound({Key? key,required this.text,required this.packageName,required this.packageUrl,}) : super(key: key);
+
+  String text;
+  String packageName;
+  String packageUrl;
+
+
+  @override
+  Widget build(BuildContext context) {
+    double w = MediaQuery.of(context).size.width;
+    double h = MediaQuery.of(context).size.height;
+    return Scaffold(
+        backgroundColor: ColorsTheme.backgroundColor,
+        body: Center(
+            child: Padding(
+              padding: EdgeInsets.all(30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(Assets.imagesPermission,
+                      width: w, height: h / 3.5),
+                  SizedBox(height: 5),
+                  Text("No $text Found, Please Install $text!",style: ThemeTexts.textStyleTitle3,textAlign: TextAlign.center,),
+                  SizedBox(height: 10),
+                  ReusingWidgets.allowPermissionButton(
+                      onPress: () async{
+                        try {
+                          bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+                          if (isInstalled) {
+                            DeviceApps.openApp(packageName);
+                          } else {
+                            launchUrl(Uri.parse(packageUrl));
+                          }
+                        } catch (e) {
+                          ReusingWidgets.toast(text: e.toString());
+                        }
+                      },
+                      context: context,
+                      text: "Open $text"),
+
+                  SizedBox(height: 10),
+
+                  ReusingWidgets.allowPermissionButton(
+                      onPress: () {
+                        Navigator.pop(context);
+                      },
+                      context: context,
+                      text: "BACK"),
+                ],
+              ),
+            ))
+    );
+  }
 }
 
 

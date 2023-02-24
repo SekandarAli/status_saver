@@ -129,3 +129,26 @@
 //   }
 //
 // }
+
+///open whatsapp or b-wa
+
+// Tooltip(
+// message: "Open Business WhatsApp",
+// child: GestureDetector(
+// onTap: ()async {
+// try {
+// bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
+// if (isInstalled) {
+// DeviceApps.openApp("com.whatsapp.w4b").then((value){
+// ReusingWidgets.toast(text: "Opening Business WhatsApp...");
+// });
+// }
+// else {
+// launchUrl(Uri.parse("market://details?id=com.whatsapp.w4b"));
+// }
+// } catch (e) {
+// ReusingWidgets.toast(text: e.toString());
+// }
+// },
+// child: Image.asset(Assets.imagesWhatsappBusinessIcon,height: 30,width: 30,)),
+// ),

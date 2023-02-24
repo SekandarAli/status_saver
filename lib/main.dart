@@ -2,8 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:status_saver/bottomNavbar/bottomNavbarScreen.dart';
 import 'package:status_saver/controller/fileController.dart';
 import 'package:status_saver/screens/home/homeScreen.dart';
+import 'package:status_saver/screens/whatsapp/status/statusTabBar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +30,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return HomeScreen();
-    // return MyHomePage();
+    return BottomNavBarScreen();
   }
 }
 

@@ -144,12 +144,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
       }
     }
     else {
-      return Center(
-        child: Text(
-          'StatusSaved Directory not Exist',
-          style: ThemeTexts.textStyleTitle3,
-        ),
-      );
+      return ReusingWidgets.emptyData(context: context);
     }
   }
 }

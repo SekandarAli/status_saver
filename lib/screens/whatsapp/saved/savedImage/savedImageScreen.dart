@@ -205,12 +205,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
       }
     }
     else {
-      return Center(
-        child: Text(
-          'StatusSaved Directory not Exist',
-          style: ThemeTexts.textStyleTitle3,
-        ),
-      );
+      return ReusingWidgets.emptyData(context: context);
     }
   }
 }
@@ -219,7 +214,6 @@ class SavedImageScreenState extends State<SavedImageScreen> {
 class MediaModel extends ChangeNotifier {
 
   Future<void> deleteFile(BuildContext context, File file) async {
-    // await ReusingWidgets().showDeleteDialog(context, file);
     file.deleteSync();
     notifyListeners();
   }

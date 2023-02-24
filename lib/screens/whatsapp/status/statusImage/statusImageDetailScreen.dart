@@ -70,7 +70,7 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
                     // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
                     ReusingWidgets.toast(text: "Image Already Saved");
                   },
-                  icon: Icon(Icons.done)))),
+                  icon: Icon(Icons.done,color: ColorsTheme.doneColor,)))),
           Obx(() => Visibility(
               visible: !(fileController.allStatusImages.elementAt(currentIndex).isSaved),
               child: IconButton(

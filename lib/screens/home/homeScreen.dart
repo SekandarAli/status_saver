@@ -29,12 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
   late List<String> videoList;
   late List<String> savedList;
 
-  late Directory whatsAppDirectory ;
-  // late Directory businessWhatsAppDirectory;
+  late Directory directoryPath ;
   late Directory savedDirectory;
   final FileController fileController = Get.put(FileController());
-
-
 
 
   @override
@@ -56,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   getSelectedDetails(){
-    imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
-    videoList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
+    imageList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
+    videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
     getImageData();
     getVideoData();
@@ -121,8 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: AnimationLimiter(
                       child: GridView.count(
-                        physics:
-                        BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        physics: BouncingScrollPhysics(),
+                        // BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                         padding: EdgeInsets.only(left: 10,right: 10,bottom: 10,top: 0),
                         crossAxisCount: 2,
                         children: [
@@ -133,13 +130,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               imageIcon: Assets.imagesWhatsappIcon,
                               onTap: ()async{
                                 try{
-                                  whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+                                  // whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+                                  directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
                                   savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
                                   await getSelectedDetails();
                                   Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
                                 }
                                 catch(e){
                                   ReusingWidgets.toast(text: e.toString());
+                                  print(e);
                                   Navigator.push(context, MaterialPageRoute(builder: (context)=> NoWhatsAppFound(
                                     text: "WhatsApp",
                                     packageName: "com.whatsapp",
@@ -155,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               imageIcon: Assets.imagesWhatsappBusinessIcon,
                               onTap: ()async{
                                 try{
-                                  whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+                                  directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
                                   savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
                                   await getSelectedDetails();
                                   Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
@@ -176,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               imageIcon: Assets.imagesGbWhatsappIcon,
                               onTap: ()async{
                                 try{
-                                  whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
+                                  directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
                                   savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
                                   await getSelectedDetails();
                                   Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNavBarScreen()));
@@ -344,60 +343,3 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-
-
-class NoWhatsAppFound extends StatelessWidget {
-  NoWhatsAppFound({Key? key,required this.text,required this.packageName,required this.packageUrl,}) : super(key: key);
-
-  String text;
-  String packageName;
-  String packageUrl;
-
-
-  @override
-  Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
-    return Scaffold(
-        backgroundColor: ColorsTheme.backgroundColor,
-        body: Center(
-            child: Padding(
-              padding: EdgeInsets.all(30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(Assets.imagesPermission,
-                      width: w, height: h / 3.5),
-                  SizedBox(height: 5),
-                  Text("No $text Found, Please Install $text!",style: ThemeTexts.textStyleTitle3,textAlign: TextAlign.center,),
-                  SizedBox(height: 10),
-                  ReusingWidgets.allowPermissionButton(
-                      onPress: () async{
-                        try {
-                          bool isInstalled = await DeviceApps.isAppInstalled(packageName);
-                          if (isInstalled) {
-                            DeviceApps.openApp(packageName);
-                          } else {
-                            launchUrl(Uri.parse(packageUrl));
-                          }
-                        } catch (e) {
-                          ReusingWidgets.toast(text: e.toString());
-                        }
-                      },
-                      context: context,
-                      text: "Open $text"),
-
-                  SizedBox(height: 10),
-
-                  ReusingWidgets.allowPermissionButton(
-                      onPress: () {
-                        Navigator.pop(context);
-                      },
-                      context: context,
-                      text: "BACK"),
-                ],
-              ),
-            ))
-    );
-  }
-}

@@ -26,14 +26,15 @@ class _SavedTabScreenState extends State<SavedTabScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Status Saver',style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.white,letterSpacing: 1),),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            color: ColorsTheme.white,
-            onPressed: (){
-              Get.offAll(()=>HomeScreen());
-            },
-          ),
+          automaticallyImplyLeading: false,
+          // centerTitle: true,
+          // leading: IconButton(
+          //   icon: Icon(Icons.arrow_back_ios),
+          //   color: ColorsTheme.white,
+          //   onPressed: (){
+          //     Get.offAll(()=>HomeScreen());
+          //   },
+          // ),
           backgroundColor: ColorsTheme.primaryColor,
           elevation: 0,
           bottom: TabBar(

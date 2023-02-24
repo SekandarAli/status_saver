@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'dart:io';
+import 'package:device_apps/device_apps.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
@@ -13,6 +14,8 @@ import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
 import 'package:status_saver/controller/fileController.dart';
 import 'package:status_saver/generated/assets.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../model/fileModel.dart';
 import 'statusImageDetailScreen.dart';
 
 class StatusImageScreen extends StatefulWidget {
@@ -25,18 +28,100 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   int? storagePermissionCheck;
   Future<int>? storagePermissionChecker;
   int? androidSDK;
-  // Directory? savedImagesDirectory;
+  FileController fileController = Get.put(FileController());
 
-  // Directory? whatsAppBusinessDirectory;
-  final FileController fileController = Get.put(FileController());
-  // List<String>? imageList;
-  // List<String>? savedList;
 
-  // Directory whatsAppDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-  // Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-  //
-  // var savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-  // var imageList;
+  late List<String> imageList;
+  late List<String> videoList;
+  late List<String> savedList;
+
+  late Directory directoryPath ;
+  late Directory savedDirectory;
+
+
+
+  createFolder() async {
+    const folderName = "StatusSaver";
+    final path = Directory('/storage/emulated/0/DCIM/$folderName');
+    if ((await path.exists())) {
+      // savedDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
+      print("Path Exist");
+    }
+    else {
+      path.create();
+    }
+  }
+
+  checkAndroidVersion() async {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    setState(() {
+      androidSDK = androidInfo.version.sdkInt;
+    });
+    if (androidSDK! >= 30) {
+      print("Version Greater than 30");
+      try {
+        print("Version Greater");
+        directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+        getSelectedDetails();
+      }
+      catch (e) {
+        print("Error is $e");
+      }
+    }
+    else if (androidSDK! < 30) {
+      print("Version Less than 30");
+      try {
+        print("Version Less");
+        directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
+        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+        getSelectedDetails();
+      }
+      catch (e) {
+        print("Error is $e");
+      }
+    }
+    else{
+      print("ERROR");
+    }
+  }
+
+  getSelectedDetails(){
+    imageList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
+    videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
+    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
+    getImageData();
+    getVideoData();
+    createFolder();
+  }
+
+  getImageData() {
+    fileController.allStatusImages.value = [];
+    if (imageList.isNotEmpty) {
+      for (var element in imageList) {
+        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+        } else {
+          // print("ELSE${element.substring(72,104)}");
+          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+        }
+      }
+    }
+  }
+
+  getVideoData() {
+    fileController.allStatusVideos.value = [];
+    if (videoList.isNotEmpty) {
+      for (var element in videoList) {
+        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+        } else {
+          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+        }
+      }
+    }
+  }
+
 
   Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -79,49 +164,13 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     }
   }
 
-  // createFolder() async {
-  //   const folderName = "StatusSaver";
-  //   final path = Directory('/storage/emulated/0/DCIM/$folderName');
-  //   if ((await path.exists())) {
-  //     savedImagesDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
-  //   }
-  //   else {
-  //     path.create();
-  //   }
-  // }
-
-  // getImageData() {
-  //   fileController.allStatusImages.value = [];
-  //   if (imageList!.isNotEmpty) {
-  //     for (var element in imageList!) {
-  //       if (savedList!.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-  //         // print("IF$element");
-  //         fileController.allStatusImages.add(
-  //             FileModel(filePath: element, isSaved: true));
-  //       }
-  //       else {
-  //         // print("ELSE$element");
-  //         fileController.allStatusImages.add(
-  //             FileModel(filePath: element, isSaved: false));
-  //       }
-  //     }
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
 
+    print("done");
+    checkAndroidVersion();
 
-
-    // imageList = whatsAppDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
-    // savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg') || item.endsWith('.mp4')).toList(growable: false);
-    // whatsAppBusinessDirectory = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-
-
-    // log(fileController.allStatusImages.map((element) => element.filePath).toString());
-    // createFolder();
-    // getImageData();
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
       int finalPermission;
@@ -160,11 +209,15 @@ class StatusImageScreenState extends State<StatusImageScreen> {
         future: storagePermissionChecker,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            log("done");
+            log("done1");
             if (snapshot.hasData) {
+              log("done2");
               if (snapshot.data == 1) {
+                log("done3");
                 // if (Directory(whatsAppDirectory.path).existsSync()) {
                   if (fileController.allStatusImages.isNotEmpty) {
+                    log("done4");
+
                     return RefreshIndicator(
                       backgroundColor: ColorsTheme.primaryColor,
                       color: ColorsTheme.white,
@@ -186,9 +239,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                   childAspectRatio: 0.75
                               ),
                               itemBuilder: (BuildContext context, int index) {
-
-                                // log("aaa${(fileController.allStatusImages.elementAt(index).filePath)}");
-                                // log("qqqqqqq${(fileController.allStatusImages.elementAt(index).isSaved)}");
                                 return Obx(() => InkWell(
                                   onTap: () {
                                     Get.to(() =>
@@ -216,12 +266,7 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                           albumName: "StatusSaver",
                                           toDcim: true).then((value) {
                                         fileController.allStatusImages.elementAt(index).isSaved = true;
-                                        // fileController.allStatusSaved.add(
-                                        //     FileModel(
-                                        //       filePath: fileController.allStatusImages.elementAt(index).filePath.replaceAll("%20"," "),
-                                        //       isSaved: fileController.allStatusImages.elementAt(index).isSaved,));
-                                        fileController.allStatusImages.refresh();
-                                        // fileController.allStatusSaved.refresh();
+                                       fileController.allStatusImages.refresh();
                                       });
                                       // ReusingWidgets.snackBar(context: context, text: "Image Saved");
                                       ReusingWidgets.toast(text: "Image Saved");
@@ -251,32 +296,49 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                     );
                   }
                   else {
-                    return RefreshIndicator(
-                      onRefresh: pullRefresh,
-                      child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(30),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(Assets.imagesPermission,
-                                    width: w, height: h / 3.5),
-                                SizedBox(height: 5),
-                                Text("You haven't seen any Status Yet!",style: ThemeTexts.textStyleTitle3,),
-                                SizedBox(height: 10),
-                                ReusingWidgets.allowPermissionButton(
-                                    onPress: () {
-                                      ReusingWidgets.toast(text: "Not Available");
+                    log("done5");
+
+                    checkAndroidVersion();
+                    createFolder();
+
+                    return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(Assets.imagesPermission,
+                                  width: w, height: h / 3.5),
+                              SizedBox(height: 5),
+                              Text("You haven't seen any Status Yet!",style: ThemeTexts.textStyleTitle3,),
+                              SizedBox(height: 10),
+                              ReusingWidgets.allowPermissionButton(
+                                    onPress: ()async {
+                                      try {
+                                        bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
+                                        if (isInstalled) {
+                                          DeviceApps.openApp("com.whatsapp").then((value){
+                                            ReusingWidgets.toast(text: "Opening WhatsApp...");
+                                          });
+                                        }
+                                        else {
+                                          launchUrl(Uri.parse("market://details?id=com.whatsapp"));
+                                        }
+                                      } catch (e) {
+                                        ReusingWidgets.toast(text: e.toString());
+                                      }
                                     },
-                                    context: context,
-                                    text: "Open WhatsApp"),
-                              ],
-                            ),
-                          )),
-                    );
+
+                                  context: context,
+                                  text: "Open WhatsApp"),
+                            ],
+                          ),
+                        ));
                   }
                 }
               else {
+                log("done6");
+
                 Future(() {
                   showDialog(
                     context: context,
@@ -318,15 +380,20 @@ class StatusImageScreenState extends State<StatusImageScreen> {
               }
               }
               else {
-                return ReusingWidgets.loadingAnimation();
+              log("done7");
+
+              return ReusingWidgets.loadingAnimation();
               }
           }
             else if (snapshot.hasError) {
-              ReusingWidgets.toast(text: snapshot.error.toString());
+            log("done8");
+
+            ReusingWidgets.toast(text: snapshot.error.toString());
               return Container();
               // return ReusingWidgets.circularProgressIndicator();
             }
             else {
+            log("done9");
             return ReusingWidgets.loadingAnimation();
             }
           // }
