@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 import 'dart:io';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
