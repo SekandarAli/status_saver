@@ -1,25 +1,26 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:developer';
 import 'dart:io';
-
 import 'package:device_apps/device_apps.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
+import 'package:status_saver/controller/active_app_controller.dart';
 import 'package:status_saver/generated/assets.dart';
 import 'package:status_saver/screens/whatsapp/status/statusImage/statusImageScreen.dart';
 import 'package:status_saver/screens/whatsapp/status/statusVideo/statusVideoScreen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import '../../../app_theme/color.dart';
 import '../../../app_theme/text_styles.dart';
 import '../../../bottomNavbar/bottomNavbarScreen.dart';
 import '../../../controller/fileController.dart';
 import '../../../model/fileModel.dart';
-import '../../home/homeScreen.dart';
 
 class StatusTabScreen extends StatefulWidget {
   const StatusTabScreen({Key? key}) : super(key: key);
@@ -29,57 +30,179 @@ class StatusTabScreen extends StatefulWidget {
 }
 
 class _StatusTabScreenState extends State<StatusTabScreen> {
+  int? androidSDK;
+  FileController fileController = Get.put(FileController());
 
   late List<String> imageList;
   late List<String> videoList;
   late List<String> savedList;
 
-  int? androidSDK;
-  FileController fileController = Get.put(FileController());
-
-  late Directory directoryPath ;
+  late Directory directoryPath;
   late Directory savedDirectory;
 
-  bool showWhatsAppIcon = true;
+//  int checkWhatsAppValue = 1;
+  late SharedPreferences pre;
 
-  checkAndroidVersion() async {
+  final ActiveAppController _activeAppController = Get.put(
+      ActiveAppController());
+
+  @override
+  void initState() {
+    super.initState();
+    getPrefs();
+    //   getValue();
+  }
+
+  /*getValue() async {
+     pre = await SharedPreferences.getInstance();
+    if (pre.getInt('statusValue') != null) {
+      print("aaaaaaaaaa");
+      checkWhatsAppValue = pre.getInt('statusValue')!;
+    } else {
+      print("aaaaaaaaaabbbbbbbb");
+      checkWhatsAppValue = 1;
+      // checkWhatsAppValue = pre.setInt('statusValue',1);
+    }
+    // setState(() {});
+  }*/
+  getPrefs() async {
+    pre =  await SharedPreferences.getInstance();
+   }
+
+  checkAndroidVersion(int newValue) async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
       androidSDK = androidInfo.version.sdkInt;
     });
     if (androidSDK! >= 30) {
-      print("Version Greater than 30");
-      try {
-        print("Version Greater");
-        directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-        getSelectedDetails();
-      }
-      catch (e) {
-        print("Error is $e");
+      // SharedPreferences pre = await SharedPreferences.getInstance();
+      // int? checkWhatsApp = pre.getInt("statusValue");
+      if (newValue == 1) {
+        try {
+          // checkWhatsAppValue = 1;
+
+          print("Version Greater");
+          directoryPath = Directory(
+              '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+          pre.setInt("statusValue", 1);
+          _activeAppController.changeActiveApp(1);
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No WhatsApp Found");
+          pre.setInt("statusValue", 2);
+        }
+      } else if (newValue == 2) {
+        try {
+          log("11111111111111");
+          // checkWhatsAppValue = 2;
+          pre.setInt("statusValue", 2);
+          log("222222222222");
+          directoryPath = Directory(
+              '/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+          log("3333333333333333");
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          log("444444444444444");
+          getSelectedDetails();
+          log("5555555555555555555");
+          _activeAppController.changeActiveApp(2);
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No Business WhatsApp Found");
+          pre.setInt("statusValue", 1);
+        }
+      } else if (newValue == 3) {
+        try {
+          // checkWhatsAppValue = 3;
+          pre.setInt("statusValue", 3);
+          directoryPath = Directory(
+              '/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+          _activeAppController.changeActiveApp(3);
+        }
+        catch (e) {
+          print("Error is $e");
+        }
+      } else {
+        print("ERROR 1111");
       }
     }
     else if (androidSDK! < 30) {
-      print("Version Less than 30");
-      try {
-        print("Version Less");
-        directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
-        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-        getSelectedDetails();
+      // SharedPreferences pre = await SharedPreferences.getInstance();
+      // int? checkWhatsApp = pre.getInt("statusValue");
+      if (newValue == 1) {
+        try {
+          // checkWhatsAppValue = 1;
+          pre.setInt("statusValue", 1);
+          directoryPath =
+              Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+          _activeAppController.changeActiveApp(1);
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No WhatsApp Found");
+          pre.setInt("statusValue", 2);
+        }
       }
-      catch (e) {
-        print("Error is $e");
+      else if (newValue == 2) {
+        try {
+          // checkWhatsAppValue = 2;
+          pre.setInt("statusValue", 2);
+          directoryPath = Directory(
+              '/storage/emulated/0/WhatsApp Business/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+          _activeAppController.changeActiveApp(2);
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No Business WhatsApp Found");
+          pre.setInt("statusValue", 1);
+        }
+      }
+      else if (newValue== 3) {
+        try {
+          // checkWhatsAppValue = 3;
+          pre.setInt("statusValue", 3);
+          directoryPath =
+              Directory('/storage/emulated/0/GB WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+          _activeAppController.changeActiveApp(3);
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No GB WhatsApp Found");
+        }
+      } else {
+        print("ERROR 2");
       }
     }
-    else{
+    else {
       print("ERROR");
     }
+    setState(() {
+
+    });
   }
 
-  getSelectedDetails(){
-    imageList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
-    videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
-    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
+  getSelectedDetails() {
+    imageList =
+        directoryPath.listSync().map((item) => item.path).where((item) =>
+            item.endsWith('.jpg')).toList(growable: false);
+    videoList =
+        directoryPath.listSync().map((item) => item.path).where((item) =>
+            item.endsWith('.mp4')).toList(growable: false);
+    savedList =
+        savedDirectory.listSync().map((item) => item.path).where((item) =>
+        item
+            .endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
     getImageData();
     getVideoData();
   }
@@ -89,11 +212,24 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
     if (imageList.isNotEmpty) {
       for (var element in imageList) {
         // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+        if (savedList.map((e) =>
+            e
+                .split("StatusSaver/")
+                .last
+                .split(".")
+                .first
+                .toString()).
+        contains(element
+            .split(".Statuses/")
+            .last
+            .split(".")
+            .first)) {
+          fileController.allStatusImages.add(
+              FileModel(filePath: element, isSaved: true));
         } else {
           // print("ELSE${element.substring(72,104)}");
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          fileController.allStatusImages.add(
+              FileModel(filePath: element, isSaved: false));
         }
       }
     }
@@ -104,10 +240,23 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
     if (videoList.isNotEmpty) {
       for (var element in videoList) {
         // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+        if (savedList.map((e) =>
+            e
+                .split("StatusSaver/")
+                .last
+                .split(".")
+                .first
+                .toString())
+            .contains(element
+            .split(".Statuses/")
+            .last
+            .split(".")
+            .first)) {
+          fileController.allStatusVideos.add(
+              FileModel(filePath: element, isSaved: true));
         } else {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+          fileController.allStatusVideos.add(
+              FileModel(filePath: element, isSaved: false));
         }
       }
     }
@@ -115,126 +264,222 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return DefaultTabController(
       initialIndex: 0,
       length: 2,
       child: Scaffold(
         backgroundColor: ColorsTheme.primaryColor,
         appBar: AppBar(
-          title: Text('Status Saver',style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.white,letterSpacing: 1),),
+          title: Text(
+            'Status Saver',
+            style: ThemeTexts.textStyleTitle2
+                .copyWith(color: ColorsTheme.white, letterSpacing: 1),
+          ),
           automaticallyImplyLeading: false,
-          // centerTitle: true,
-          // leading: IconButton(
-          //   icon: Icon(Icons.arrow_back_ios),
-          //   color: ColorsTheme.white,
-          //   onPressed: (){
-          //     Get.offAll(()=>HomeScreen());
-          //   },
-          // ),
           leading: InkWell(
-              onTap: (){
-                if(scaffoldKey.currentState!.isDrawerOpen){
+              onTap: () {
+                if (scaffoldKey.currentState!.isDrawerOpen) {
                   scaffoldKey.currentState!.closeDrawer();
-                }
-                else{
+                } else {
                   scaffoldKey.currentState!.openDrawer();
                 }
               },
               child: Icon(Icons.menu)),
           actions: [
-
-
-            Visibility(
-              visible: showWhatsAppIcon,
-              child: Tooltip(
-                message: "Open Business WhatsApp",
-                child: GestureDetector(
-                    onTap: ()async {
-                    //   try {
-                    //   bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
-                    //   if (isInstalled) {
-                    //     DeviceApps.openApp("com.whatsapp.w4b").then((value){
-                    //       ReusingWidgets.toast(text: "Opening Business WhatsApp...");
-                    //     });
-                    //   }
-                    //   else {
-                    //     launchUrl(Uri.parse("market://details?id=com.whatsapp.w4b"));
-                    //   }
-                    // } catch (e) {
-                    //     ReusingWidgets.toast(text: e.toString());
-                    //   }
-
-                      try{
-                        directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-                        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-                        // await checkAndroidVersion();
-                        await getSelectedDetails();
-                        showWhatsAppIcon = false;
-                        setState(() {});
-                      }
-                      catch(e){
-                        // ReusingWidgets.toast(text: e.toString());
-                        ReusingWidgets.toast(text: "No WhatsApp Business Found");
-                        print(e);
-                      }
-                    },
-                    child: Image.asset(Assets.imagesWhatsappBusinessIcon,height: 30,width: 30,)),
-              ),
-            ),
-
+            Obx(() {
+              return Visibility(
+                visible: _activeAppController.activeApp.value == 1,
+                child: Tooltip(
+                  message: "Open WhatsApp",
+                  child: GestureDetector(
+                      onTap: () async {
+                        try {
+                          bool isInstalled =
+                          await DeviceApps.isAppInstalled('com.whatsapp');
+                          if (isInstalled) {
+                            DeviceApps.openApp("com.whatsapp").then((value) {
+                              ReusingWidgets.toast(text: "Opening WhatsApp...");
+                            });
+                          } else {
+                            launchUrl(Uri.parse(
+                                "market://details?id=com.whatsapp"));
+                          }
+                        } catch (e) {
+                          ReusingWidgets.toast(text: e.toString());
+                        }
+                        // setState(() {});
+                      },
+                      child: Image.asset(
+                        Assets.imagesWhatsappIcon,
+                        height: 25,
+                        width: 25,
+                      )),
+                ),
+              );
+            }),
+            Obx(() {
+              return Visibility(
+                visible: _activeAppController.activeApp.value == 2,
+                child: Tooltip(
+                  message: "Open Business WhatsApp",
+                  child: GestureDetector(
+                      onTap: () async {
+                        try {
+                          bool isInstalled = await DeviceApps.isAppInstalled(
+                              'com.whatsapp.w4b');
+                          if (isInstalled) {
+                            DeviceApps.openApp("com.whatsapp.w4b").then((
+                                value) {
+                              ReusingWidgets.toast(
+                                  text: "Opening Business WhatsApp...");
+                            });
+                          } else {
+                            launchUrl(
+                                Uri.parse(
+                                    "market://details?id=com.whatsapp.w4b"));
+                          }
+                        } catch (e) {
+                          ReusingWidgets.toast(text: e.toString());
+                        }
+                        // setState(() {});
+                      },
+                      child: Image.asset(
+                        Assets.imagesWhatsappBusinessIcon,
+                        height: 25,
+                        width: 25,
+                      )),
+                ),
+              );
+            }),
             // SizedBox(width: 10),
+           PopupMenuButton(
+                icon: Icon(
+                  Icons.add_circle,
+                  color: ColorsTheme.white,
+                ),
+                itemBuilder: (context) =>
+                [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          Assets.imagesWhatsappIcon,
+                          width: 25,
+                          height: 25,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("WhatsApp"),
+                        Spacer(),
+                        Image.asset(
+                          _activeAppController.activeApp.value == 1 ? Assets
+                              .imagesCheck : Assets.imagesUnCheck,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          Assets.imagesWhatsappBusinessIcon,
+                          width: 25,
+                          height: 25,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("Business WhatsApp"),
+                        Spacer(),
+                        Image.asset(
+                          _activeAppController.activeApp.value == 2 ? Assets
+                              .imagesCheck : Assets.imagesUnCheck,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 3,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          Assets.imagesGbWhatsappIcon,
+                          width: 25,
+                          height: 25,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("GB WhatsApp"),
+                        Spacer(),
+                        Obx(() {
+                          return Image.asset(
+                            _activeAppController.activeApp.value == 3 ? Assets
+                                .imagesCheck : Assets.imagesUnCheck,
+                            width: 20,
+                            height: 20,
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ],
+                offset: Offset(0, 50),
+                elevation: 2,
+                onSelected: (value) async {
 
-            Visibility(
-              visible: !showWhatsAppIcon,
-              child: Tooltip(
-                message: "Open WhatsApp",
-                child: GestureDetector(
-                    onTap: ()async {
-                      // try {
-                      //   bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
-                      //   if (isInstalled) {
-                      //     DeviceApps.openApp("com.whatsapp").then((value){
-                      //       ReusingWidgets.toast(text: "Opening WhatsApp...");
-                      //     });
-                      //   }
-                      //   else {
-                      //     launchUrl(Uri.parse("market://details?id=com.whatsapp"));
-                      //   }
-                      // } catch (e) {
-                      //   ReusingWidgets.toast(text: e.toString());
-                      // }
+                  if (value == 1) {
+                    try {
+                      // SharedPreferences pre = await SharedPreferences.getInstance();
+                    //  pre.setInt("statusValue", 1);
+
+                      await checkAndroidVersion(1);
+
+                    } catch (e) {
+                      ReusingWidgets.toast(text: "No WhatsApp Found");
+                      print("eeeeeeeeeee $e");
+                    }
+                  } else if (value == 2) {
+                    try {
+                      print("aaaaaaaaaaaaa");
+                      // SharedPreferences pre = await SharedPreferences.getInstance();
+                     // pre.setInt("statusValue", 2);
+
+                      await checkAndroidVersion(2);
+
+                    } catch (e) {
+                      // ReusingWidgets.toast(text: e.toString());
+                      ReusingWidgets.toast(text: "No WhatsApp Business Found");
+                      print("eeeeeeeeeee $e");
+                      // _activeAppController.changeActiveApp(1);
+                    }
+                  } else if (value == 3) {
+                    // setState(() {
+                    //   checkWhatsAppValue = 3;
+                    // });
+                    // pre.setInt("statusValue", 3);
+                    ReusingWidgets.toast(text: "Not Available");
+                  }
+                },
+              )
 
 
-
-                      try{
-                        directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-                        // directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
-                        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-                        // await checkAndroidVersion();
-                        await getSelectedDetails();
-                        showWhatsAppIcon = true;
-                        setState(() {});
-                      }
-                      catch(e){
-                        // ReusingWidgets.toast(text: e.toString());
-                        ReusingWidgets.toast(text: "No WhatsApp Found");
-                        print(e);
-                      }
-                    },
-                    child: Image.asset(Assets.imagesWhatsappIcon,height: 30,width: 30,)),
-              ),
-            ),
-            SizedBox(width: 10),
           ],
           backgroundColor: ColorsTheme.primaryColor,
           elevation: 0,
           bottom: TabBar(
             unselectedLabelColor: ColorsTheme.lightWhite,
             labelColor: ColorsTheme.white,
-            indicatorColor: ColorsTheme.white,
+            indicatorColor: ColorsTheme.lightWhite,
             labelPadding: EdgeInsets.symmetric(horizontal: 2),
-            indicatorWeight: 8,
+            indicatorWeight: 3,
             tabs: [
               Tab(text: "IMAGES"),
               Tab(text: "VIDEOS"),
@@ -252,10 +497,4 @@ class _StatusTabScreenState extends State<StatusTabScreen> {
       ),
     );
   }
-}
-
-class Item {
-  const Item(this.name,this.icon);
-  final String name;
-  final Icon icon;
 }

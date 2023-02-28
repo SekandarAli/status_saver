@@ -40,9 +40,9 @@ class _SavedTabScreenState extends State<SavedTabScreen> {
           bottom: TabBar(
             unselectedLabelColor: ColorsTheme.lightWhite,
             labelColor: ColorsTheme.white,
-            indicatorColor: ColorsTheme.white,
+            indicatorColor: ColorsTheme.lightWhite,
             labelPadding: EdgeInsets.symmetric(horizontal: 2),
-            indicatorWeight: 8,
+            indicatorWeight: 3,
             tabs: [
               Tab(text: "IMAGES"),
               Tab(text: "VIDEOS"),

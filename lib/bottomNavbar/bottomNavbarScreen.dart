@@ -24,18 +24,18 @@ class BottomNavBarScreen extends StatefulWidget {
 GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProviderStateMixin{
 
-  late List<String> imageList;
-  late List<String> videoList;
-  late List<String> savedList;
-
-  late Directory directoryPath ;
-  late Directory savedDirectory;
-  final FileController fileController = Get.put(FileController());
-
-  int? androidSDK;
-
+  // late List<String> imageList;
+  // late List<String> videoList;
+  // late List<String> savedList;
+  //
+  // late Directory directoryPath ;
+  // late Directory savedDirectory;
+  // final FileController fileController = Get.put(FileController());
+  //
+  // int? androidSDK;
+  //
   int tabIndex = 0;
-  late TabController tabController = TabController(length: 3, vsync: this,animationDuration: Duration(microseconds: 1));
+  late TabController tabController = TabController(length: 2, vsync: this,animationDuration: Duration(microseconds: 1));
 
   @override
   void initState() {
@@ -60,107 +60,107 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
         });
       }
     });
-    createFolder();
-    checkAndroidVersion();
+    // createFolder();
+    // checkAndroidVersion();
   }
 
 
-  checkAndroidVersion() async {
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    setState(() {
-      androidSDK = androidInfo.version.sdkInt;
-    });
-    if (androidSDK! >= 30) {
-      print("Version Greater than 30");
-      try {
-        print("Version Greater");
-        directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-        getSelectedDetails();
-      }
-      catch (e) {
-        print("Error is $e");
-        //
-        // ReusingWidgets.toast(text: e.toString());
-        // print(e);
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => NoWhatsAppFound(
-        //       text: "WhatsApp",
-        //       packageName: "com.whatsapp",
-        //       packageUrl: "market://details?id=com.whatsapp",
-        //     )));
-      }
-    }
-    else if (androidSDK! < 30) {
-      print("Version Less than 30");
-      try {
-        print("Version Less");
-        directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
-        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-        getSelectedDetails();
-      }
-      catch (e) {
-        print("Error is $e");
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => NoWhatsAppFound(
-        //       text: "WhatsApp",
-        //       packageName: "com.whatsapp",
-        //       packageUrl: "market://details?id=com.whatsapp",
-        //     )));
-      }
-    }
+  // checkAndroidVersion() async {
+  //   final androidInfo = await DeviceInfoPlugin().androidInfo;
+  //   setState(() {
+  //     androidSDK = androidInfo.version.sdkInt;
+  //   });
+  //   if (androidSDK! >= 30) {
+  //     print("Version Greater than 30");
+  //     try {
+  //       print("Version Greater");
+  //       directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+  //       savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+  //       getSelectedDetails();
+  //     }
+  //     catch (e) {
+  //       print("Error is $e");
+  //       //
+  //       // ReusingWidgets.toast(text: e.toString());
+  //       // print(e);
+  //       // Navigator.push(context,
+  //       //     MaterialPageRoute(builder: (context) => NoWhatsAppFound(
+  //       //       text: "WhatsApp",
+  //       //       packageName: "com.whatsapp",
+  //       //       packageUrl: "market://details?id=com.whatsapp",
+  //       //     )));
+  //     }
+  //   }
+  //   else if (androidSDK! < 30) {
+  //     print("Version Less than 30");
+  //     try {
+  //       print("Version Less");
+  //       directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
+  //       savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+  //       getSelectedDetails();
+  //     }
+  //     catch (e) {
+  //       print("Error is $e");
+  //       // Navigator.push(context,
+  //       //     MaterialPageRoute(builder: (context) => NoWhatsAppFound(
+  //       //       text: "WhatsApp",
+  //       //       packageName: "com.whatsapp",
+  //       //       packageUrl: "market://details?id=com.whatsapp",
+  //       //     )));
+  //     }
+  //   }
+  //
+  //   else{
+  //     print("ERROR");
+  //   }
+  // }
 
-    else{
-      print("ERROR");
-    }
-  }
+  // createFolder() async {
+  //   const folderName = "StatusSaver";
+  //   final path = Directory('/storage/emulated/0/DCIM/$folderName');
+  //   if ((await path.exists())) {
+  //     // savedDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
+  //     print("Path Exist");
+  //   }
+  //   else {
+  //     path.create();
+  //   }
+  // }
 
-  createFolder() async {
-    const folderName = "StatusSaver";
-    final path = Directory('/storage/emulated/0/DCIM/$folderName');
-    if ((await path.exists())) {
-      // savedDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
-      print("Path Exist");
-    }
-    else {
-      path.create();
-    }
-  }
+  // getSelectedDetails(){
+  //   imageList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
+  //   videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
+  //   savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
+  //   getImageData();
+  //   getVideoData();
+  // }
 
-  getSelectedDetails(){
-    imageList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
-    videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
-    savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
-    getImageData();
-    getVideoData();
-  }
+  // getImageData() {
+  //   fileController.allStatusImages.value = [];
+  //   if (imageList.isNotEmpty) {
+  //     for (var element in imageList) {
+  //       if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+  //         fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+  //       } else {
+  //         // print("ELSE${element.substring(72,104)}");
+  //         fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+  //       }
+  //     }
+  //   }
+  // }
 
-  getImageData() {
-    fileController.allStatusImages.value = [];
-    if (imageList.isNotEmpty) {
-      for (var element in imageList) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-        } else {
-          // print("ELSE${element.substring(72,104)}");
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
-        }
-      }
-    }
-  }
-
-  getVideoData() {
-    fileController.allStatusVideos.value = [];
-    if (videoList.isNotEmpty) {
-      for (var element in videoList) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-        } else {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
-        }
-      }
-    }
-  }
+  // getVideoData() {
+  //   fileController.allStatusVideos.value = [];
+  //   if (videoList.isNotEmpty) {
+  //     for (var element in videoList) {
+  //       if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
+  //         fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+  //       } else {
+  //         fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -229,24 +229,24 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: InkWell(
-                        onTap: () {
-                          tabIndex = 2;
-                          tabController.index = tabIndex;
-                        },
-                        child: bottomWidget(
-                          2,
-                          "Settings",
-                          Icons.settings,
-                          Icons.settings_outlined,
-                        )),
-                  ),
+                  // Expanded(
+                  //   child: InkWell(
+                  //       onTap: () {
+                  //         tabIndex = 2;
+                  //         tabController.index = tabIndex;
+                  //       },
+                  //       child: bottomWidget(
+                  //         2,
+                  //         "Settings",
+                  //         Icons.settings,
+                  //         Icons.settings_outlined,
+                  //       )),
+                  // ),
                 ],
               ),
             )),
         body: DefaultTabController(
-          length: 3,
+          length: 2,
           child: Scaffold(
             body: Column(
               children: [
@@ -267,12 +267,12 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                         alignment: Alignment.center,
                         child: SavedTabScreen(),
                       ),
-                      Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        alignment: Alignment.center,
-                        child: SettingScreen(),
-                      ),
+                      // Container(
+                      //   width: double.infinity,
+                      //   height: double.infinity,
+                      //   alignment: Alignment.center,
+                      //   child: SettingScreen(),
+                      // ),
                     ],
                   ),
                 ),

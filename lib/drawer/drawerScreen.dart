@@ -49,7 +49,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
 
     return SafeArea(
       child: SizedBox(
-        width: w / 1.5,
+        width: w / 1.7,
         height: h,
         child: Drawer(
           child: ListView(
@@ -61,22 +61,22 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     child: Image.asset(
                         Assets.imagesDrawerbg, 
                         fit: BoxFit.fill, 
-                        width: w / 1.5,
+                        width: w / 1.7,
                         height: 160,
                         color: ColorsTheme.primaryColor.withOpacity(1)
                       // height: h * 0.4,
                     ),
                   ),
                   Container(
-                    width: w / 1.5,
+                    width: w / 1.7,
                     height: 160,
                     decoration: BoxDecoration(
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Image.asset(Assets.imagesWhatsappIcon,width:  w * 0.22,),
-                        Text('Status Saver',style: ThemeTexts.textStyleTitle1.copyWith(color: Colors.white,letterSpacing: 2,fontWeight: FontWeight.w300),),
+                        Image.asset(Assets.imagesGbWhatsappIcon,width:  w * 0.20,color: ColorsTheme.white,),
+                        Text('Status Saver',style: ThemeTexts.textStyleTitle2.copyWith(color: Colors.white,letterSpacing: 2,fontWeight: FontWeight.w500),),
                       ],
                     ),
                   ),
@@ -122,7 +122,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
   }){
     return Text(
       text,
-      style: ThemeTexts.textStyleTitle2.copyWith(color: Colors.black,fontSize: 12,fontWeight: FontWeight.normal),
+      style: ThemeTexts.textStyleTitle3.copyWith(color: Colors.black,fontWeight: FontWeight.normal),
     );
   }
   Icon iconStyle({

@@ -1,15 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, must_be_immutable
 
 import 'dart:io';
-
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -117,30 +113,30 @@ class ReusingWidgets {
     );
   }
 
-  static AwesomeDialog dialogueAnimated({
-    required BuildContext context,
-    required DialogType dialogType,
-    required Color color,
-    required String title,
-    required String desc,
-  }) {
-    return AwesomeDialog(
-      context: context,
-      animType: AnimType.scale,
-      dialogBackgroundColor: color,
-      dialogType: dialogType,
-      dismissOnBackKeyPress: true,
-      dismissOnTouchOutside: true,
-      autoDismiss: true,
-      title: title,
-      titleTextStyle:
-      TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      desc: desc,
-      descTextStyle: TextStyle(color: Colors.white),
-      autoHide: Duration(milliseconds: 2000),
-    )
-      ..show();
-  }
+  // static AwesomeDialog dialogueAnimated({
+  //   required BuildContext context,
+  //   required DialogType dialogType,
+  //   required Color color,
+  //   required String title,
+  //   required String desc,
+  // }) {
+  //   return AwesomeDialog(
+  //     context: context,
+  //     animType: AnimType.scale,
+  //     dialogBackgroundColor: color,
+  //     dialogType: dialogType,
+  //     dismissOnBackKeyPress: true,
+  //     dismissOnTouchOutside: true,
+  //     autoDismiss: true,
+  //     title: title,
+  //     titleTextStyle:
+  //     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+  //     desc: desc,
+  //     descTextStyle: TextStyle(color: Colors.white),
+  //     autoHide: Duration(milliseconds: 2000),
+  //   )
+  //     ..show();
+  // }
 
   static circularProgressIndicator() {
     return Center(
@@ -235,7 +231,8 @@ class ReusingWidgets {
                 children: [
                   Expanded(
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.05,
+                      // height: MediaQuery.of(context).size.height * 0.05,
+                      height: 35,
                       color: ColorsTheme.primaryColor.withOpacity(0.6),
                       // color:  ColorsTheme.black,
                       child: IconButton(
@@ -253,7 +250,8 @@ class ReusingWidgets {
                   // SizedBox(width: 1),
                   Expanded(
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.05,
+                      // height: MediaQuery.of(context).size.height * 0.05,
+                      height: 35,
                       color: ColorsTheme.black.withOpacity(0.6),
                       // color:  ColorsTheme.black,
                       child: IconButton(
@@ -472,61 +470,61 @@ class ReusingWidgets {
         ));
   }
 
-  static Widget newHomeCard({
-    required BuildContext context,
-    required String title,
-    required String imageIcon,
-    required Function() onTap,
-  }){
-    return InkWell(
-      onTap: (){
-        onTap();
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: 10,right: 10,bottom: 10,top: 10),
-        decoration: BoxDecoration(
-          color: ColorsTheme.white,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 40,
-              spreadRadius: 10,
-            ),
-          ],
-        ),
-        child: AnimationConfiguration.staggeredGrid(
-          duration: Duration(milliseconds: 500),
-          columnCount: 1,
-          position: 1,
-          child: ScaleAnimation(
-            duration: Duration(milliseconds: 900),
-            curve: Curves.fastLinearToSlowEaseIn,
-            scale: 5,
-            child: FadeInAnimation(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    imageIcon,
-                    fit: BoxFit.cover,
-                    width:  MediaQuery.of(context).size.width * 0.15,
-                    height:  MediaQuery.of(context).size.width * 0.15,
-                  ),
-                  SizedBox(height: 10),
-                  Text(title,
-                      style: ThemeTexts.textStyleTitle3.copyWith(
-                          color: ColorsTheme.textColor,
-                          fontWeight: FontWeight.w400),textAlign: TextAlign.center,),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // static Widget newHomeCard({
+  //   required BuildContext context,
+  //   required String title,
+  //   required String imageIcon,
+  //   required Function() onTap,
+  // }){
+  //   return InkWell(
+  //     onTap: (){
+  //       onTap();
+  //     },
+  //     child: Container(
+  //       margin: EdgeInsets.only(left: 10,right: 10,bottom: 10,top: 10),
+  //       decoration: BoxDecoration(
+  //         color: ColorsTheme.white,
+  //         borderRadius: BorderRadius.all(Radius.circular(20)),
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: Colors.black.withOpacity(0.1),
+  //             blurRadius: 40,
+  //             spreadRadius: 10,
+  //           ),
+  //         ],
+  //       ),
+  //       child: AnimationConfiguration.staggeredGrid(
+  //         duration: Duration(milliseconds: 500),
+  //         columnCount: 1,
+  //         position: 1,
+  //         child: ScaleAnimation(
+  //           duration: Duration(milliseconds: 900),
+  //           curve: Curves.fastLinearToSlowEaseIn,
+  //           scale: 5,
+  //           child: FadeInAnimation(
+  //             child: Column(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               crossAxisAlignment: CrossAxisAlignment.center,
+  //               children: [
+  //                 Image.asset(
+  //                   imageIcon,
+  //                   fit: BoxFit.cover,
+  //                   width:  MediaQuery.of(context).size.width * 0.15,
+  //                   height:  MediaQuery.of(context).size.width * 0.15,
+  //                 ),
+  //                 SizedBox(height: 10),
+  //                 Text(title,
+  //                     style: ThemeTexts.textStyleTitle3.copyWith(
+  //                         color: ColorsTheme.textColor,
+  //                         fontWeight: FontWeight.w400),textAlign: TextAlign.center,),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   static Future<String?> exitDialogueBox({
     required BuildContext context,

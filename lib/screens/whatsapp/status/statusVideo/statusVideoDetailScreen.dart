@@ -41,7 +41,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
   @override
   Widget build(BuildContext context) {
 
-    log("aaaaaaaaa${fileController.allStatusVideos.elementAt(widget.indexNo).isSaved.toString()}");
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -90,7 +90,6 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
               visible: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved,
               child: IconButton(
                   onPressed: () {
-                    // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
                     ReusingWidgets.toast(text: "Video Already Saved");
                   }, icon: Icon(Icons.done,color: ColorsTheme.doneColor,)),
             )
@@ -104,8 +103,9 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
                     albumName: "StatusSaver",toDcim: true ).then((value) =>
                 fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
                 fileController.allStatusVideos.refresh();
-                // ReusingWidgets.snackBar(context: context, text: "Video Saved");
-                ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState((){}));
+                ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState((){
+                  fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true;
+                }));
               }, icon: Icon(Icons.save_alt)),
             )
           )

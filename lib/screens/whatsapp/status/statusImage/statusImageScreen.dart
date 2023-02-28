@@ -9,6 +9,7 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
@@ -38,7 +39,118 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   late Directory directoryPath ;
   late Directory savedDirectory;
 
+  int checkWhatsAppValue = 1;
 
+  checkAndroidVersion() async {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    setState(() {
+      androidSDK = androidInfo.version.sdkInt;
+    });
+    if (androidSDK! >= 30) {
+      SharedPreferences pre = await SharedPreferences.getInstance();
+      // int? checkWhatsApp = pre.getInt("statusValue");
+      if (checkWhatsAppValue == 1) {
+        try {
+          // checkWhatsAppValue = 1;
+          pre.setInt("statusValue", 1);
+          print("Version Greater");
+          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No WhatsApp Found");
+          pre.setInt("statusValue", 2);
+        }
+      } else if (checkWhatsAppValue == 2) {
+        try {
+          // checkWhatsAppValue = 2;
+          pre.setInt("statusValue", 2);
+          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No Business WhatsApp Found");
+          pre.setInt("statusValue", 1);
+        }
+      } else if (checkWhatsAppValue == 3) {
+        try {
+          // checkWhatsAppValue = 3;
+          pre.setInt("statusValue", 3);
+          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+        }
+        catch (e) {
+          print("Error is $e");
+        }
+      } else {
+        print("ERROR 1111222222");
+      }
+    }
+    else if (androidSDK! < 30) {
+      SharedPreferences pre = await SharedPreferences.getInstance();
+      // int? checkWhatsApp = pre.getInt("statusValue");
+      if (checkWhatsAppValue == 1) {
+        try {
+          // checkWhatsAppValue = 1;
+          pre.setInt("statusValue", 1);
+          directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No WhatsApp Found");
+          pre.setInt("statusValue", 2);
+        }
+      }
+      else if (checkWhatsAppValue == 2) {
+        try {
+          // checkWhatsAppValue = 2;
+          pre.setInt("statusValue", 2);
+          directoryPath = Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No Business WhatsApp Found");
+          pre.setInt("statusValue", 1);
+        }
+      }
+      else if (checkWhatsAppValue == 3) {
+        try {
+          // checkWhatsAppValue = 3;
+          pre.setInt("statusValue", 3);
+          directoryPath = Directory('/storage/emulated/0/GB WhatsApp/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No GB WhatsApp Found");
+        }
+      } else {
+        print("ERROR 2");
+      }
+    } else {
+      print("ERROR");
+    }
+  }
+
+  getValue() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    if (_prefs.getInt('statusValue') != null) {
+      checkWhatsAppValue = _prefs.getInt('statusValue')!;
+    } else {
+      checkWhatsAppValue = 1;
+    }
+    setState(() {});
+  }
 
   createFolder() async {
     const folderName = "StatusSaver";
@@ -49,40 +161,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     }
     else {
       path.create();
-    }
-  }
-
-  checkAndroidVersion() async {
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    setState(() {
-      androidSDK = androidInfo.version.sdkInt;
-    });
-    if (androidSDK! >= 30) {
-      print("Version Greater than 30");
-      try {
-        print("Version Greater");
-        directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-        getSelectedDetails();
-      }
-      catch (e) {
-        print("Error is $e");
-      }
-    }
-    else if (androidSDK! < 30) {
-      print("Version Less than 30");
-      try {
-        print("Version Less");
-        directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
-        savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-        getSelectedDetails();
-      }
-      catch (e) {
-        print("Error is $e");
-      }
-    }
-    else{
-      print("ERROR");
     }
   }
 
@@ -121,7 +199,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
       }
     }
   }
-
 
   Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -167,10 +244,9 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   @override
   void initState() {
     super.initState();
-
-    print("done");
-    checkAndroidVersion();
-
+    print("Status Image Screen");
+    getValue();
+    // checkAndroidVersion();
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
       int finalPermission;
