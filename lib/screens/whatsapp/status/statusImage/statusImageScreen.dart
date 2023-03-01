@@ -301,6 +301,14 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   void initState() {
     super.initState();
     print("Status Image Screen");
+
+    // Future.delayed(Duration(seconds: 3), () {
+    //   if (mounted)
+    //     setState(() {
+    //       showLoading = !showLoading;
+    //     });
+    // });
+
     getPrefs();
 
     log("aaaaaaaaaa${_activeAppController.activeApp.value.toString()}");

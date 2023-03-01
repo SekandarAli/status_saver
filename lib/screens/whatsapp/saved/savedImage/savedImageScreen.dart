@@ -35,8 +35,18 @@ class SavedImageScreenState extends State<SavedImageScreen> {
 
   @override
   void initState() {
-
     log("checkkkkkkkkk");
+    getDetails();
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant SavedImageScreen oldWidget){
+    getDetails();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  getDetails(){
 
     savedImagesDirectory = _activeAppController.activeApp.value == 1 ?
     Directory('/storage/emulated/0/DCIM/StatusSaver/') :
@@ -63,8 +73,6 @@ class SavedImageScreenState extends State<SavedImageScreen> {
       }
       return finalPermission;
     })();
-
-    super.initState();
   }
 
   Future<int> loadPermission() async {
@@ -122,11 +130,14 @@ class SavedImageScreenState extends State<SavedImageScreen> {
     if (Directory(savedImagesDirectory!.path).existsSync()) {
       final imageList = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
       if (imageList.isNotEmpty) {
+
+        log("message");
         return Scaffold(
           backgroundColor: ColorsTheme.backgroundColor,
           body: FutureBuilder(
               future: storagePermissionChecker,
               builder: (context, snapshot) {
+                log("futureBuilder");
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
                     return Container(
@@ -161,6 +172,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                                 icon: Icons.delete,
                                 color: ColorsTheme.dismissColor,
                                 onSharePress: (){
+
                                   Share.shareXFiles(
                                     text: "Have a look on this Status",
                                     [XFile(Uri.parse(imageList[index]).path)],

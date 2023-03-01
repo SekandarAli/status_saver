@@ -29,12 +29,21 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
 
   @override
   void initState() {
+    log("checkkkkkkkkk");
+    getDetails();
+    super.initState();
+  }
 
+  @override
+  void didUpdateWidget(covariant SavedVideoScreen oldWidget){
+    getDetails();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  getDetails(){
     savedImagesDirectory = _activeAppController.activeApp.value == 1 ?
     Directory('/storage/emulated/0/DCIM/StatusSaver/') :
     Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
-
-    super.initState();
   }
 
   Future<void> deleteFile(File file) async {

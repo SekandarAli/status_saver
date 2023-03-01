@@ -57,20 +57,21 @@ class _DrawerScreenState extends State<DrawerScreen> {
             children: [
               Stack(
                 children: [
-                  Positioned(
-                    child: Image.asset(
-                        Assets.imagesDrawerbg, 
-                        fit: BoxFit.fill, 
-                        width: w / 1.7,
-                        height: 160,
-                        color: ColorsTheme.primaryColor.withOpacity(1)
-                      // height: h * 0.4,
-                    ),
-                  ),
+                  // Positioned(
+                  //   child: Image.asset(
+                  //       Assets.imagesDrawerbg,
+                  //       fit: BoxFit.fill,
+                  //       width: w / 1.7,
+                  //       height: 160,
+                  //       color: ColorsTheme.primaryColor.withOpacity(1)
+                  //     // height: h * 0.4,
+                  //   ),
+                  // ),
                   Container(
                     width: w / 1.7,
                     height: 160,
                     decoration: BoxDecoration(
+                        color: ColorsTheme.primaryColor.withOpacity(1)
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

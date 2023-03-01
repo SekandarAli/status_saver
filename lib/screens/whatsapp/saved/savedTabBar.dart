@@ -55,7 +55,7 @@ class _SavedTabScreenState extends State<SavedTabScreen> {
   }
 
   checkAndroidVersion(int newValue) async {
-    log("qqqqqqqqqqq");
+    log("11111111");
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
       androidSDK = androidInfo.version.sdkInt;
@@ -159,15 +159,14 @@ class _SavedTabScreenState extends State<SavedTabScreen> {
     else {
       print("ERROR");
     }
-    log("iiiiiiiiiiiiii ${  _activeAppController.activeApp.value}");
+    log("666666666 ${  _activeAppController.activeApp.value}");
     // setState(() {
     //
     // });
   }
 
-
   getSelectedDetails() {
-    imageList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
+    imageList =directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
     videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
     getImageData();
@@ -175,18 +174,20 @@ class _SavedTabScreenState extends State<SavedTabScreen> {
   }
 
   getImageData() {
-    log("44444444444");
+    log("kkkkk");
     fileController.allStatusImages.value = [];
     if (imageList.isNotEmpty) {
       for (var element in imageList) {
         // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
-
         if (_activeAppController.activeApp.value == 1){
           if (savedList.map((e) =>
               e.split("StatusSaver/").last.split(".").first.toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
+
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
           } else {
+            // print("ELSE${element.substring(72,104)}");
+
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
           }
         }else if(_activeAppController.activeApp.value == 2){
@@ -195,12 +196,15 @@ class _SavedTabScreenState extends State<SavedTabScreen> {
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
           } else {
+            // print("ELSE${element.substring(72,104)}");
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
           }
         }
+
       }
     }
   }
+
 
   getVideoData() {
     fileController.allStatusVideos.value = [];
@@ -416,6 +420,7 @@ class _SavedTabScreenState extends State<SavedTabScreen> {
                 } else if (value == 3) {
                   ReusingWidgets.toast(text: "Not Available");
                 }
+
               },
             )
 
