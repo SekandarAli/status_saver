@@ -11,6 +11,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
 import '../../../../app_theme/text_styles.dart';
+import '../../../../controller/active_app_controller.dart';
 import '../../../../controller/fileController.dart';
 
 class SavedVideoScreen extends StatefulWidget {
@@ -23,10 +24,16 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
 
   Directory? savedImagesDirectory;
   FileController fileController = Get.put(FileController());
+  final ActiveAppController _activeAppController = Get.put(ActiveAppController());
+
 
   @override
   void initState() {
-    savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+
+    savedImagesDirectory = _activeAppController.activeApp.value == 1 ?
+    Directory('/storage/emulated/0/DCIM/StatusSaver/') :
+    Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
+
     super.initState();
   }
 
@@ -102,7 +109,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                   );
                                 },
                                 onDownloadDeletePress: (){
-                                    // deleteFile(File(videoList[index]));
+                                  //   deleteFile(File(videoList[index]));
                                   // setState(() {
                                   //   File(videoList[index]).delete();
                                   //   fileController.allStatusVideos.elementAt(index).isSaved = false;
@@ -111,6 +118,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                   //   // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
                                   // });
 
+                                  _activeAppController.activeApp.value == 1 ?
                                   setState(() {
                                     File(videoList[index]).delete();
                                     for (var element in fileController.allStatusVideos) {
@@ -119,7 +127,27 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                         element.isSaved = false;
                                       }
                                     }
+                                  }) :
+                                  setState(() {
+                                    File(videoList[index]).delete();
+                                    for (var element in fileController.allStatusVideos) {
+                                      if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                                      contains(File(videoList[index]).toString().split("StatusSaverBusiness/").last.split(".").first)){
+                                        element.isSaved = false;
+                                      }
+                                    }
                                   });
+                                  // ReusingWidgets.toast(text: "Image Deleted Successfully!");
+
+                                  // setState(() {
+                                  //   File(videoList[index]).delete();
+                                  //   for (var element in fileController.allStatusVideos) {
+                                  //     if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                                  //     contains(File(videoList[index]).toString().split("StatusSaver/").last.split(".").first)){
+                                  //       element.isSaved = false;
+                                  //     }
+                                  //   }
+                                  // });
                                   ReusingWidgets.toast(text: "Video Deleted Successfully");
                                 },
                             ),

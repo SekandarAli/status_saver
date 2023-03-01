@@ -16,6 +16,7 @@ import 'package:status_saver/app_theme/text_styles.dart';
 import 'package:status_saver/controller/fileController.dart';
 import 'package:status_saver/generated/assets.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../controller/active_app_controller.dart';
 import '../../../../model/fileModel.dart';
 import 'statusImageDetailScreen.dart';
 
@@ -41,94 +42,96 @@ class StatusImageScreenState extends State<StatusImageScreen> {
 
   int checkWhatsAppValue = 1;
 
-  checkAndroidVersion() async {
+  late SharedPreferences _prefs;
+
+  final ActiveAppController _activeAppController = Get.put(ActiveAppController());
+
+  checkAndroidVersion(int newValue) async {
+    log("1111111111111111111111${_activeAppController.activeApp.value}");
+    log("1111111111111111111111${newValue}");
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
       androidSDK = androidInfo.version.sdkInt;
     });
     if (androidSDK! >= 30) {
-      SharedPreferences pre = await SharedPreferences.getInstance();
-      // int? checkWhatsApp = pre.getInt("statusValue");
-      if (checkWhatsAppValue == 1) {
+      if (newValue == 1) {
         try {
-          // checkWhatsAppValue = 1;
-          pre.setInt("statusValue", 1);
           print("Version Greater");
           directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
           savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
           getSelectedDetails();
+          _prefs.setInt("statusValue", 1);
+          _activeAppController.changeActiveApp(1);
         }
         catch (e) {
           print("Error is $e");
           ReusingWidgets.toast(text: "No WhatsApp Found");
-          pre.setInt("statusValue", 2);
+          // pre.setInt("statusValue", 2);
         }
-      } else if (checkWhatsAppValue == 2) {
+      } else if (newValue == 2) {
         try {
-          // checkWhatsAppValue = 2;
-          pre.setInt("statusValue", 2);
+          _prefs.setInt("statusValue", 2);
           directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
           getSelectedDetails();
+          _activeAppController.changeActiveApp(2);
         }
         catch (e) {
           print("Error is $e");
           ReusingWidgets.toast(text: "No Business WhatsApp Found");
-          pre.setInt("statusValue", 1);
+          _prefs.setInt("statusValue", 1);
         }
-      } else if (checkWhatsAppValue == 3) {
+      } else if (newValue == 3) {
         try {
-          // checkWhatsAppValue = 3;
-          pre.setInt("statusValue", 3);
+          _prefs.setInt("statusValue", 3);
           directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
           savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
           getSelectedDetails();
+          _activeAppController.changeActiveApp(3);
         }
         catch (e) {
           print("Error is $e");
         }
       } else {
-        print("ERROR 1111222222");
+        print("ERROR 1111");
       }
     }
     else if (androidSDK! < 30) {
-      SharedPreferences pre = await SharedPreferences.getInstance();
-      // int? checkWhatsApp = pre.getInt("statusValue");
-      if (checkWhatsAppValue == 1) {
+      if (newValue == 1) {
         try {
-          // checkWhatsAppValue = 1;
-          pre.setInt("statusValue", 1);
+          _prefs.setInt("statusValue", 1);
           directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
           savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
           getSelectedDetails();
+          _activeAppController.changeActiveApp(1);
         }
         catch (e) {
           print("Error is $e");
           ReusingWidgets.toast(text: "No WhatsApp Found");
-          pre.setInt("statusValue", 2);
+          _prefs.setInt("statusValue", 2);
         }
       }
-      else if (checkWhatsAppValue == 2) {
+      else if (newValue == 2) {
         try {
-          // checkWhatsAppValue = 2;
-          pre.setInt("statusValue", 2);
+          _prefs.setInt("statusValue", 2);
           directoryPath = Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses');
-          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
           getSelectedDetails();
+          _activeAppController.changeActiveApp(2);
         }
         catch (e) {
           print("Error is $e");
           ReusingWidgets.toast(text: "No Business WhatsApp Found");
-          pre.setInt("statusValue", 1);
+          _prefs.setInt("statusValue", 1);
         }
       }
-      else if (checkWhatsAppValue == 3) {
+      else if (newValue == 3) {
         try {
-          // checkWhatsAppValue = 3;
-          pre.setInt("statusValue", 3);
+          _prefs.setInt("statusValue", 3);
           directoryPath = Directory('/storage/emulated/0/GB WhatsApp/Media/.Statuses');
           savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
           getSelectedDetails();
+          _activeAppController.changeActiveApp(3);
         }
         catch (e) {
           print("Error is $e");
@@ -137,23 +140,30 @@ class StatusImageScreenState extends State<StatusImageScreen> {
       } else {
         print("ERROR 2");
       }
-    } else {
+    }
+    else {
       print("ERROR");
     }
-  }
+    setState(() {
 
-  getValue() async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    if (_prefs.getInt('statusValue') != null) {
-      checkWhatsAppValue = _prefs.getInt('statusValue')!;
-    } else {
-      checkWhatsAppValue = 1;
-    }
-    setState(() {});
+    });
   }
 
   createFolder() async {
     const folderName = "StatusSaver";
+    final path = Directory('/storage/emulated/0/DCIM/$folderName');
+    if ((await path.exists())) {
+      // savedDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
+      print("Path Exist");
+    }
+    else {
+      path.create();
+    }
+  }
+
+
+  createFolderBusiness() async {
+    const folderName = "StatusSaverBusiness";
     final path = Directory('/storage/emulated/0/DCIM/$folderName');
     if ((await path.exists())) {
       // savedDirectory = Directory('/storage/emulated/0/DCIM/$folderName');
@@ -171,18 +181,36 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     getImageData();
     getVideoData();
     createFolder();
+    createFolderBusiness();
   }
 
   getImageData() {
+    log("2222222222222222222222");
     fileController.allStatusImages.value = [];
     if (imageList.isNotEmpty) {
       for (var element in imageList) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-        } else {
-          // print("ELSE${element.substring(72,104)}");
-          fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+        // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
+
+        if (_activeAppController.activeApp.value == 1){
+          if (savedList.map((e) =>
+              e.split("StatusSaver/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+          } else {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          }
         }
+        else if(_activeAppController.activeApp.value == 2){
+          if (savedList.map((e) =>
+              e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+          }
+          else {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
+
       }
     }
   }
@@ -191,11 +219,39 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     fileController.allStatusVideos.value = [];
     if (videoList.isNotEmpty) {
       for (var element in videoList) {
-        if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).contains(element.split(".Statuses/").last.split(".").first)) {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-        } else {
-          fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+        // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
+
+
+        if (_activeAppController.activeApp.value == 1){
+          if (savedList.map((e) =>
+              e.split("StatusSaver/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+          } else {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+          }
         }
+        else if(_activeAppController.activeApp.value == 2){
+          if (savedList.map((e) =>
+              e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+          }
+          else {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
+
+
+
+        //
+        // if (savedList.map((e) =>
+        //     e.split("StatusSaver/").last.split(".").first.toString())
+        //     .contains(element.split(".Statuses/").last.split(".").first)) {
+        //   fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+        // } else {
+        //   fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+        // }
       }
     }
   }
@@ -245,8 +301,10 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   void initState() {
     super.initState();
     print("Status Image Screen");
-    getValue();
-    // checkAndroidVersion();
+    getPrefs();
+
+    log("aaaaaaaaaa${_activeAppController.activeApp.value.toString()}");
+
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
       int finalPermission;
@@ -268,6 +326,10 @@ class StatusImageScreenState extends State<StatusImageScreen> {
       }
       return finalPermission;
     })();
+  }
+
+  getPrefs() async {
+    _prefs =  await SharedPreferences.getInstance();
   }
 
   Future pullRefresh() async {
@@ -337,9 +399,17 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                     ColorsTheme.white : ColorsTheme.doneColor,
                                     onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
                                         () {
+                                      _activeAppController.activeApp.value == 1 ?
                                       GallerySaver.saveImage(Uri.parse(
                                           fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "),
                                           albumName: "StatusSaver",
+                                          toDcim: true).then((value) {
+                                        fileController.allStatusImages.elementAt(index).isSaved = true;
+                                       fileController.allStatusImages.refresh();
+                                      }) :
+                                      GallerySaver.saveImage(Uri.parse(
+                                          fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "),
+                                          albumName: "StatusSaverBusiness",
                                           toDcim: true).then((value) {
                                         fileController.allStatusImages.elementAt(index).isSaved = true;
                                        fileController.allStatusImages.refresh();
@@ -349,8 +419,7 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                     }
                                         : () {
                                       // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
-                                      ReusingWidgets.toast(
-                                          text: "Image Already Saved");
+                                      ReusingWidgets.toast(text: "Image Already Saved");
                                     },
                                     onSharePress: () {
                                        // Share.shareXFiles(
@@ -374,8 +443,9 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                   else {
                     log("done5");
 
-                    checkAndroidVersion();
+                    checkAndroidVersion(_activeAppController.activeApp.value);
                     createFolder();
+                    createFolderBusiness();
 
                     return Center(
                         child: Padding(

@@ -9,10 +9,11 @@ import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
+import '../../../../controller/active_app_controller.dart';
 import '../../../../controller/fileController.dart';
 
 class SavedVideoDetailScreen extends StatefulWidget {
-  var videoPath;
+  File videoPath;
   List videoList;
   int indexNo;
 
@@ -25,6 +26,7 @@ class SavedVideoDetailScreen extends StatefulWidget {
 class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
 
   FileController fileController = Get.put(FileController());
+  ActiveAppController activeAppController = Get.put(ActiveAppController());
 
   @override
   Widget build(BuildContext context) {
@@ -51,29 +53,37 @@ class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
               icon: Icon(Icons.share)),
           IconButton(onPressed: () {
 
-            // widget.videoPath.delete();
-            // for (var element in fileController.allStatusImages) {
+            activeAppController.activeApp.value == 1 ?
+            setState(() {
+              File(widget.videoList[widget.indexNo]).delete();
+              for (var element in fileController.allStatusVideos) {
+                if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                contains(  File(widget.videoList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
+                  element.isSaved = false;
+                }
+              }
+            }) :
+            setState(() {
+              File(widget.videoList[widget.indexNo]).delete();
+              for (var element in fileController.allStatusVideos) {
+                if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                contains( File(widget.videoList[widget.indexNo]).toString().split("StatusSaverBusiness/").last.split(".").first)){
+                  element.isSaved = false;
+                }
+              }
+            });
+            ReusingWidgets.toast(text: "Video Deleted Successfully!");
+
+            // File(widget.videoList[widget.indexNo]).delete();
+            //
+            // for (var element in fileController.allStatusVideos) {
             //   if(element.filePath.toString().split(".Statuses/").last.split(".").first.
-            //   contains(widget.videoPath.toString().split("StatusSaver/").last.split(".").first)){
+            //   contains( File(widget.videoList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
             //     element.isSaved = false;
             //   }
             // }
-
-            // fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = false;
-            // fileController.allStatusVideos.refresh();
-            // fileController.allStatusSaved.refresh();
-            // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
-
-            File(widget.videoList[widget.indexNo]).delete();
-
-            for (var element in fileController.allStatusVideos) {
-              if(element.filePath.toString().split(".Statuses/").last.split(".").first.
-              contains( File(widget.videoList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
-                element.isSaved = false;
-              }
-            }
-
-            ReusingWidgets.toast(text: "Video Deleted Successfully");
+            //
+            // ReusingWidgets.toast(text: "Video Deleted Successfully");
             Navigator.pop(context);
 
           }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),

@@ -8,9 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/bottomNavbar/bottomNavbarScreen.dart';
 import 'package:status_saver/controller/active_app_controller.dart';
-import 'package:status_saver/controller/fileController.dart';
-import 'package:status_saver/screens/home/homeScreen.dart';
-import 'package:status_saver/screens/whatsapp/status/statusTabBar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +36,6 @@ class _MyAppState extends State<MyApp> {
   final ActiveAppController _activeAppController = Get.put(ActiveAppController());
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getActiveApp();
   }
@@ -48,12 +44,14 @@ class _MyAppState extends State<MyApp> {
 
    final SharedPreferences _prefs = await SharedPreferences.getInstance();
     int? statusValue= _prefs.getInt('statusValue');
-    if(statusValue!=null){
+    if(statusValue != null){
       _activeAppController.changeActiveApp(statusValue);
-    }else{
-      _activeAppController.changeActiveApp(1);
+      log("bbbbbbbb${_activeAppController.activeApp.value.toString()}");
     }
-   log("************************************ ${_activeAppController.activeApp.value} ***********************");
+    else{
+      _activeAppController.changeActiveApp(1);
+      log("aaaaaaaaaaaa");
+    }
   }
 
 

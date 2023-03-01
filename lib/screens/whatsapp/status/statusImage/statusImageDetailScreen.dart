@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
+import 'package:status_saver/controller/active_app_controller.dart';
 import 'package:status_saver/controller/fileController.dart';
 
 class StatusImageDetailScreen extends StatefulWidget {
@@ -24,6 +25,7 @@ class StatusImageDetailScreen extends StatefulWidget {
 class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
   Uri? myUri;
   FileController fileController = Get.put(FileController());
+  final ActiveAppController _activeAppController = Get.put(ActiveAppController());
   int currentIndex = 0;
 
   bool? isTapped;
@@ -74,19 +76,31 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               visible: !(fileController.allStatusImages.elementAt(currentIndex).isSaved),
               child: IconButton(
                   onPressed: () {
+                      // GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
+                      //     albumName: "StatusSaver", toDcim: true).then((value) {
+                      //   fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
+                      //   fileController.allStatusImages.refresh();
+                      // });
+                      // ReusingWidgets.toast(text: "Image Saved Successfully!");
+
+
+                      _activeAppController.activeApp.value == 1 ?
                       GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
-                          albumName: "StatusSaver", toDcim: true).then((value) {
+                          albumName: "StatusSaver",
+                          toDcim: true).then((value) {
+                        fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
+                        fileController.allStatusImages.refresh();
+                      }) :
+                      GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
+                          albumName: "StatusSaverBusiness",
+                          toDcim: true).then((value) {
                         fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
                         fileController.allStatusImages.refresh();
                       });
-                      ReusingWidgets.toast(text: "Image Saved Successfully!");
-                      // ReusingWidgets.dialogueAnimated(
-                      //   context: context,
-                      //   dialogType: DialogType.success,
-                      //   color: ColorsTheme.primaryColor,
-                      //   title: "Image Saved",
-                      //   desc: "Image saved to File Manager > Internal Storage > >DCIM > StatusSaver",
-                      // );
+                      // ReusingWidgets.snackBar(context: context, text: "Image Saved");
+                      ReusingWidgets.toast(text: "Image Saved");
+
+
                   },
                   icon: Icon(Icons.save_alt)))),
         ],

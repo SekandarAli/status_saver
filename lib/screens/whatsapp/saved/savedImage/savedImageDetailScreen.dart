@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
+import 'package:status_saver/controller/active_app_controller.dart';
 import 'package:status_saver/controller/fileController.dart';
 
 class SavedImageDetailScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class SavedImageDetailScreen extends StatefulWidget {
 class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
 
   FileController fileController = Get.put(FileController());
+  ActiveAppController activeAppController = Get.put(ActiveAppController());
   Uri? myUri;
 
   @override
@@ -62,14 +64,37 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
           IconButton(
               onPressed: () {
 
-                File(widget.imgList[widget.indexNo]).delete();
-                for (var element in fileController.allStatusImages) {
-                  if(element.filePath.toString().split(".Statuses/").last.split(".").first.
-                  contains( File(widget.imgList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
-                    element.isSaved = false;
+                activeAppController.activeApp.value == 1 ?
+                setState(() {
+                  File(widget.imgList[widget.indexNo]).delete();
+                  for (var element in fileController.allStatusImages) {
+                    if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                    contains( File(widget.imgList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
+                      element.isSaved = false;
+                    }
                   }
-                }
-                  ReusingWidgets.toast(text: "Image Deleted Successfully");
+                }) :
+                setState(() {
+                  File(widget.imgList[widget.indexNo]).delete();
+                  for (var element in fileController.allStatusImages) {
+                    if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                    contains(File(widget.imgList[widget.indexNo]).toString().split("StatusSaverBusiness/").last.split(".").first)){
+                      element.isSaved = false;
+                    }
+                  }
+                });
+                ReusingWidgets.toast(text: "Image Deleted Successfully!");
+
+
+
+                // File(widget.imgList[widget.indexNo]).delete();
+                // for (var element in fileController.allStatusImages) {
+                //   if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                //   contains( File(widget.imgList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
+                //     element.isSaved = false;
+                //   }
+                // }
+                //   ReusingWidgets.toast(text: "Image Deleted Successfully");
                   Navigator.pop(context);
               }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),
         ],

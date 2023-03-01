@@ -7,7 +7,6 @@ class FileController extends GetxController{
   var allStatusImages = <FileModel>[].obs;
   var allStatusVideos = <FileModel>[].obs;
   var allStatusSaved = <FileModel>[].obs;
-  RxBool check = false.obs;
 
   // changeDownloadStatus(int index){
   //   allStatusImages.elementAt(index).isSaved = true;

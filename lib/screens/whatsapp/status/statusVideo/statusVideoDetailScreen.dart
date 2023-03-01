@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
+import '../../../../controller/active_app_controller.dart';
 import '../../../../controller/fileController.dart';
 import '../../../../model/fileModel.dart';
 
@@ -26,6 +27,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
 
   Uri? myUri;
   FileController fileController = Get.put(FileController());
+  final ActiveAppController _activeAppController = Get.put(ActiveAppController());
 
   @override
   void initState() {
@@ -98,14 +100,35 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
              Visibility(
               visible: !(fileController.allStatusVideos.elementAt(widget.indexNo).isSaved),
               child: IconButton(onPressed: () {
+
+
+
+                _activeAppController.activeApp.value == 1 ?
                 GallerySaver.saveVideo(Uri.parse(
                     fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path.replaceAll("%20"," "),
-                    albumName: "StatusSaver",toDcim: true ).then((value) =>
-                fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
-                fileController.allStatusVideos.refresh();
-                ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState((){
+                    albumName: "StatusSaver",toDcim: true ).then((value) {
                   fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true;
-                }));
+                  fileController.allStatusVideos.refresh();
+                }) :
+                GallerySaver.saveVideo(myUri!.path.replaceAll("%20"," "),
+                    albumName: "StatusSaverBusiness",
+                    toDcim: true).then((value) {
+                  fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true;
+                  fileController.allStatusVideos.refresh();
+                });
+                // ReusingWidgets.snackBar(context: context, text: "Image Saved");
+                ReusingWidgets.toast(text: "Image Saved");
+
+
+                // GallerySaver.saveVideo(Uri.parse(
+                //     fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path.replaceAll("%20"," "),
+                //     albumName: "StatusSaver",toDcim: true ).then((value) =>
+                // fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
+                // fileController.allStatusVideos.refresh();
+                // ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState((){
+                //   fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true;
+                // }));
+
               }, icon: Icon(Icons.save_alt)),
             )
           )

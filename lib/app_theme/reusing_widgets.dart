@@ -572,14 +572,26 @@ class ReusingWidgets {
 
 
   static emptyData({required BuildContext context}){
-    return Center(
-      child: Image.asset(
-        Assets.imagesEmpty,
-        filterQuality: FilterQuality.high,
-        fit: BoxFit.cover,
-        color: ColorsTheme.primaryColor,
-        height: MediaQuery.of(context).size.width / 3,
-        width: MediaQuery.of(context).size.width / 3,
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: ColorsTheme.backgroundColor,
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              Assets.imagesEmpty,
+              filterQuality: FilterQuality.high,
+              fit: BoxFit.cover,
+              color: ColorsTheme.primaryColor,
+              height: MediaQuery.of(context).size.width / 3,
+              width: MediaQuery.of(context).size.width / 3,
+            ),
+            Text("Oops! No Data Found!",textAlign: TextAlign.center,style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.primaryColor),)
+          ],
+        ),
       ),
     );
   }

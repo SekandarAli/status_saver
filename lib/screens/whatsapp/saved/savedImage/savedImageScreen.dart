@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:status_saver/controller/active_app_controller.dart';
 import 'package:status_saver/screens/whatsapp/saved/savedImage/savedImageDetailScreen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../app_theme/color.dart';
@@ -28,11 +30,17 @@ class SavedImageScreenState extends State<SavedImageScreen> {
   int? storagePermissionCheck;
   int? androidSDK;
   final FileController fileController = Get.put(FileController());
+  final ActiveAppController _activeAppController = Get.put(ActiveAppController());
   final MediaModel mediaModel = MediaModel();
 
   @override
   void initState() {
-    savedImagesDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+
+    log("checkkkkkkkkk");
+
+    savedImagesDirectory = _activeAppController.activeApp.value == 1 ?
+    Directory('/storage/emulated/0/DCIM/StatusSaver/') :
+    Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
 
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
@@ -100,19 +108,6 @@ class SavedImageScreenState extends State<SavedImageScreen> {
     }
   }
 
-  // Future<void> deleteFile(File file) async {
-  //   try {
-  //     if (await file.exists()) {
-  //        unawaited(file.delete());
-  //      // file.deleteSync(recursive: false);
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
-
-
   Future<String?> getVideo(videoPathUrl) async {
     final thumbnail = await VideoThumbnail.thumbnailFile(video: videoPathUrl);
     return thumbnail;
@@ -173,12 +168,23 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                                 },
                                 onDownloadDeletePress: (){
 
+                                  _activeAppController.activeApp.value == 1 ?
                                   setState(() {
                                     mediaModel.deleteFile(context, File(imageList[index]));
                                     // File(imageList[index]).delete();
                                     for (var element in fileController.allStatusImages) {
                                       if(element.filePath.toString().split(".Statuses/").last.split(".").first.
                                       contains(File(imageList[index]).toString().split("StatusSaver/").last.split(".").first)){
+                                        element.isSaved = false;
+                                      }
+                                    }
+                                  }) :
+                                  setState(() {
+                                    mediaModel.deleteFile(context, File(imageList[index]));
+                                    // File(imageList[index]).delete();
+                                    for (var element in fileController.allStatusImages) {
+                                      if(element.filePath.toString().split(".Statuses/").last.split(".").first.
+                                      contains(File(imageList[index]).toString().split("StatusSaverBusiness/").last.split(".").first)){
                                         element.isSaved = false;
                                       }
                                     }

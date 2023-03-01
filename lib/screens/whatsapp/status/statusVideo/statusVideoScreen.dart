@@ -12,6 +12,7 @@ import 'package:status_saver/model/fileModel.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../app_theme/reusing_widgets.dart';
 import '../../../../app_theme/text_styles.dart';
+import '../../../../controller/active_app_controller.dart';
 import '../../../../controller/fileController.dart';
 import 'statusVideoDetailScreen.dart';
 
@@ -24,6 +25,9 @@ class StatusVideoScreen extends StatefulWidget {
 class StatusVideoScreenState extends State<StatusVideoScreen> {
 
   final FileController fileController = Get.put(FileController());
+  final ActiveAppController _activeAppController = Get.put(ActiveAppController());
+
+
   // late List<String> videoList;
   // late List<String> savedList;
   // Directory? whatsAppDirectory;
@@ -128,16 +132,39 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                                   },
                                   onDownloadDeletePress: fileController.allStatusVideos.elementAt(index).isSaved == false ?
                                       (){
-                                      GallerySaver.saveVideo(
-                                          Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path.replaceAll("%20"," "),
-                                          albumName: "StatusSaver",toDcim: true ).then((value)
-                                      {
+                                    //   GallerySaver.saveVideo(
+                                    //       Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path.replaceAll("%20"," "),
+                                    //       albumName: "StatusSaver",toDcim: true ).then((value)
+                                    //   {
+                                    //   fileController.allStatusVideos.elementAt(index).isSaved = true;
+                                    //   fileController.allStatusVideos.refresh();
+                                    //   });
+                                    //   ReusingWidgets.toast(text: "Video Saved");
+                                    //   }
+                                    //   : () {
+                                    // ReusingWidgets.toast(text: "Video Already Saved");
+
+
+                                    _activeAppController.activeApp.value == 1 ?
+                                    GallerySaver.saveVideo(Uri.parse(
+                                        fileController.allStatusVideos.elementAt(index).filePath).path.replaceAll("%20"," "),
+                                        albumName: "StatusSaver",
+                                        toDcim: true).then((value) {
                                       fileController.allStatusVideos.elementAt(index).isSaved = true;
                                       fileController.allStatusVideos.refresh();
-                                      });
-                                      ReusingWidgets.toast(text: "Video Saved");
-                                      }
-                                      : () {
+                                    }) :
+                                    GallerySaver.saveVideo(Uri.parse(
+                                        fileController.allStatusVideos.elementAt(index).filePath).path.replaceAll("%20"," "),
+                                        albumName: "StatusSaverBusiness",
+                                        toDcim: true).then((value) {
+                                      fileController.allStatusVideos.elementAt(index).isSaved = true;
+                                      fileController.allStatusVideos.refresh();
+                                    });
+                                    // ReusingWidgets.snackBar(context: context, text: "Image Saved");
+                                    ReusingWidgets.toast(text: "Video Saved");
+
+
+                                  } : (){
                                     ReusingWidgets.toast(text: "Video Already Saved");
                                   },
                                 );
