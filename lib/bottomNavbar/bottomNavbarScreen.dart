@@ -1,18 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, avoid_unnecessary_containers, library_private_types_in_public_api, null_check_always_fails, use_build_context_synchronously
 
 import 'dart:io';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:status_saver/screens/home/homeScreen.dart';
 import '../app_theme/color.dart';
 import '../app_theme/reusing_widgets.dart';
-import '../controller/fileController.dart';
 import '../drawer/drawerScreen.dart';
-import '../model/fileModel.dart';
-import '../screens/setting/settingScreen.dart';
-import '../screens/whatsapp/saved/savedTabBar.dart';
-import '../screens/whatsapp/status/statusTabBar.dart';
+import '../screens/saved/savedTabBar.dart';
+import '../screens/status/statusTabBar.dart';
 
 class BottomNavBarScreen extends StatefulWidget {
   const BottomNavBarScreen({Key? key}) : super(key: key);
@@ -132,18 +126,20 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> with TickerProv
                     physics: NeverScrollableScrollPhysics(),
                     controller: tabController,
                     children: [
-                      Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        alignment: Alignment.center,
-                        child: StatusTabScreen(),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        alignment: Alignment.center,
-                        child: SavedTabScreen(),
-                      ),
+                      StatusTabScreen(),
+                      SavedTabScreen(),
+                      // Container(
+                      //   width: double.infinity,
+                      //   height: double.infinity,
+                      //   alignment: Alignment.center,
+                      //   child: StatusTabScreen(),
+                      // ),
+                      // Container(
+                      //   width: double.infinity,
+                      //   height: double.infinity,
+                      //   alignment: Alignment.center,
+                      //   child: SavedTabScreen(),
+                      // ),
                     ],
                   ),
                 ),

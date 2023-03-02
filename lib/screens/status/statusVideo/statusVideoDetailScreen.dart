@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_constructors, use_build_context_synchronously
 
-import 'dart:developer';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
 import '../../../../controller/active_app_controller.dart';
 import '../../../../controller/fileController.dart';
-import '../../../../model/fileModel.dart';
 
 class StatusVideoDetailScreen extends StatefulWidget {
   int indexNo;
@@ -65,27 +63,6 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
           },
               icon: Icon(Icons.share)),
 
-        /*  fileController.allStatusVideos.elementAt(widget.indexNo).isSaved == false ?
-          IconButton(
-              onPressed: () {
-                  GallerySaver.saveVideo(Uri.parse(
-                      fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path.replaceAll("%20"," "),
-                      albumName: "StatusSaver",toDcim: true ).then((value) =>
-                  fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
-
-                  fileController.allStatusVideos.refresh();
-
-                  ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState(() {}));
-
-              },
-              icon: Icon(Icons.save_alt)) :
-          IconButton(
-              onPressed: () {
-                  ReusingWidgets.toast(text: "Video Already Saved");
-              },
-              icon: Icon(Icons.done)),
-*/
-
           ///OBX
           Obx(() =>
              Visibility(
@@ -116,19 +93,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
                   fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true;
                   fileController.allStatusVideos.refresh();
                 });
-                // ReusingWidgets.snackBar(context: context, text: "Image Saved");
                 ReusingWidgets.toast(text: "Image Saved");
-
-
-                // GallerySaver.saveVideo(Uri.parse(
-                //     fileController.allStatusVideos.elementAt(widget.indexNo).filePath).path.replaceAll("%20"," "),
-                //     albumName: "StatusSaver",toDcim: true ).then((value) =>
-                // fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true);
-                // fileController.allStatusVideos.refresh();
-                // ReusingWidgets.toast(text: "Video Saved Successfully!").then((value) => setState((){
-                //   fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true;
-                // }));
-
               }, icon: Icon(Icons.save_alt)),
             )
           )

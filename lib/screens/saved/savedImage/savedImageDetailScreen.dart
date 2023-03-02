@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_single_cascade_in_expression_statements, use_build_context_synchronously, avoid_print
 
-import 'dart:developer';
 import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +11,6 @@ import 'package:status_saver/controller/active_app_controller.dart';
 import 'package:status_saver/controller/fileController.dart';
 
 class SavedImageDetailScreen extends StatefulWidget {
-  // File imgPath;
-  // String imgListIndex;
   int indexNo;
   List imgList;
 
@@ -152,7 +149,6 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
              initialPage: widget.indexNo,
              padEnds: true,
              onPageChanged: (index, reason) {
-               log('index $index');
                widget.indexNo = index;
                myUri = Uri.parse(File(widget.imgList[widget.indexNo]).path);
                setState(() {});

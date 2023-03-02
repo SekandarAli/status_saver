@@ -6,11 +6,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:status_saver/screens/whatsapp/saved/savedVideo/savedVideoDetailScreen.dart';
+import 'package:status_saver/screens/saved/savedVideo/savedVideoDetailScreen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
-import '../../../../app_theme/text_styles.dart';
 import '../../../../controller/active_app_controller.dart';
 import '../../../../controller/fileController.dart';
 
@@ -29,7 +28,6 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
 
   @override
   void initState() {
-    log("checkkkkkkkkk");
     getDetails();
     super.initState();
   }
@@ -64,8 +62,6 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log("build");
-    // log(fileController.allStatusSaved.length.toString());
 
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
@@ -118,14 +114,6 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                   );
                                 },
                                 onDownloadDeletePress: (){
-                                  //   deleteFile(File(videoList[index]));
-                                  // setState(() {
-                                  //   File(videoList[index]).delete();
-                                  //   fileController.allStatusVideos.elementAt(index).isSaved = false;
-                                  //   fileController.allStatusVideos.refresh();
-                                  //   // fileController.allStatusSaved.refresh();
-                                  //   // ReusingWidgets.snackBar(context: context, text: "Video Deleted Successfully");
-                                  // });
 
                                   _activeAppController.activeApp.value == 1 ?
                                   setState(() {
@@ -146,17 +134,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                       }
                                     }
                                   });
-                                  // ReusingWidgets.toast(text: "Image Deleted Successfully!");
 
-                                  // setState(() {
-                                  //   File(videoList[index]).delete();
-                                  //   for (var element in fileController.allStatusVideos) {
-                                  //     if(element.filePath.toString().split(".Statuses/").last.split(".").first.
-                                  //     contains(File(videoList[index]).toString().split("StatusSaver/").last.split(".").first)){
-                                  //       element.isSaved = false;
-                                  //     }
-                                  //   }
-                                  // });
                                   ReusingWidgets.toast(text: "Video Deleted Successfully");
                                 },
                             ),
@@ -164,12 +142,6 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                         } else {
                           return ReusingWidgets.loadingAnimation();
                         }
-                      // }
-                      // else {
-                      //   return Hero(tag:videoList[index],
-                      //     child: ReusingWidgets.loadingAnimation(),
-                      //   );
-                      // }
                     });
               },
             ),

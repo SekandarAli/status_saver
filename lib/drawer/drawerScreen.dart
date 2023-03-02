@@ -71,7 +71,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     width: w / 1.7,
                     height: 160,
                     decoration: BoxDecoration(
-                        color: ColorsTheme.primaryColor.withOpacity(1)
+                        color: ColorsTheme.primaryColor.withOpacity(1),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

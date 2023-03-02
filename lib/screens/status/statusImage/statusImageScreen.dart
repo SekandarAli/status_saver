@@ -7,6 +7,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,8 +48,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   final ActiveAppController _activeAppController = Get.put(ActiveAppController());
 
   checkAndroidVersion(int newValue) async {
-    log("1111111111111111111111${_activeAppController.activeApp.value}");
-    log("1111111111111111111111${newValue}");
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
       androidSDK = androidInfo.version.sdkInt;
@@ -81,18 +80,8 @@ class StatusImageScreenState extends State<StatusImageScreen> {
           ReusingWidgets.toast(text: "No Business WhatsApp Found");
           _prefs.setInt("statusValue", 1);
         }
-      } else if (newValue == 3) {
-        try {
-          _prefs.setInt("statusValue", 3);
-          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
-          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-          getSelectedDetails();
-          _activeAppController.changeActiveApp(3);
-        }
-        catch (e) {
-          print("Error is $e");
-        }
-      } else {
+      }
+      else {
         print("ERROR 1111");
       }
     }
@@ -125,28 +114,14 @@ class StatusImageScreenState extends State<StatusImageScreen> {
           _prefs.setInt("statusValue", 1);
         }
       }
-      else if (newValue == 3) {
-        try {
-          _prefs.setInt("statusValue", 3);
-          directoryPath = Directory('/storage/emulated/0/GB WhatsApp/Media/.Statuses');
-          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-          getSelectedDetails();
-          _activeAppController.changeActiveApp(3);
-        }
-        catch (e) {
-          print("Error is $e");
-          ReusingWidgets.toast(text: "No GB WhatsApp Found");
-        }
-      } else {
+      else {
         print("ERROR 2");
       }
     }
     else {
       print("ERROR");
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   createFolder() async {
@@ -160,7 +135,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
       path.create();
     }
   }
-
 
   createFolderBusiness() async {
     const folderName = "StatusSaverBusiness";
@@ -185,24 +159,20 @@ class StatusImageScreenState extends State<StatusImageScreen> {
   }
 
   getImageData() {
-    log("2222222222222222222222");
     fileController.allStatusImages.value = [];
     if (imageList.isNotEmpty) {
       for (var element in imageList) {
-        // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
-
-        if (_activeAppController.activeApp.value == 1){
-          if (savedList.map((e) =>
-              e.split("StatusSaver/").last.split(".").first.toString()).
+       if (_activeAppController.activeApp.value == 1){
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-          } else {
+          }
+          else {
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
           }
         }
         else if(_activeAppController.activeApp.value == 2){
-          if (savedList.map((e) =>
-              e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
           }
@@ -219,21 +189,8 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     fileController.allStatusVideos.value = [];
     if (videoList.isNotEmpty) {
       for (var element in videoList) {
-        // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
-
-
-        if (_activeAppController.activeApp.value == 1){
-          if (savedList.map((e) =>
-              e.split("StatusSaver/").last.split(".").first.toString()).
-          contains(element.split(".Statuses/").last.split(".").first)) {
-            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-          } else {
-            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
-          }
-        }
-        else if(_activeAppController.activeApp.value == 2){
-          if (savedList.map((e) =>
-              e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+         if (_activeAppController.activeApp.value == 1){
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
           }
@@ -241,22 +198,76 @@ class StatusImageScreenState extends State<StatusImageScreen> {
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
           }
         }
-
-
-
-        //
-        // if (savedList.map((e) =>
-        //     e.split("StatusSaver/").last.split(".").first.toString())
-        //     .contains(element.split(".Statuses/").last.split(".").first)) {
-        //   fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-        // } else {
-        //   fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
-        // }
+        else if(_activeAppController.activeApp.value == 2){
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+          }
+          else {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
       }
     }
   }
 
   Future<int> loadPermission() async {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    setState(() {
+      androidSDK = androidInfo.version.sdkInt;
+    });
+    if (androidSDK! >= 30) {
+
+
+      final currentStatusManaged = await Permission.manageExternalStorage.status;
+      if (currentStatusManaged.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    } else {
+      final currentStatusStorage = await Permission.storage.status;
+      if (currentStatusStorage.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  Future<int> requestPermission() async {
+    if (androidSDK! >= 30) {
+      final requestStatusManaged =
+      await Permission.storage.request();
+      if (requestStatusManaged.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    } else {
+      final requestStatusStorage = await Permission.manageExternalStorage.request();
+      if (requestStatusStorage.isGranted) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  // Future<int> requestStoragePermission() async {
+  //
+  //   final result = await [Permission.storage].request();
+  //   setState(() {});
+  //   if (result[Permission.storage]!.isDenied) {
+  //     return 0;
+  //   } else if (result[Permission.storage]!.isGranted) {
+  //     return 1;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
+
+  /*  Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
       androidSDK = androidInfo.version.sdkInt;
@@ -297,21 +308,23 @@ class StatusImageScreenState extends State<StatusImageScreen> {
     }
   }
 
+  Future<int> requestStoragePermission() async {
+
+    final result = await [Permission.storage].request();
+    setState(() {});
+    if (result[Permission.storage]!.isDenied) {
+      return 0;
+    } else if (result[Permission.storage]!.isGranted) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }*/
+
   @override
   void initState() {
     super.initState();
-    print("Status Image Screen");
-
-    // Future.delayed(Duration(seconds: 3), () {
-    //   if (mounted)
-    //     setState(() {
-    //       showLoading = !showLoading;
-    //     });
-    // });
-
     getPrefs();
-
-    log("aaaaaaaaaa${_activeAppController.activeApp.value.toString()}");
 
     storagePermissionChecker = (() async {
       int storagePermissionCheckInt;
@@ -355,15 +368,10 @@ class StatusImageScreenState extends State<StatusImageScreen> {
         future: storagePermissionChecker,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            log("done1");
             if (snapshot.hasData) {
-              log("done2");
               if (snapshot.data == 1) {
-                log("done3");
                 // if (Directory(whatsAppDirectory.path).existsSync()) {
                   if (fileController.allStatusImages.isNotEmpty) {
-                    log("done4");
-
                     return RefreshIndicator(
                       backgroundColor: ColorsTheme.primaryColor,
                       color: ColorsTheme.white,
@@ -387,10 +395,7 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                               itemBuilder: (BuildContext context, int index) {
                                 return Obx(() => InkWell(
                                   onTap: () {
-                                    Get.to(() =>
-                                        StatusImageDetailScreen(
-                                          indexNo: index,
-                                        ));
+                                    Get.to(() => StatusImageDetailScreen(indexNo: index));
                                   },
                                   child:
                                   ReusingWidgets.getSavedData(
@@ -422,11 +427,9 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                         fileController.allStatusImages.elementAt(index).isSaved = true;
                                        fileController.allStatusImages.refresh();
                                       });
-                                      // ReusingWidgets.snackBar(context: context, text: "Image Saved");
                                       ReusingWidgets.toast(text: "Image Saved");
                                     }
                                         : () {
-                                      // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
                                       ReusingWidgets.toast(text: "Image Already Saved");
                                     },
                                     onSharePress: () {
@@ -436,7 +439,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                                         //     fileController.allStatusImages.elementAt(index).filePath).path)
                                         // ],
                                       // );
-                                      log(Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "));
                                       Share.shareFiles(
                                           [Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," ")],
                                           text: 'Have a look on this Status',
@@ -449,7 +451,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                     );
                   }
                   else {
-                    log("done5");
 
                     checkAndroidVersion(_activeAppController.activeApp.value);
                     createFolder();
@@ -491,8 +492,6 @@ class StatusImageScreenState extends State<StatusImageScreen> {
                   }
                 }
               else {
-                log("done6");
-
                 Future(() {
                   showDialog(
                     context: context,
@@ -534,20 +533,14 @@ class StatusImageScreenState extends State<StatusImageScreen> {
               }
               }
               else {
-              log("done7");
-
               return ReusingWidgets.loadingAnimation();
               }
           }
             else if (snapshot.hasError) {
-            log("done8");
-
             ReusingWidgets.toast(text: snapshot.error.toString());
               return Container();
-              // return ReusingWidgets.circularProgressIndicator();
             }
             else {
-            log("done9");
             return ReusingWidgets.loadingAnimation();
             }
           // }

@@ -28,8 +28,6 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
   final ActiveAppController _activeAppController = Get.put(ActiveAppController());
   int currentIndex = 0;
 
-  bool? isTapped;
-
   @override
   void initState() {
     super.initState();
@@ -39,8 +37,6 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // savedImagesFolder = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.jpeg')).toList(growable: false);
-    // imageData = savedImagesFolder!.map((e) => e.substring(37, 69).toString()).contains(widget.imgPath.substring(72, 104));
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -76,29 +72,16 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               visible: !(fileController.allStatusImages.elementAt(currentIndex).isSaved),
               child: IconButton(
                   onPressed: () {
-                      // GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
-                      //     albumName: "StatusSaver", toDcim: true).then((value) {
-                      //   fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
-                      //   fileController.allStatusImages.refresh();
-                      // });
-                      // ReusingWidgets.toast(text: "Image Saved Successfully!");
 
-
-                      _activeAppController.activeApp.value == 1 ?
-                      GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
-                          albumName: "StatusSaver",
-                          toDcim: true).then((value) {
-                        fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
-                        fileController.allStatusImages.refresh();
-                      }) :
-                      GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
-                          albumName: "StatusSaverBusiness",
-                          toDcim: true).then((value) {
-                        fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
-                        fileController.allStatusImages.refresh();
-                      });
-                      // ReusingWidgets.snackBar(context: context, text: "Image Saved");
-                      ReusingWidgets.toast(text: "Image Saved");
+                    _activeAppController.activeApp.value == 1 ?
+                    GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
+                        albumName: "StatusSaver",
+                        toDcim: true).then((value) {fileController.allStatusImages.elementAt(currentIndex).isSaved = true;fileController.allStatusImages.refresh();}) :
+                    GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
+                        albumName: "StatusSaverBusiness",
+                        toDcim: true).then((value) {fileController.allStatusImages.elementAt(currentIndex).isSaved = true;fileController.allStatusImages.refresh();});
+                    // ReusingWidgets.snackBar(context: context, text: "Image Saved");
+                    ReusingWidgets.toast(text: "Image Saved");
 
 
                   },
@@ -135,22 +118,6 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               }
             );
           }).toList(),
-
-
-          // options: CarouselOptions(
-          //   enlargeCenterPage: false,
-          //   // enlargeFactor: 0,
-          //   enableInfiniteScroll: true,
-          //   disableCenter: false,
-          //   initialPage: currentIndex,
-          //   padEnds: true,
-          //
-          //   onScrolled: (value){
-          //     print("object");
-          //     // setState(() {});
-          //   }
-          // ),
-
             options: CarouselOptions(
               aspectRatio: 0.75,
               viewportFraction: 1,

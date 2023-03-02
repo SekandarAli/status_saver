@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +8,11 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:status_saver/controller/active_app_controller.dart';
-import 'package:status_saver/screens/whatsapp/saved/savedImage/savedImageDetailScreen.dart';
+import 'package:status_saver/screens/saved/savedImage/savedImageDetailScreen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../app_theme/color.dart';
 import '../../../../app_theme/reusing_widgets.dart';
-import '../../../../app_theme/text_styles.dart';
 import '../../../../controller/fileController.dart';
-import '../../../../model/fileModel.dart';
 
 class SavedImageScreen extends StatefulWidget {
   const SavedImageScreen({Key? key}) : super(key: key);
@@ -35,7 +32,6 @@ class SavedImageScreenState extends State<SavedImageScreen> {
 
   @override
   void initState() {
-    log("checkkkkkkkkk");
     getDetails();
     super.initState();
   }
@@ -130,14 +126,11 @@ class SavedImageScreenState extends State<SavedImageScreen> {
     if (Directory(savedImagesDirectory!.path).existsSync()) {
       final imageList = savedImagesDirectory!.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
       if (imageList.isNotEmpty) {
-
-        log("message");
         return Scaffold(
           backgroundColor: ColorsTheme.backgroundColor,
           body: FutureBuilder(
               future: storagePermissionChecker,
               builder: (context, snapshot) {
-                log("futureBuilder");
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
                     return Container(
