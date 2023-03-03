@@ -1,8 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:saf/saf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/bottomNavbar/bottomNavbarScreen.dart';
@@ -33,6 +39,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final ActiveAppController _activeAppController = Get.put(ActiveAppController());
+
+
   @override
   void initState() {
     super.initState();
@@ -41,8 +49,8 @@ class _MyAppState extends State<MyApp> {
 
   getActiveApp() async{
 
-   final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    int? statusValue= _prefs.getInt('statusValue');
+   final SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? statusValue = prefs.getInt('statusValue');
     if(statusValue != null){
       _activeAppController.changeActiveApp(statusValue);
     }
@@ -55,17 +63,29 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return BottomNavBarScreen();
+    // return MediaGrid();
   }
 }
 
 
-// import 'dart:io';
+
+///
 //
+// ignore_for_file: prefer_const_constructors
+//
+// import 'dart:io';
+// import 'package:file_picker/file_picker.dart';
+// import 'package:gallery_saver/gallery_saver.dart';
 // import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter/material.dart';
 // import 'package:saf/saf.dart';
+// import 'package:share_plus/share_plus.dart';
+// import 'package:status_saver/app_theme/reusing_widgets.dart';
 //
-// /// Edit the Directory Programmatically Here
+// import 'app_theme/color.dart';
+// import 'screens/status/statusImage/statusImageDetailScreen.dart';
+//
+//
 // const directory = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses";
 //
 // void main() {
@@ -86,8 +106,12 @@ class _MyAppState extends State<MyApp> {
 //   void initState() {
 //     Permission.storage.request();
 //     saf = Saf(directory);
+//     getSync();
+//
 //     super.initState();
 //   }
+//
+//
 //
 //   loadImage(paths, {String k = ""}) {
 //     var tempPaths = [];
@@ -101,6 +125,14 @@ class _MyAppState extends State<MyApp> {
 //     setState(() {});
 //   }
 //
+//   getSync() async{
+//     var isSync = await saf.sync();
+//     if (isSync as bool) {
+//       var _paths = await saf.getCachedFilesPath();
+//       loadImage(_paths);
+//     }
+//   }
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return MaterialApp(
@@ -108,21 +140,57 @@ class _MyAppState extends State<MyApp> {
 //         appBar: AppBar(
 //           title: const Text('Saf example app'),
 //         ),
-//         body: Center(
-//           child: SingleChildScrollView(
-//             child: Column(
-//               children: [
-//                 if (_paths.isNotEmpty)
-//                   ..._paths.map(
-//                         (path) => Card(
-//                       child: Image.file(
-//                         File(path),
-//                       ),
-//                     ),
-//                   )
-//               ],
-//             ),
+//         body:  GridView.builder(
+//           key: PageStorageKey(widget.key),
+//           itemCount: _paths.length,
+//           physics: BouncingScrollPhysics(),
+//           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//               crossAxisCount: 2,
+//               mainAxisSpacing: 5,
+//               crossAxisSpacing: 5,
+//               childAspectRatio: 0.75
 //           ),
+//           itemBuilder: (BuildContext context, int index) {
+//             return InkWell(
+//               onTap: () {
+//
+//                 Navigator.push(context, MaterialPageRoute(builder: (context)=>StatusImageDetailScreen(indexNo: index)));
+//
+//                 // Get.to(() => StatusImageDetailScreen(indexNo: index));
+//               },
+//               child:
+//               ReusingWidgets.getSavedData(
+//                 tag: _paths[index],
+//                 context: context,
+//                 file: File(_paths[index]),
+//                 showPlayIcon: true,
+//                 bgColor: ColorsTheme.primaryColor ,
+//                 icon:Icons.save_alt,
+//                 color: ColorsTheme.doneColor,
+//                 onDownloadDeletePress:
+//                     () {
+//
+//                   GallerySaver.saveImage(
+//                       Uri.parse(_paths[index]).path,
+//                       albumName: "StatusSaver",
+//                       toDcim: true);
+//                   ReusingWidgets.toast(text: "Image Saved");
+//                 },
+//                 onSharePress: () {
+//                   // Share.shareXFiles(
+//                   // text: "Have a look on this Status",
+//                   // [XFile(Uri.parse(
+//                   //     fileController.allStatusImages.elementAt(index).filePath).path)
+//                   // ],
+//                   // );
+//                   Share.shareFiles(
+//                     [Uri.parse(_paths[index]).path.replaceAll("%20"," ")],
+//                     text: 'Have a look on this Status',
+//                   );
+//                 },
+//               ),
+//             );
+//           },
 //         ),
 //         bottomNavigationBar: Row(
 //           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -174,6 +242,28 @@ class _MyAppState extends State<MyApp> {
 //                 }
 //               },
 //               child: const Text("Clear"),
+//             ),
+//
+//             ElevatedButton(
+//               style: ButtonStyle(
+//                 backgroundColor: MaterialStateProperty.all(Colors.orange),
+//               ),
+//               onPressed: () async {
+//                 // final result = await FilePicker.platform.pickFiles();
+//
+//                 final result = await FilePicker.platform.getDirectoryPath();
+//
+//                 if (result != null) {
+//                   // User picked a file or directory
+//                   final files = result;
+//                   // final directory = result.path;
+//
+//                   print("filesssssssss$files");
+//                   // Do something with the selected files or directory
+//                 }
+//
+//               },
+//               child: const Text("aaa"),
 //             ),
 //           ],
 //         ),

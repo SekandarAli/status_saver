@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'dart:io';
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get/get.dart';
+import 'package:saf/saf.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/screens/status/statusImage/statusImageScreen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../app_theme/reusing_widgets.dart';
 import '../../../../controller/active_app_controller.dart';
@@ -26,10 +29,45 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
 
   Directory savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
 
+  late Saf saf;
+  var _paths = [];
+
+  String directory = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses";
+
 
   @override
   void initState() {
     super.initState();
+    saf = Saf(directory);
+    getPermission();
+  }
+
+  getPermission() async{
+    await saf.getDirectoryPermission(isDynamic: true);
+    getSync();
+  }
+
+  loadImage(paths) {
+    var tempPaths = [];
+    for (String path in paths) {
+      if (path.endsWith(".mp4")) {
+        tempPaths.add(path);
+      }
+    }
+    // if (k.isNotEmpty) tempPaths.add(k);
+    _paths = tempPaths;
+    setState(() {});
+  }
+
+  getSync() async{
+    var isSync = await saf.sync();
+    if (isSync as bool) {
+      var _paths = await saf.getCachedFilesPath();
+
+      print(_paths!.map((e) => e.toString()));
+      print("sdsd");
+      loadImage(_paths);
+    }
   }
 
   Future<String?> getVideo(videoPathUrl) async {
@@ -47,7 +85,7 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 
-    if (fileController.allStatusVideos.isNotEmpty) {
+    if (_paths.isNotEmpty) {
           return WillPopScope(
             onWillPop: (){
               Get.offAll(StatusImageScreen());
@@ -63,9 +101,9 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                 strokeWidth: 2,
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: Obx(()=> GridView.builder(
+                  child: GridView.builder(
                     key: PageStorageKey(widget.key),
-                    itemCount: fileController.allStatusVideos.length,
+                    itemCount: _paths.length,
                     physics: BouncingScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -81,51 +119,40 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                           ));
                         },
                         child: FutureBuilder(
-                            future: getVideo(fileController.allStatusVideos.elementAt(index).filePath),
+                            future: getVideo(_paths[index]),
                             builder: (context, snapshot) {
                               // if (snapshot.connectionState == ConnectionState.done) {
                               //   log("done2");
                                 if (snapshot.hasData) {
                                   return ReusingWidgets.getSavedData(
-                                    tag: fileController.allStatusVideos.elementAt(index).filePath,
+                                    tag: _paths[index],
                                     context: context,
                                     file: File(snapshot.data!),
                                     showPlayIcon: false,
-                                      bgColor: fileController.allStatusVideos.elementAt(index).isSaved == false ?
-                                      ColorsTheme.primaryColor : ColorsTheme.doneColor,
-                                    icon: fileController.allStatusVideos.elementAt(index).isSaved == false
-                                        ? Icons.save_alt : Icons.done,
-                                      color: fileController.allStatusVideos.elementAt(index).isSaved == false ?
-                                      ColorsTheme.white : ColorsTheme.doneColor,
-                                    onSharePress: (){
-                                      Share.shareXFiles(text: "Have a look on this Status",
-                                        [XFile(Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path)],
-                                      );
-                                    },
-                                    onDownloadDeletePress: fileController.allStatusVideos.elementAt(index).isSaved == false ?
-                                        (){
+                                    bgColor: ColorsTheme.primaryColor ,
+                                    icon:Icons.save_alt,
+                                    color: ColorsTheme.doneColor,
+                                    onDownloadDeletePress:
+                                        () {
 
-                                      _activeAppController.activeApp.value == 1 ?
-                                      GallerySaver.saveVideo(Uri.parse(
-                                          fileController.allStatusVideos.elementAt(index).filePath).path.replaceAll("%20"," "),
+                                      GallerySaver.saveVideo(
+                                          Uri.parse(_paths[index]).path,
                                           albumName: "StatusSaver",
-                                          toDcim: true).then((value) {
-                                        fileController.allStatusVideos.elementAt(index).isSaved = true;
-                                        fileController.allStatusVideos.refresh();
-                                      }) :
-                                      GallerySaver.saveVideo(Uri.parse(
-                                          fileController.allStatusVideos.elementAt(index).filePath).path.replaceAll("%20"," "),
-                                          albumName: "StatusSaverBusiness",
-                                          toDcim: true).then((value) {
-                                        fileController.allStatusVideos.elementAt(index).isSaved = true;
-                                        fileController.allStatusVideos.refresh();
-                                      });
-                                      // ReusingWidgets.snackBar(context: context, text: "Image Saved");
-                                      ReusingWidgets.toast(text: "Video Saved");
+                                          toDcim: true);
+                                      ReusingWidgets.toast(text: "Image Saved");
+                                    },
+                                    onSharePress: () async{
+                                      // Share.shareXFiles(
+                                      // text: "Have a look on this Status",
+                                      // [XFile(Uri.parse(
+                                      //     fileController.allStatusImages.elementAt(index).filePath).path)
+                                      // ],
+                                      // );
+                                      Share.shareFiles(
+                                        [Uri.parse(_paths[index]).path.replaceAll("%20"," ")],
+                                        text: 'Have a look on this Status',
+                                      );
 
-
-                                    } : (){
-                                      ReusingWidgets.toast(text: "Video Already Saved");
                                     },
                                   );
                                 }
@@ -135,7 +162,7 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                             }),
                       );
                     },
-                  ))
+                  )
                 ),
               ),
             ),
@@ -145,7 +172,28 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
           return Scaffold(
             backgroundColor: ColorsTheme.backgroundColor,
             body: Center(
-              child: ReusingWidgets.emptyData(context: context)
+              child:/* ReusingWidgets.allowPermissionButton(
+                  onPress: ()async {
+                    try {
+                      bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
+                      if (isInstalled) {
+
+                       getSync();
+                        // DeviceApps.openApp("com.whatsapp").then((value){
+                        //   ReusingWidgets.toast(text: "Opening WhatsApp...");
+                        // });
+                      }
+                      else {
+                        launchUrl(Uri.parse("market://details?id=com.whatsapp"));
+                      }
+                    } catch (e) {
+                      ReusingWidgets.toast(text: e.toString());
+                    }
+                  },
+
+                  context: context,
+                  text: "Fetch Statuses"),*/
+              ReusingWidgets.emptyData(context: context)
             ),
           );
         }

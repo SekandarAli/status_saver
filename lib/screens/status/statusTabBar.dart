@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:saf/saf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
 import 'package:status_saver/controller/active_app_controller.dart';
@@ -45,6 +46,12 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
 
   late final TabController _tabController = TabController(length: 2, vsync: this,animationDuration: Duration(microseconds: 1));
   int tabIndex = 0;
+
+  late Saf saf;
+  var _paths = [];
+
+  String? directory;
+
 
   @override
   void initState() {
@@ -85,161 +92,84 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
     if (androidSDK! >= 30) {
       if (newValue == 1) {
         try {
+          print("Version Greater");
+
+          directory = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses";
+
+          saf = Saf(directory!);
+
           directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-          try{
-            if(await directoryPath.exists()){
-              savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-              _prefs.setInt("statusValue", 1);
-              _activeAppController.changeActiveApp(1);
-              getSelectedDetails();
-            }
-            else{
-              ReusingWidgets.toast(text: "No WhatsApp Found");
-            }
-          }
-          catch(e){
-            print(e);
-          }
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
+          getSelectedDetails();
+          _prefs.setInt("statusValue", 1);
+          _activeAppController.changeActiveApp(1);
         }
         catch (e) {
+          print("Error is $e");
           ReusingWidgets.toast(text: "No WhatsApp Found");
           // pre.setInt("statusValue", 2);
         }
       } else if (newValue == 2) {
         try {
-          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-          try{
-            if(await directoryPath.exists()){
-              savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
-              _prefs.setInt("statusValue", 2);
-              _activeAppController.changeActiveApp(2);
-              getSelectedDetails();
-            }
-            else{
-              ReusingWidgets.toast(text: "No Business WhatsApp Found");
-            }
-          }
-          catch(e){
-            print(e);
-          }
-        }
-        catch (e) {
-          ReusingWidgets.toast(text: "No Business WhatsApp Found");
-          _prefs.setInt("statusValue", 1);
-        }
-      } else if (newValue == 3) {
-        try {
-          _prefs.setInt("statusValue", 3);
-          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.gb/GB WhatsApp/Media/.Statuses');
-          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
 
-          _activeAppController.changeActiveApp(3);
+          directory = "/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses";
+
+          saf = Saf(directory!);
+
+
+          _prefs.setInt("statusValue", 2);
+          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
           getSelectedDetails();
+          _activeAppController.changeActiveApp(2);
         }
         catch (e) {
           print("Error is $e");
+          ReusingWidgets.toast(text: "No Business WhatsApp Found");
+          _prefs.setInt("statusValue", 1);
         }
-      } else {
+      }
+      else {
+        print("ERROR 1111");
       }
     }
     else if (androidSDK! < 30) {
-      // if (newValue == 1) {
-      //   try {
-      //
-      //     directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
-      //     savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-      //
-      //     _activeAppController.changeActiveApp(1);
-      //     getSelectedDetails();
-      //   }
-      //   catch (e) {
-      //     print("Error is $e");
-      //     ReusingWidgets.toast(text: "No WhatsApp Found");
-      //     _prefs.setInt("statusValue", 2);
-      //   }
-      //
-      //
-      // }
-
       if (newValue == 1) {
         try {
-          directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
-          try{
-            if(await directoryPath.exists()){
-              savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-              _prefs.setInt("statusValue", 1);
-              _activeAppController.changeActiveApp(1);
-              getSelectedDetails();
-            }
-            else{
-              ReusingWidgets.toast(text: "No WhatsApp Found");
-            }
-          }
-          catch(e){
-            print(e);
-          }
-        }
-        catch (e) {
-          ReusingWidgets.toast(text: "No WhatsApp Found");
-          // pre.setInt("statusValue", 2);
-        }
-      }
-      else if (newValue == 2) {
-        // try {
-        //   _prefs.setInt("statusValue", 2);
-        //   directoryPath = Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses');
-        //   savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
-        //
-        //   _activeAppController.changeActiveApp(2);
-        //   getSelectedDetails();
-        // }
-        // catch (e) {
-        //   print("Error is $e");
-        //   ReusingWidgets.toast(text: "No Business WhatsApp Found");
-        //   _prefs.setInt("statusValue", 1);
-        // }
-
-        try {
-          directoryPath = Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses');
-          try{
-            if(await directoryPath.exists()){
-              savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
-              _prefs.setInt("statusValue", 2);
-              _activeAppController.changeActiveApp(2);
-              getSelectedDetails();
-            }
-            else{
-              ReusingWidgets.toast(text: "No Business WhatsApp Found");
-            }
-          }
-          catch(e){
-            print(e);
-          }
-        }
-        catch (e) {
-          ReusingWidgets.toast(text: "No Business WhatsApp Found");
           _prefs.setInt("statusValue", 1);
-        }
-
-      }
-      else if (newValue == 3) {
-        try {
-          _prefs.setInt("statusValue", 3);
-          directoryPath = Directory('/storage/emulated/0/GB WhatsApp/Media/.Statuses');
+          directoryPath = Directory('/storage/emulated/0/WhatsApp/Media/.Statuses');
           savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-
-          _activeAppController.changeActiveApp(3);
           getSelectedDetails();
+          _activeAppController.changeActiveApp(1);
         }
         catch (e) {
           print("Error is $e");
-          ReusingWidgets.toast(text: "No GB WhatsApp Found");
+          ReusingWidgets.toast(text: "No WhatsApp Found");
+          _prefs.setInt("statusValue", 2);
         }
-      } else {
+      }
+      else if (newValue == 2) {
+        try {
+          _prefs.setInt("statusValue", 2);
+          directoryPath = Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses');
+          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
+          getSelectedDetails();
+          _activeAppController.changeActiveApp(2);
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.toast(text: "No Business WhatsApp Found");
+          _prefs.setInt("statusValue", 1);
+        }
+      }
+      else {
+        print("ERROR 2");
       }
     }
     else {
+      print("ERROR");
     }
+    setState(() {});
   }
 
   getSelectedDetails() {
@@ -309,21 +239,6 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
         }
       }
     }
-  }
-
-  Future<bool> _onWillPop() async {
-    print("on will pop");
-    if (_tabController.index == 0) {
-      await SystemNavigator.pop();
-    }
-
-    Future.delayed(Duration(milliseconds: 200), () {
-      print("set index");
-      _tabController.index = 0;
-    });
-
-    print("return");
-    return _tabController.index == 0;
   }
 
   @override

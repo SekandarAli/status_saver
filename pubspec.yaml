@@ -47,6 +47,8 @@ dependencies:
 
   saf: ^1.0.3+4
 
+  file_picker: ^5.2.5
+
 
 dev_dependencies:
   flutter_test:
