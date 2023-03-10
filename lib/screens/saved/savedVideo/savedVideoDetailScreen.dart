@@ -49,7 +49,8 @@ class _SavedVideoDetailScreenState extends State<SavedVideoDetailScreen> {
               onPressed: () {
                 Share.shareXFiles(text: "Have a look on this Status",
                   [XFile(widget.videoPath.path.replaceAll("%20"," "))],);
-          },
+                ReusingWidgets.snackBar(context: context, text: "Please Wait...");
+              },
               icon: Icon(Icons.share)),
           IconButton(onPressed: () {
 

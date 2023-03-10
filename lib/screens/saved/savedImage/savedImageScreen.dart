@@ -159,6 +159,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                                     text: "Have a look on this Status",
                                     [XFile(Uri.parse(imageList[index]).path)],
                                   );
+                                  ReusingWidgets.snackBar(context: context, text: "Please Wait...");
                                 },
                                 onDownloadDeletePress: (){
 

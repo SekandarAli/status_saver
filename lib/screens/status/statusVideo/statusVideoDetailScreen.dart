@@ -60,7 +60,8 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
           IconButton(
               onPressed: () {
                 Share.shareXFiles(text: "Have a look on this Status", [XFile(myUri!.path.replaceAll("%20"," "))],);
-          },
+                ReusingWidgets.snackBar(context: context, text: "Please Wait...");
+              },
               icon: Icon(Icons.share)),
 
           ///OBX

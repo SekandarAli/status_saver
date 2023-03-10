@@ -112,6 +112,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                                     text: "Have a look on this Status",
                                     [XFile(Uri.parse(videoList[index]).path)],
                                   );
+                                  ReusingWidgets.snackBar(context: context, text: "Please Wait...");
                                 },
                                 onDownloadDeletePress: (){
 

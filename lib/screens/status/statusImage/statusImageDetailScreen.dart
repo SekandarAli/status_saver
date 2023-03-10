@@ -58,6 +58,7 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
                   text: "Have a look on this Status",
                   [XFile(myUri!.path.replaceAll("%20"," "))],
                 );
+                ReusingWidgets.snackBar(context: context, text: "Please Wait...");
               },
               icon: Icon(Icons.share)),
           Obx(() => Visibility(

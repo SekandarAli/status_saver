@@ -93,6 +93,7 @@ class StatusVideoScreenState extends State<StatusVideoScreen> {
                                 Share.shareXFiles(text: "Have a look on this Status",
                                   [XFile(Uri.parse(fileController.allStatusVideos.elementAt(index).filePath).path)],
                                 );
+                                ReusingWidgets.snackBar(context: context, text: "Please Wait...");
                               },
                               onDownloadDeletePress: fileController.allStatusVideos.elementAt(index).isSaved == false ?
                                   (){

@@ -56,6 +56,7 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
                   text: "Have a look on this Status",
                   [XFile(myUri!.path.replaceAll("%20"," "))],
                 );
+                ReusingWidgets.snackBar(context: context, text: "Please Wait...");
               },
               icon: Icon(Icons.share)),
           IconButton(
