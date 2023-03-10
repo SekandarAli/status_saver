@@ -158,7 +158,8 @@ class _SavedTabScreenState extends State<SavedTabScreen> with TickerProviderStat
         }
       }
 
-      /*  else  if (newValue == 2) {
+
+      else  if (newValue == 2) {
         try {
           try {
             bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
@@ -167,6 +168,7 @@ class _SavedTabScreenState extends State<SavedTabScreen> with TickerProviderStat
               directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
               savedDirectory = Directory(Constant.savedDirectoryBusinessWhatsApp);
               if (Directory(directoryPath.path).existsSync()) {
+                getPermissionsBusinessWhatsApp();
                 getSelectedDetails();
                 _prefs.setInt("statusValue", 2);
                 _activeAppController.changeActiveApp(2);
@@ -176,7 +178,7 @@ class _SavedTabScreenState extends State<SavedTabScreen> with TickerProviderStat
               }
             }
             else {
-              ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+              ReusingWidgets.snackBar(text: "No WhatsApp Business Found",context: context);
             }
           }
           catch (e) {
@@ -186,12 +188,12 @@ class _SavedTabScreenState extends State<SavedTabScreen> with TickerProviderStat
         catch (e) {
           print("Error is $e");
           if (context.mounted) {
-            ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+            ReusingWidgets.snackBar(text: "No WhatsApp Business Found",context: context);
             // _prefs.setInt("statusValue", 2);
           }
         }
-      }*/
-      else if (newValue == 2) {
+      }
+      /*else if (newValue == 2) {
         try {
 
           print("Version 2222222");
@@ -211,7 +213,7 @@ class _SavedTabScreenState extends State<SavedTabScreen> with TickerProviderStat
           ReusingWidgets.snackBar(text: "No Business WhatsApp Found", context: context);
           // _prefs.setInt("statusValue", 1);
         }
-      }
+      }*/
       else {
         print("ERROR 1111");
       }

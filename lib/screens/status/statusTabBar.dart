@@ -354,11 +354,16 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
   loadImage(paths) {
 
     fileController.allStatusImages.value = [];
-
     for (var element in paths) {
       if (element.endsWith(".jpg")) {
         if (_activeAppController.activeApp.value == 1){
-          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
+
+          savedDirectory = Directory(Constant.savedDirectoryWhatsApp);
+          savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
+
+
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first
+              .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
           }
@@ -367,16 +372,24 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
           }
         }
         else if (_activeAppController.activeApp.value == 2){
-          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+
+          savedDirectory = Directory(Constant.savedDirectoryBusinessWhatsApp);
+          savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
+
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first
+              .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
           }
           else{
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
           }
+
         }
       }
     }
+
+
     setState(() {});
   }
 
@@ -387,7 +400,12 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
     for (String element in paths) {
       if (element.endsWith(".mp4")) {
         if (_activeAppController.activeApp.value == 1){
-          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
+
+          savedDirectory = Directory(Constant.savedDirectoryWhatsApp);
+          savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
+
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first
+              .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
           }
@@ -396,7 +414,12 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
           }
         }
         else if (_activeAppController.activeApp.value == 2){
-          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+
+          savedDirectory = Directory(Constant.savedDirectoryBusinessWhatsApp);
+          savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
+
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first
+              .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
           }
@@ -549,52 +572,20 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
                 onSelected: (value) async {
 
                   if (value == 1) {
+                    setState(() {
+                      _activeAppController.activeApp.value = 1;
+                      // getPermissionsWhatsApp();
+                      // getSelectedDetails();
+                    });
                     await checkAndroidVersion(1);
-                    /*try {
-                      try {
-                        print("Whatsapp Installed1");
-                        bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
-                        if (isInstalled) {
-                          print("Whatsapp Installed");
-                          await checkAndroidVersion(1);
-                        }
-                        else {
-                          ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
-                        }
-                      }
-                      catch (e) {
-                        ReusingWidgets.snackBar(text: e.toString(),context: context);
-                      }
-                    }
-                    catch (e) {
-                      ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
-                    }*/
                   }
                   else if (value == 2) {
-                    await checkAndroidVersion(2);
-                    /* print("value");
-                    try {
-
-                      try {
-                        print("Business Whatsapp Installed1  ");
-
-                        bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
-                        if (isInstalled) {
-                          print("Business Whatsapp Installed");
-                          await checkAndroidVersion(2);
-                        } else {
-                          print("Business Whatsapp Installed11111");
-                          ReusingWidgets.snackBar(text: "WhatsApp Business Found but not Logged In",context: context);
-                        }
-                      } catch (e) {
-                        print("Business Whatsapp Installed22222");
-                        ReusingWidgets.snackBar(text: e.toString(),context: context);
-                      }
-                    }
-                    catch (e) {
-                      print("Business Whatsapp Installed3333");
-                      ReusingWidgets.snackBar(text: "No WhatsApp Business Found",context: context);
-                    }*/
+                    setState(() {
+                      _activeAppController.activeApp.value = 2;
+                      // getPermissionsWhatsApp();
+                      // getSelectedDetails();
+                    });
+                     await checkAndroidVersion(2);
                   }
                 },
               )
