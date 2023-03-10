@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:status_saver/app_theme/color.dart';
 import 'package:status_saver/app_theme/text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,6 +15,9 @@ import '../generated/assets.dart';
 class ReusingWidgets {
   WillPopScope permissionDialogue({
     required BuildContext context,
+    required String title,
+    required String buttonText,
+    required Color titleColor,
     required double width,
     required double height,
     required Function() onPress,
@@ -29,32 +33,76 @@ class ReusingWidgets {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           content: Container(
-            padding: EdgeInsets.all(30),
+            padding: EdgeInsets.all(15),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(Assets.imagesPermission,
-                    width: width, height: height / 3.5),
-                SizedBox(height: 10),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height / 3.5),
+                SizedBox(height: 15),
                 Text(
-                  "WhatsApp Permission",
+                  title,textAlign: TextAlign.center,
                   style: ThemeTexts.textStyleTitle2.copyWith(
-                      color: ColorsTheme.primaryColor, fontWeight: FontWeight.w500),
+                      color: titleColor, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 10),
-                Text("Allow access to .STATUSES Folder to get all Status.",
+                Text("Allow access to .STATUSES Folder to View statuses",
                     textAlign: TextAlign.center,
                     style: ThemeTexts.textStyleTitle3.copyWith(
                         color: Colors.black54, fontWeight: FontWeight.w400)),
                 SizedBox(height: 20),
-                // Text("*Require on Android 11 or higher or later",
-                //     textAlign: TextAlign.center,
-                //     style: ThemeTexts.textStyleTitle3.copyWith(
-                //         color: Colors.black54, fontWeight: FontWeight.w200)),
-                // SizedBox(height: 10),
                 allowPermissionButton(
                   context: context,
-                  text: "Allow permission",
+                  text: buttonText,
+                  onPress: () {
+                    onPress();
+                  },
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+
+
+  WillPopScope noDataFound({
+    required BuildContext context,
+    required String title,
+    required String buttonText,
+    required Color titleColor,
+    required double width,
+    required double height,
+    required Function() onPress,
+  }) =>
+      WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context);
+          return false;
+        },
+        child: AlertDialog(
+          titlePadding: EdgeInsets.all(0),
+          contentPadding: EdgeInsets.all(0),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          content: Container(
+            padding: EdgeInsets.all(15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                emptyData(context: context),
+                SizedBox(height: 15),
+                Text(
+                  title,textAlign: TextAlign.center,
+                  style: ThemeTexts.textStyleTitle2.copyWith(
+                      color: titleColor, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 10),
+                allowPermissionButton(
+                  context: context,
+                  text: buttonText,
                   onPress: () {
                     onPress();
                   },
@@ -91,13 +139,22 @@ class ReusingWidgets {
     );
   }
 
-  // static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar({
-  //   required BuildContext context,
-  //   required String text,
-  // }) {
-  //   return ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text(text), duration: Duration(milliseconds: 800)));
-  // }
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar({
+    required BuildContext context,
+    required String text,
+  }) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(text,textAlign: TextAlign.center,), duration: Duration(milliseconds: 500),
+          backgroundColor: ColorsTheme.primaryColor,
+          padding: EdgeInsets.all(15),
+          showCloseIcon: false,
+          closeIconColor: ColorsTheme.white,
+          behavior: SnackBarBehavior.floating,
+          width: MediaQuery.of(context).size.width * 0.7,
+          dismissDirection: DismissDirection.startToEnd,
+        ));
+  }
 
   static Future<bool?> toast({
     required String text,
@@ -589,7 +646,7 @@ class ReusingWidgets {
               height: MediaQuery.of(context).size.width / 3,
               width: MediaQuery.of(context).size.width / 3,
             ),
-            Text("Oops! No Data Found!",textAlign: TextAlign.center,style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.primaryColor),)
+            Text("Oops! No Data Found!",textAlign: TextAlign.center,style: ThemeTexts.textStyleTitle2.copyWith(color: ColorsTheme.textColor),)
           ],
         ),
       ),
@@ -731,7 +788,44 @@ class ReusingWidgets {
     );
   }
 
+  static Widget shimmerEffect({required BuildContext context}){
+    return  ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      child: Shimmer.fromColors(
+          baseColor: ColorsTheme.primaryColor.withOpacity(0.3),
+          highlightColor: Colors.grey,
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  color: ColorsTheme.primaryColor.withOpacity(0.7),
+                ),
+              ),
+              SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 35,
+                      color: ColorsTheme.primaryColor,
 
+                    ),
+                  ),
+                  SizedBox(width: 1),
+                  Expanded(
+                    child: Container(
+                      height: 35,
+                      color: ColorsTheme.primaryColor,
+
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),),
+    );
+  }
 }
 
 
@@ -791,7 +885,10 @@ class NoWhatsAppFound extends StatelessWidget {
             ))
     );
   }
+
 }
+
+
 
 
 // Share.shareFiles([Uri.parse(imageList[index]).path], text: 'Have a look on this Status');

@@ -64,8 +64,8 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               visible: fileController.allStatusImages.elementAt(currentIndex).isSaved,
               child: IconButton(
                   onPressed: () {
-                    // ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
-                    ReusingWidgets.toast(text: "Image Already Saved");
+                    ReusingWidgets.snackBar(context: context, text: "Image Already Saved");
+                    // ReusingWidgets.toast(text: "Image Already Saved");
                   },
                   icon: Icon(Icons.done,color: ColorsTheme.doneColor,)))),
           Obx(() => Visibility(
@@ -76,12 +76,18 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
                     _activeAppController.activeApp.value == 1 ?
                     GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
                         albumName: "StatusSaver",
-                        toDcim: true).then((value) {fileController.allStatusImages.elementAt(currentIndex).isSaved = true;fileController.allStatusImages.refresh();}) :
+                        toDcim: true).then((value) {
+                          fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
+                          fileController.allStatusImages.refresh();
+                        }) :
                     GallerySaver.saveImage(myUri!.path.replaceAll("%20"," "),
                         albumName: "StatusSaverBusiness",
-                        toDcim: true).then((value) {fileController.allStatusImages.elementAt(currentIndex).isSaved = true;fileController.allStatusImages.refresh();});
-                    // ReusingWidgets.snackBar(context: context, text: "Image Saved");
-                    ReusingWidgets.toast(text: "Image Saved");
+                        toDcim: true).then((value) {
+                          fileController.allStatusImages.elementAt(currentIndex).isSaved = true;
+                          fileController.allStatusImages.refresh();
+                        });
+                    ReusingWidgets.snackBar(context: context, text: "Image Saved Successfully!");
+                    // ReusingWidgets.toast(text: "Image Saved");
 
 
                   },
@@ -93,31 +99,27 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
         height: h,
         child: CarouselSlider(
              items: fileController.allStatusImages.map((index) {
-            return Builder(
-            builder: (BuildContext context) {
-                return InteractiveViewer(
-                  panAxis: PanAxis.free,
-                  panEnabled: false,
-                  minScale: 0.5,
-                  maxScale: 5,
-                  child: Hero(
-                    tag: currentIndex,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.file(
-                          File(fileController.allStatusImages.elementAt(currentIndex).filePath),
-                          fit: BoxFit.fill,
-                          // width: double.infinity,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }
-            );
-          }).toList(),
+               return Builder(
+                   builder: (BuildContext context) {
+                     return InteractiveViewer(
+                       panAxis: PanAxis.free,
+                       panEnabled: false,
+                       minScale: 0.5,
+                       maxScale: 5,
+                       child: Padding(
+                         padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                         child: ClipRRect(
+                           borderRadius: BorderRadius.circular(20),
+                           child: Image.file(
+                             File(fileController.allStatusImages.elementAt(currentIndex).filePath),
+                             fit: BoxFit.contain,
+                           ),
+                         ),
+                       ),
+                     );
+                   }
+              );
+             }).toList(),
             options: CarouselOptions(
               aspectRatio: 0.75,
               viewportFraction: 1,
@@ -125,7 +127,7 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               initialPage: currentIndex,
               enableInfiniteScroll: true,
               reverse: false,
-              autoPlay: true,
+              autoPlay: false,
               autoPlayInterval: Duration(seconds: 5),
               autoPlayAnimationDuration: Duration(milliseconds: 800),
               autoPlayCurve: Curves.fastOutSlowIn,
@@ -140,7 +142,7 @@ class _StatusImageDetailScreenState extends State<StatusImageDetailScreen> {
               scrollDirection: Axis.horizontal,
             )
         ),
-      ),),
+      )),
     );
   }
 }

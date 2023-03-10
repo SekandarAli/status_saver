@@ -1,16 +1,18 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'dart:developer';
 import 'dart:io';
 import 'package:device_apps/device_apps.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:saf/saf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:status_saver/app_theme/reusing_widgets.dart';
+import 'package:status_saver/constants/constant.dart';
 import 'package:status_saver/controller/active_app_controller.dart';
 import 'package:status_saver/generated/assets.dart';
 import 'package:status_saver/screens/status/statusImage/statusImageScreen.dart';
@@ -21,6 +23,7 @@ import '../../../app_theme/text_styles.dart';
 import '../../../bottomNavbar/bottomNavbarScreen.dart';
 import '../../../controller/fileController.dart';
 import '../../../model/fileModel.dart';
+import '../../controller/permission_controller.dart';
 
 class StatusTabScreen extends StatefulWidget {
   const StatusTabScreen({Key? key}) : super(key: key);
@@ -30,8 +33,8 @@ class StatusTabScreen extends StatefulWidget {
 }
 
 class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderStateMixin{
+
   int? androidSDK;
-  FileController fileController = Get.put(FileController());
 
   late List<String> imageList;
   late List<String> videoList;
@@ -40,49 +43,112 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
   late Directory directoryPath;
   late Directory savedDirectory;
 
-  late SharedPreferences _prefs;
-
   final ActiveAppController _activeAppController = Get.put(ActiveAppController());
-
+  final FileController fileController = Get.put(FileController());
+  final PermissionController _permissionController = Get.put(PermissionController());
   late final TabController _tabController = TabController(length: 2, vsync: this,animationDuration: Duration(microseconds: 1));
+
   int tabIndex = 0;
-
   late Saf saf;
-  var _paths = [];
-
   String? directory;
 
+  late SharedPreferences _prefs;
 
   @override
   void initState() {
     super.initState();
+    createFolder();
+    createFolderBusiness();
     getPrefs();
 
-    _tabController.addListener(() {
-      if (_tabController.index == 0) {
-        setState(() {
-          tabIndex = 0;
-          _tabController.index =  tabIndex;
-        });
-      }
-      else if (_tabController.index == 1) {
-        setState(() {
-          tabIndex = 1;
-          _tabController.index = tabIndex;
-        });
-      }
-      else if (_tabController.index == 2) {
-        setState(() {
-          tabIndex = 2;
-          _tabController.index =  tabIndex;
-        });
-      }
-    });
+
+    print("Status Tab Screen");
+
+
+
+  }
+
+  createFolder() async {
+    const folderName = "StatusSaver";
+    final path = Directory('/storage/emulated/0/DCIM/$folderName');
+    if ((await path.exists())) {
+      print("Path Exist tab");
+    }
+    else {
+      path.create();
+      print("Path created tab");
+    }
+  }
+
+  createFolderBusiness() async {
+    const folderName = "StatusSaverBusiness";
+    final path = Directory('/storage/emulated/0/DCIM/$folderName');
+    if ((await path.exists())) {
+      print("Path Exist tab");
+    }
+    else {
+      path.create();
+      print("Path created tab");
+    }
   }
 
   getPrefs() async {
     _prefs =  await SharedPreferences.getInstance();
    }
+
+  getPermissionsWhatsApp() async {
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    bool? permission =  preferences.getBool('isGrantedWhatsApp');
+
+    if(permission == null || permission == false){
+      _permissionController.permissionGrantedWhatsApp.value = false;
+      bool? isGranted = await saf.getDirectoryPermission(isDynamic: false);
+
+      if(isGranted == null || isGranted == false ){
+        _permissionController.changePermissionWhatsApp(false);
+      }
+      else{
+        _permissionController.changePermissionWhatsApp(true);
+      }
+    }
+    else{
+      _permissionController.permissionGrantedWhatsApp.value = true;
+    }
+
+    if(_permissionController.permissionGrantedWhatsApp.value){
+      List<String>? directoriesPath = await Saf.getPersistedPermissionDirectories();
+      await getSync();
+    }
+  }
+
+  getPermissionsBusinessWhatsApp() async {
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    bool? permission =  preferences.getBool('isGrantedBusinessWhatsApp');
+
+    if(permission == null || permission == false){
+      _permissionController.permissionGrantedBusinessWhatsApp.value = false;
+      bool? isGranted = await saf.getDirectoryPermission(isDynamic: false);
+
+      if(isGranted == null || isGranted == false ){
+        _permissionController.changePermissionBusinessWhatsApp(false);
+      }
+      else{
+        _permissionController.changePermissionBusinessWhatsApp(true);
+      }
+    }
+    else{
+      _permissionController.permissionGrantedBusinessWhatsApp.value = true;
+    }
+
+    if(_permissionController.permissionGrantedBusinessWhatsApp.value){
+      List<String>? directoriesPath = await Saf.getPersistedPermissionDirectories();
+      log("directoriesPath$directoriesPath");
+      await getSync();
+
+    }
+  }
 
   checkAndroidVersion(int newValue) async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -90,50 +156,104 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
       androidSDK = androidInfo.version.sdkInt;
     });
     if (androidSDK! >= 30) {
-      if (newValue == 1) {
+      print("greater than 30");
+      if (newValue == 1)  {
         try {
-          print("Version Greater");
+          try {
+            bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
+            if (isInstalled) {
+              saf = Saf(Constant.whatsAppPath);
+              directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+              savedDirectory = Directory(Constant.savedDirectoryWhatsApp);
+              if (Directory(directoryPath.path).existsSync()) {
+                getPermissionsWhatsApp();
+                getSelectedDetails();
+                _prefs.setInt("statusValue", 1);
+                _activeAppController.changeActiveApp(1);
+              }
 
-          directory = "/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses";
-
-          saf = Saf(directory!);
-
-          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaver/');
-          getSelectedDetails();
-          _prefs.setInt("statusValue", 1);
-          _activeAppController.changeActiveApp(1);
+              else{
+                ReusingWidgets.snackBar(text: "WhatsApp found but Not Logged In",context: context);
+              }
+            }
+            else {
+              ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+            }
+          }
+          catch (e) {
+            ReusingWidgets.snackBar(text: e.toString(),context: context);
+          }
         }
         catch (e) {
           print("Error is $e");
-          ReusingWidgets.toast(text: "No WhatsApp Found");
-          // pre.setInt("statusValue", 2);
-        }
-      } else if (newValue == 2) {
-        try {
-
-          directory = "/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses";
-
-          saf = Saf(directory!);
-
-
-          _prefs.setInt("statusValue", 2);
-          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-          savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
-          getSelectedDetails();
-          _activeAppController.changeActiveApp(2);
-        }
-        catch (e) {
-          print("Error is $e");
-          ReusingWidgets.toast(text: "No Business WhatsApp Found");
-          _prefs.setInt("statusValue", 1);
+          if (context.mounted) {
+            ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+            // _prefs.setInt("statusValue", 2);
+          }
         }
       }
+
+      else  if (newValue == 2) {
+        try {
+          try {
+            bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
+            if (isInstalled) {
+              saf = Saf(Constant.businessWhatsAppPath);
+              directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+              savedDirectory = Directory(Constant.savedDirectoryBusinessWhatsApp);
+              if (Directory(directoryPath.path).existsSync()) {
+                getPermissionsBusinessWhatsApp();
+                getSelectedDetails();
+                _prefs.setInt("statusValue", 2);
+                _activeAppController.changeActiveApp(2);
+              }
+              else{
+                ReusingWidgets.snackBar(text: "Business WhatsApp found but Not Logged In",context: context);
+              }
+            }
+            else {
+              ReusingWidgets.snackBar(text: "No WhatsApp Business Found",context: context);
+            }
+          }
+          catch (e) {
+            ReusingWidgets.snackBar(text: e.toString(),context: context);
+          }
+        }
+        catch (e) {
+          print("Error is $e");
+          if (context.mounted) {
+            ReusingWidgets.snackBar(text: "No WhatsApp Business Found",context: context);
+            // _prefs.setInt("statusValue", 2);
+          }
+        }
+      }
+    /*  else if (newValue == 2) {
+        try {
+
+          print("Version 2222222");
+
+          saf = Saf(Constant.businessWhatsAppPath);
+          directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
+          savedDirectory = Directory(Constant.savedDirectoryBusinessWhatsApp);
+
+          getPermissionsBusinessWhatsApp();
+          getSelectedDetails();
+          _prefs.setInt("statusValue", 2);
+          _activeAppController.changeActiveApp(2);
+
+        }
+        catch (e) {
+          print("Error is $e");
+          ReusingWidgets.snackBar(text: "No Business WhatsdssdApp Found", context: context);
+          // _prefs.setInt("statusValue", 1);
+        }
+      }*/
       else {
         print("ERROR 1111");
       }
     }
     else if (androidSDK! < 30) {
+      print("less than 30");
       if (newValue == 1) {
         try {
           _prefs.setInt("statusValue", 1);
@@ -144,11 +264,43 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
         }
         catch (e) {
           print("Error is $e");
-          ReusingWidgets.toast(text: "No WhatsApp Found");
-          _prefs.setInt("statusValue", 2);
+          ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+          // _prefs.setInt("statusValue", 2);
         }
       }
-      else if (newValue == 2) {
+      else  if (newValue == 2) {
+        try {
+          try {
+            bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
+            if (isInstalled) {
+              _prefs.setInt("statusValue", 2);
+              directoryPath = Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses');
+              savedDirectory = Directory('/storage/emulated/0/DCIM/StatusSaverBusiness/');
+              if (Directory(directoryPath.path).existsSync()) {
+                getSelectedDetails();
+                _activeAppController.changeActiveApp(2);
+              }
+              else{
+                ReusingWidgets.snackBar(text: "Business WhatsApp found but Not Logged In",context: context);
+              }
+            }
+            else {
+              ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+            }
+          }
+          catch (e) {
+            ReusingWidgets.snackBar(text: e.toString(),context: context);
+          }
+        }
+        catch (e) {
+          print("Error is $e");
+          if (context.mounted) {
+            ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+            // _prefs.setInt("statusValue", 2);
+          }
+        }
+      }
+      /*else if (newValue == 2) {
         try {
           _prefs.setInt("statusValue", 2);
           directoryPath = Directory('/storage/emulated/0/WhatsApp Business/Media/.Statuses');
@@ -158,10 +310,10 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
         }
         catch (e) {
           print("Error is $e");
-          ReusingWidgets.toast(text: "No Business WhatsApp Found");
-          _prefs.setInt("statusValue", 1);
+          ReusingWidgets.snackBar(text: "No Business WhatsApp Found",context: context);
+          // _prefs.setInt("statusValue", 1);
         }
-      }
+      }*/
       else {
         print("ERROR 2");
       }
@@ -176,69 +328,85 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
     imageList =directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
     videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
-    getImageData();
-    getVideoData();
+    // getImageData();
+    // getVideoData();
+    getSync();
+
   }
 
-  getImageData() {
+  getSync() async{
+    var cachedFilesPath = await saf.cache();
+    if (cachedFilesPath != null) {
+      loadImage(cachedFilesPath);
+      loadVideos(cachedFilesPath);
+    }
+  }
+
+/*  getSync() async{
+    var isSync = await saf.sync();
+    if (isSync as bool) {
+      var paths = await saf.getCachedFilesPath();
+      loadImage(paths);
+      loadVideos(paths);
+    }
+  }*/
+
+  loadImage(paths) {
+
     fileController.allStatusImages.value = [];
-    if (imageList.isNotEmpty) {
-      for (var element in imageList) {
-        // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
+
+    for (var element in paths) {
+      if (element.endsWith(".jpg")) {
         if (_activeAppController.activeApp.value == 1){
-          if (savedList.map((e) =>
-              e.split("StatusSaver/").last.split(".").first.toString()).
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
-
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-          } else {
-            // print("ELSE${element.substring(72,104)}");
-
-            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
           }
-        }else if(_activeAppController.activeApp.value == 2){
-          if (savedList.map((e) =>
-              e.split("StatusSaverBusiness/").last.split(".").first.toString()).
-          contains(element.split(".Statuses/").last.split(".").first)) {
-            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-          } else {
-            // print("ELSE${element.substring(72,104)}");
+          else{
             fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
           }
         }
-
+        else if (_activeAppController.activeApp.value == 2){
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+          }
+          else{
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
       }
     }
+    setState(() {});
   }
 
-  getVideoData() {
+  loadVideos(paths) {
+
     fileController.allStatusVideos.value = [];
-    if (videoList.isNotEmpty) {
-      for (var element in videoList) {
-        // if (savedList.map((e) => e.substring(37, 69).toString()).contains(element.substring(72, 104))) {
 
-
+    for (String element in paths) {
+      if (element.endsWith(".mp4")) {
         if (_activeAppController.activeApp.value == 1){
-          if (savedList.map((e) =>
-              e.split("StatusSaver/").last.split(".").first.toString()).
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
-          } else {
+          }
+          else{
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
           }
         }
-        else if(_activeAppController.activeApp.value == 2){
-          if (savedList.map((e) =>
-              e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+        else if (_activeAppController.activeApp.value == 2){
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
           contains(element.split(".Statuses/").last.split(".").first)) {
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
           }
-          else {
+          else{
             fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
           }
         }
       }
     }
+    setState(() {});
   }
 
   @override
@@ -276,13 +444,13 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
                           await DeviceApps.isAppInstalled('com.whatsapp');
                           if (isInstalled) {
                             DeviceApps.openApp("com.whatsapp").then((value) {
-                              ReusingWidgets.toast(text: "Opening WhatsApp...");
+                              ReusingWidgets.snackBar(text: "Opening WhatsApp...",context: context);
                             });
                           } else {
                             launchUrl(Uri.parse("market://details?id=com.whatsapp"));
                           }
                         } catch (e) {
-                          ReusingWidgets.toast(text: e.toString());
+                          ReusingWidgets.snackBar(text: e.toString(),context: context);
                         }
                       },
                       child: Image.asset(
@@ -304,13 +472,13 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
                           bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
                           if (isInstalled) {
                             DeviceApps.openApp("com.whatsapp.w4b").then((value) {
-                              ReusingWidgets.toast(text: "Opening Business WhatsApp...");
+                              ReusingWidgets.snackBar(text: "Opening Business WhatsApp...",context: context);
                             });
                           } else {
                             launchUrl(Uri.parse("market://details?id=com.whatsapp.w4b"));
                           }
                         } catch (e) {
-                          ReusingWidgets.toast(text: e.toString());
+                          ReusingWidgets.snackBar(text: e.toString(),context: context);
                         }
                       },
                       child: Image.asset(
@@ -381,55 +549,67 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
                 onSelected: (value) async {
 
                   if (value == 1) {
-                    try {
-
+                    await checkAndroidVersion(1);
+                    /*try {
                       try {
+                        print("Whatsapp Installed1");
                         bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp');
                         if (isInstalled) {
+                          print("Whatsapp Installed");
                           await checkAndroidVersion(1);
                         }
                         else {
-                          ReusingWidgets.toast(text: "No WhatsApp Found");
+                          ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
                         }
-                      } catch (e) {
-                        ReusingWidgets.toast(text: e.toString());
                       }
-
-                    } catch (e) {
-                      ReusingWidgets.toast(text: "No WhatsApp Found");
-                    }
-                  }
-                  else if (value == 2) {
-                    try {
-
-                      try {
-                        bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
-                        if (isInstalled) {
-                          await checkAndroidVersion(2);
-                        } else {
-                          ReusingWidgets.toast(text: "No WhatsApp Business Found");
-                        }
-                      } catch (e) {
-                        ReusingWidgets.toast(text: e.toString());
+                      catch (e) {
+                        ReusingWidgets.snackBar(text: e.toString(),context: context);
                       }
                     }
                     catch (e) {
-                      ReusingWidgets.toast(text: "No WhatsApp Business Found");
-                    }
+                      ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+                    }*/
                   }
-                  fileController.allStatusImages.forEach((element) {
-                    log("ELEMENT IS ${element.isSaved}");
-                  });
+                  else if (value == 2) {
+                    await checkAndroidVersion(2);
+                    /* print("value");
+                    try {
+
+                      try {
+                        print("Business Whatsapp Installed1  ");
+
+                        bool isInstalled = await DeviceApps.isAppInstalled('com.whatsapp.w4b');
+                        if (isInstalled) {
+                          print("Business Whatsapp Installed");
+                          await checkAndroidVersion(2);
+                        } else {
+                          print("Business Whatsapp Installed11111");
+                          ReusingWidgets.snackBar(text: "WhatsApp Business Found but not Logged In",context: context);
+                        }
+                      } catch (e) {
+                        print("Business Whatsapp Installed22222");
+                        ReusingWidgets.snackBar(text: e.toString(),context: context);
+                      }
+                    }
+                    catch (e) {
+                      print("Business Whatsapp Installed3333");
+                      ReusingWidgets.snackBar(text: "No WhatsApp Business Found",context: context);
+                    }*/
+                  }
                 },
               )
           ],
           backgroundColor: ColorsTheme.primaryColor,
           elevation: 0,
           bottom: TabBar(
+            physics: BouncingScrollPhysics(),
+            dragStartBehavior: DragStartBehavior.start,
+            indicatorSize: TabBarIndicatorSize.tab,
+            // isScrollable: true,
+            labelPadding: EdgeInsets.symmetric(horizontal:40,vertical: 0),
             unselectedLabelColor: ColorsTheme.lightWhite,
             labelColor: ColorsTheme.white,
             indicatorColor: ColorsTheme.lightWhite,
-            labelPadding: EdgeInsets.symmetric(horizontal: 2),
             indicatorWeight: 3,
             tabs: [
               Tab(text: "IMAGES"),

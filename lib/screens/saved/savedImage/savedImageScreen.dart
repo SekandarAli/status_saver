@@ -77,12 +77,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
       androidSDK = androidInfo.version.sdkInt;
     });
     if (androidSDK! >= 30) {
-      final currentStatusManaged = await Permission.manageExternalStorage.status;
-      if (currentStatusManaged.isGranted) {
-        return 1;
-      } else {
-        return 0;
-      }
+      return 1;
     } else {
       final currentStatusStorage = await Permission.storage.status;
       if (currentStatusStorage.isGranted) {
@@ -95,13 +90,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
 
   Future<int> requestPermission() async {
     if (androidSDK! >= 30) {
-      final requestStatusManaged =
-      await Permission.manageExternalStorage.request();
-      if (requestStatusManaged.isGranted) {
-        return 1;
-      } else {
-        return 0;
-      }
+      return 1;
     } else {
       final requestStatusStorage = await Permission.storage.request();
       if (requestStatusStorage.isGranted) {
@@ -194,7 +183,7 @@ class SavedImageScreenState extends State<SavedImageScreen> {
                                       }
                                     }
                                   });
-                                  ReusingWidgets.toast(text: "Image Deleted Successfully!");
+                                  ReusingWidgets.snackBar(context: context, text: "Image Deleted");
                                 },
                               ),
                             );

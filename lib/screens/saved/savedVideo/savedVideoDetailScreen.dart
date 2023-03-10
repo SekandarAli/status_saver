@@ -118,6 +118,7 @@ class _SavedControllerState extends State<SavedController> {
 
   @override
   void dispose() {
+    chewieController!.pause();
     widget.videoPlayerController.dispose();
     chewieController!.dispose();
     super.dispose();

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
  class ColorsTheme{
-   static Color textColor = Colors.black.withOpacity(0.7);
+   static Color textColor = Colors.grey.shade700;
    static Color lightWhite = Colors.white.withOpacity(0.7);
    static MaterialColor themeColor = Colors.deepOrange;
-   static Color dismissColor = Colors.red;
+   static Color dismissColor = Colors.red.shade900;
    static Color lightGrey = Colors.grey.shade400;
    static Color primaryColor = Color(0xff075e54);
    static Color doneColor = Color(0xffe0d625);

@@ -4,7 +4,7 @@ class ActiveAppController extends GetxController{
 
   RxInt activeApp = 1.obs;
 
-  void changeActiveApp(int newActiveApp){
+  Future<void> changeActiveApp(int newActiveApp) async {
     activeApp.value = newActiveApp;
   }
 

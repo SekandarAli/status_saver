@@ -80,37 +80,19 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
                     }
                   }
                 });
-                ReusingWidgets.toast(text: "Image Deleted Successfully!");
 
-
-
-                // File(widget.imgList[widget.indexNo]).delete();
-                // for (var element in fileController.allStatusImages) {
-                //   if(element.filePath.toString().split(".Statuses/").last.split(".").first.
-                //   contains( File(widget.imgList[widget.indexNo]).toString().split("StatusSaver/").last.split(".").first)){
-                //     element.isSaved = false;
-                //   }
-                // }
-                //   ReusingWidgets.toast(text: "Image Deleted Successfully");
+                ReusingWidgets.snackBar(context: context, text: "Image Deleted");
                   Navigator.pop(context);
+                // widget.indexNo = widget.indexNo+1;
+                // myUri = Uri.parse(File(widget.imgList[widget.indexNo]).path);
+                // setState(() {});
               }, icon: Icon(Icons.delete,color: ColorsTheme.dismissColor,)),
         ],
       ),
-      // body: Hero(
-      //   tag: widget.imgList,
-      //   child: Center(
-      //     child: Image.file(
-      //       widget.imgPath,
-      //       fit: BoxFit.cover,
-      //     ),
-      //   ),
-      // ),
        body: Container(
          color: Colors.black,
          height: h ,
          child: CarouselSlider(
-           // itemCount: widget.imgList.length,
-           // itemBuilder: (BuildContext context, int index,_) {
             items: widget.imgList.map((index) {
              return Builder(
                builder: (context) {
@@ -118,17 +100,13 @@ class _SavedImageDetailScreenState extends State<SavedImageDetailScreen> {
                    panEnabled: false,
                    minScale: 0.5,
                    maxScale: 5,
-                   child: Hero(
-                     tag: widget.indexNo,
-                     child: Padding(
-                       padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
-                       child: ClipRRect(
-                         borderRadius: BorderRadius.circular(20),
-                         child: Image.file(
-                           File(widget.imgList[widget.indexNo]),
-                           fit: BoxFit.fill,
-                           // width: double.infinity,
-                         ),
+                   child: Padding(
+                     padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                     child: ClipRRect(
+                       borderRadius: BorderRadius.circular(20),
+                       child: Image.file(
+                         File(widget.imgList[widget.indexNo]),
+                         fit: BoxFit.contain,
                        ),
                      ),
                    ),

@@ -49,6 +49,8 @@ dependencies:
 
   file_picker: ^5.2.5
 
+  app_settings: ^4.2.0
+
 
 dev_dependencies:
   flutter_test:

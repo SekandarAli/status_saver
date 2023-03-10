@@ -140,7 +140,7 @@ class SavedVideoScreenState extends State<SavedVideoScreen> {
                             ),
                           );
                         } else {
-                          return ReusingWidgets.loadingAnimation();
+                          return ReusingWidgets.shimmerEffect(context: context);
                         }
                     });
               },

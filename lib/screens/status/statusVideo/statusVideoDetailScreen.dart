@@ -69,7 +69,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
               visible: fileController.allStatusVideos.elementAt(widget.indexNo).isSaved,
               child: IconButton(
                   onPressed: () {
-                    ReusingWidgets.toast(text: "Video Already Saved");
+                    ReusingWidgets.snackBar(text: "Video Already Saved",context: context);
                   }, icon: Icon(Icons.done,color: ColorsTheme.doneColor,)),
             )
           ),
@@ -93,7 +93,7 @@ class _StatusVideoDetailScreenState extends State<StatusVideoDetailScreen> {
                   fileController.allStatusVideos.elementAt(widget.indexNo).isSaved = true;
                   fileController.allStatusVideos.refresh();
                 });
-                ReusingWidgets.toast(text: "Image Saved");
+                ReusingWidgets.snackBar(text: "Video Saved Successfully!",context: context);
               }, icon: Icon(Icons.save_alt)),
             )
           )
