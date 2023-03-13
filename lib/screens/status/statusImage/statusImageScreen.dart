@@ -1,3 +1,6 @@
+// status image screeen friday
+
+
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, avoid_print
 
 import 'dart:developer';
@@ -38,7 +41,7 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
 
   int? storagePermissionCheck;
   Future<int>? storagePermissionChecker;
-  int? androidSDK;
+  // int? androidSDK;
 
   late List<String> imageList;
   late List<String> videoList;
@@ -60,12 +63,13 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
 
   bool isAppInstalled = false;
 
+  int androidSDKVersion = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // getPermissionsWhatsApp();
-    // getPermissionsBusinessWhatsApp();
+
     createFolder();
     createFolderBusiness();
 
@@ -75,6 +79,7 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
     getSync();
     storagePermission();
 
+    getAndroidSDKVersion();
     print("Status Image Screen");
   }
 
@@ -104,36 +109,36 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
   loadImage(paths) {
 
     fileController.allStatusImages.value = [];
-      for (var element in paths) {
-        if (element.endsWith(".jpg")) {
-          if (_activeAppController.activeApp.value == 1){
+    for (var element in paths) {
+      if (element.endsWith(".jpg")) {
+        if (_activeAppController.activeApp.value == 1){
 
-            savedDirectory = Directory(Constant.savedDirectoryWhatsApp);
-            savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
+          savedDirectory = Directory(Constant.savedDirectoryWhatsApp);
+          savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
 
 
-            if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first
-                .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
-            contains(element.split(".Statuses/").last.split(".").first)) {
-              fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-            }
-            else{
-              fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
-            }
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first
+              .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
           }
-          else if (_activeAppController.activeApp.value == 2){
+          else{
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
+        else if (_activeAppController.activeApp.value == 2){
 
-            savedDirectory = Directory(Constant.savedDirectoryBusinessWhatsApp);
-            savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
+          savedDirectory = Directory(Constant.savedDirectoryBusinessWhatsApp);
+          savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith(".mp4")).toList(growable: false);
 
-            if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first
-                .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
-            contains(element.split(".Statuses/").last.split(".").first)) {
-              fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
-            }
-            else{
-              fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
-            }
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first
+              .replaceAll(" (1)","").replaceAll(" (2)","").replaceAll(" (3)","").toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+          }
+          else{
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          }
 
         }
       }
@@ -212,9 +217,9 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
   checkAndroidVersion(int newValue) async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
-      androidSDK = androidInfo.version.sdkInt;
+      androidSDKVersion = androidInfo.version.sdkInt;
     });
-    if (androidSDK! >= 30) {
+    if (androidSDKVersion >= 30) {
       print("greater than 30");
       if (newValue == 1)  {
         try {
@@ -311,7 +316,7 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
         print("ERROR 1111");
       }
     }
-    else if (androidSDK! < 30) {
+    else if (androidSDKVersion < 30) {
       print("less than 30");
       if (newValue == 1) {
         try {
@@ -323,7 +328,7 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
         }
         catch (e) {
           print("Error is $e");
-          ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+          // ReusingWidgets.snackBar(text: "No WhatsApphhh Found",context: context);
           // _prefs.setInt("statusValue", 2);
         }
       }
@@ -473,11 +478,23 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
   Future<int> loadPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     setState(() {
-      androidSDK = androidInfo.version.sdkInt;
+      androidSDKVersion = androidInfo.version.sdkInt;
     });
-    if (androidSDK! >= 30) {
+    if (androidSDKVersion >= 30) {
       // getPermissions();
-      return 1;
+      // return 1;
+
+      if(_activeAppController.activeApp.value == 1){
+        return 1;
+      }
+      else if(_activeAppController.activeApp.value == 2){
+        return 2;
+      }
+      else{
+        return 4;
+      }
+
+
     }
     else {
       print("less thanddd 30");
@@ -487,7 +504,7 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
       }
       else if(currentStatusStorage.isPermanentlyDenied){
         // await Permission.storage.request();
-        return 2;
+        return 3;
       } else {
         return 0;
       }
@@ -495,9 +512,19 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
   }
 
   Future<int> requestPermission() async {
-    if (androidSDK! >= 30) {
+    if (androidSDKVersion >= 30) {
       // getPermissions();
-      return 1;
+
+      if(_activeAppController.activeApp.value == 1){
+        return 1;
+      }
+      else if(_activeAppController.activeApp.value == 2){
+        return 2;
+      }
+      else{
+        return 4;
+      }
+
     }
 
     else {
@@ -509,7 +536,7 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
 
       else if(requestStatusStorage.isPermanentlyDenied){
         // await Permission.storage.request();
-        return 2;
+        return 3;
       }
       else{
         return 0;
@@ -523,13 +550,13 @@ class StatusImageScreenState extends State<StatusImageScreen> with WidgetsBindin
 
   Future pullRefresh() async {
     setState(() {
-      storagePermissionChecker = requestPermission();
+      checkAndroidVersion(_activeAppController.activeApp.value);
       log("pull to refresh");
     });
   }
 
   getPermissionsWhatsApp() async {
-log('Get Permission Whatsapp');
+
     SharedPreferences preferences = await SharedPreferences.getInstance();
     bool? permission =  preferences.getBool('isGrantedWhatsApp');
 
@@ -587,10 +614,25 @@ log('Get Permission Whatsapp');
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      setState(() {
-        log("resumed");
-        getSync();
-      });
+      if(androidSDKVersion >= 30){
+        setState(() {
+          log("resumed greater 30");
+          getSync();
+        });
+      }
+
+      else if(androidSDKVersion < 30){
+        setState(() {
+          log("resumed less 30");
+          checkAndroidVersion(_activeAppController.activeApp.value);
+          // storagePermission();
+          storagePermissionChecker = requestPermission();
+
+        });
+      }
+      else{
+        print("Null ANDROID VALUE");
+      }
     }
     else if (state == AppLifecycleState.paused) {
       log("paused");
@@ -607,6 +649,14 @@ log('Get Permission Whatsapp');
     }
   }
 
+  Future<int?> getAndroidSDKVersion() async {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    setState(() {
+      androidSDKVersion = androidInfo.version.sdkInt;
+    });
+    return androidSDKVersion;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -619,256 +669,143 @@ log('Get Permission Whatsapp');
         body: FutureBuilder(
           future: storagePermissionChecker,
           builder: (context, snapshot) {
-            print("hello44441");
+            print("builder1");
             // if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              print("hello1");
+              print("hasDAta");
               if (snapshot.data == 1) {
                 print("snapshot.data == 1");
 
-                if(_activeAppController.activeApp.value == 1){
-                  directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
-                  if (Directory(directoryPath.path).existsSync()) {
-                    if(_permissionController.permissionGrantedWhatsApp.value){
-                      log("Permission Given");
-                      // return ReusingWidgets.loadingAnimation();
-                      if (fileController.allStatusImages.isNotEmpty) {
-                        print("active app 1");
-                        return RefreshIndicator(
-                          backgroundColor: ColorsTheme.primaryColor,
-                          color: ColorsTheme.white,
-                          strokeWidth: 2,
-                          onRefresh: pullRefresh,
-                          child: Container(
-                              height: h,
-                              width: w,
-                              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                if (fileController.allStatusImages.isNotEmpty) {
+                  print("builder2");
+                  return RefreshIndicator(
+                    backgroundColor: ColorsTheme.primaryColor,
+                    color: ColorsTheme.white,
+                    strokeWidth: 2,
+                    onRefresh: pullRefresh,
+                    child: Container(
+                        height: h,
+                        width: w,
+                        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        child:
+                        GridView.builder(
+                          key: PageStorageKey(widget.key),
+                          itemCount: fileController.allStatusImages.length,
+                          physics: BouncingScrollPhysics(),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 5,
+                              crossAxisSpacing: 5,
+                              childAspectRatio: 0.75
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            return Obx(()=> InkWell(
+                              onTap: () {
+                                Get.to(() => StatusImageDetailScreen(indexNo: index));
+                              },
                               child:
-                              GridView.builder(
-                                key: PageStorageKey(widget.key),
-                                itemCount: fileController.allStatusImages.length,
-                                physics: BouncingScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 5,
-                                    crossAxisSpacing: 5,
-                                    childAspectRatio: 0.75
-                                ),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Obx(()=> InkWell(
-                                    onTap: () {
-                                      Get.to(() => StatusImageDetailScreen(indexNo: index));
-                                    },
-                                    child:
-                                    ReusingWidgets.getSavedData(
-                                      tag: fileController.allStatusImages.elementAt(index).filePath,
-                                      context: context,
-                                      file: File(fileController.allStatusImages.elementAt(index).filePath),
-                                      showPlayIcon: true,
-                                      bgColor: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                      ColorsTheme.primaryColor : ColorsTheme.doneColor,
-                                      icon:
-                                      fileController.allStatusImages.elementAt(index).isSaved == false
-                                          ? Icons.save_alt : Icons.done,
-                                      color: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                      ColorsTheme.white : ColorsTheme.doneColor,
-                                      onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                          () {
-                                        _activeAppController.activeApp.value == 1 ?
-                                        GallerySaver.saveImage(Uri.parse(
-                                            fileController.allStatusImages.elementAt(index).filePath).path,
-                                            albumName: "StatusSaver",
-                                            toDcim: true).then((value) {
-                                          fileController.allStatusImages.elementAt(index).isSaved = true;
-                                          fileController.allStatusImages.refresh();
-                                        }) :
-                                        GallerySaver.saveImage(Uri.parse(
-                                            fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "),
-                                            albumName: "StatusSaverBusiness",
-                                            toDcim: true).then((value) {
-                                          fileController.allStatusImages.elementAt(index).isSaved = true;
-                                          fileController.allStatusImages.refresh();
-                                        });
-                                        ReusingWidgets.snackBar(text: "Image Saved",context: context);
-                                      }
-                                          : () {
-                                        ReusingWidgets.snackBar(text: "Image Already Saved",context: context);
-                                      },
-                                      onSharePress: () {
-                                        // Share.shareXFiles(
-                                        // text: "Have a look on this Status",
-                                        // [XFile(Uri.parse(
-                                        //     fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "))
-                                        // ],
-                                        // );
-                                        Share.shareFiles(
-                                          [Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," ")],
-                                          text: 'Have a look on this Status',
-                                        );
-                                        ReusingWidgets.snackBar(context: context, text: "Please Wait...");
-                                      },
-                                    ),
-                                  ));
+                              ReusingWidgets.getSavedData(
+                                tag: fileController.allStatusImages.elementAt(index).filePath,
+                                context: context,
+                                file: File(fileController.allStatusImages.elementAt(index).filePath),
+                                showPlayIcon: true,
+                                bgColor: fileController.allStatusImages.elementAt(index).isSaved == false ?
+                                ColorsTheme.primaryColor : ColorsTheme.doneColor,
+                                icon:
+                                fileController.allStatusImages.elementAt(index).isSaved == false
+                                    ? Icons.save_alt : Icons.done,
+                                color: fileController.allStatusImages.elementAt(index).isSaved == false ?
+                                ColorsTheme.white : ColorsTheme.doneColor,
+                                onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
+                                    () {
+
+
+                                  _activeAppController.activeApp.value == 1 ?
+                                  GallerySaver.saveImage(Uri.parse(
+                                      fileController.allStatusImages.elementAt(index).filePath).path,
+                                      albumName: "StatusSaver",
+                                      toDcim: true).then((value) {
+                                    fileController.allStatusImages.elementAt(index).isSaved = true;
+                                    fileController.allStatusImages.refresh();
+                                  }) :
+                                  GallerySaver.saveImage(Uri.parse(
+                                      fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "),
+                                      albumName: "StatusSaverBusiness",
+                                      toDcim: true).then((value) {
+                                    fileController.allStatusImages.elementAt(index).isSaved = true;
+                                    fileController.allStatusImages.refresh();
+                                  });
+                                  ReusingWidgets.snackBar(text: "Image Saved",context: context);
+                                }
+                                    : () {
+                                  ReusingWidgets.snackBar(text: "Image Already Saved",context: context);
                                 },
-                              )),
-                        );
+                                onSharePress: () {
+                                  // Share.shareXFiles(
+                                  // text: "Have a look on this Status",
+                                  // [XFile(Uri.parse(
+                                  //     fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "))
+                                  // ],
+                                  // );
+                                  Share.shareFiles(
+                                    [Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," ")],
+                                    text: 'Have a look on this Status',
+                                  );
+                                  ReusingWidgets.snackBar(context: context, text: "Please Wait...");
+                                },
+                              ),
+                            ));
+                          },
+                        )),
+                  );
+                }
+                else {
+
+                  log("androidSDKVersion${androidSDKVersion.toString()}");
+
+                  if(androidSDKVersion >= 30){
+                    log("android version greater 30");
+                    directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses');
+                    if (Directory(directoryPath.path).existsSync()) {
+                      if(_permissionController.permissionGrantedWhatsApp.value){
+                        log("Permission Given");
+                        // return ReusingWidgets.loadingAnimation();
+                        return ReusingWidgets.emptyData(context: context);
                       }
                       else{
-                        print("Empty data");
-                        return ReusingWidgets.emptyData(context: context);
+                        log("Permission Not Given");
+                        return ReusingWidgets().permissionDialogue(
+                            context: context,
+                            title: "Allow Permission",
+                            buttonText: "Allow permission",
+                            titleColor: ColorsTheme.primaryColor,
+                            width: w,
+                            height: h,
+                            onPress: () {
+                              setState(() {
+                                getPermissionsWhatsApp();
+                              });
+                            }
+                        );
                       }
                     }
                     else{
-                      log("Permission Not Given");
-                      return ReusingWidgets().permissionDialogue(
-                          context: context,
-                          title: "Allow Permission",
-                          buttonText: "Allow permission",
-                          titleColor: ColorsTheme.primaryColor,
-                          width: w,
-                          height: h,
-                          onPress: () {
-                            setState(() async {
-                              checkAndroidVersion(1);
-                            });
-                          }
-                      );
+                      return ReusingWidgets.emptyData(context: context);
                     }
+                  }
 
+                  else if(androidSDKVersion < 30){
+                    log("android version less 30");
+                    checkAndroidVersion(_activeAppController.activeApp.value);
+                    return ReusingWidgets.loadingAnimation();
                   }
                   else{
-                    print("Empty data");
                     return ReusingWidgets.emptyData(context: context);
                   }
                 }
-
-                else if(_activeAppController.activeApp.value == 2){
-                  directoryPath = Directory('/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp Business/Media/.Statuses');
-                  if (Directory(directoryPath.path).existsSync()) {
-                    if(_permissionController.permissionGrantedBusinessWhatsApp.value){
-                      log("Permission Given BWA");
-                      // return ReusingWidgets.loadingAnimation();
-                      if (fileController.allStatusImages.isNotEmpty) {
-                        print("active app 2");
-                        return RefreshIndicator(
-                          backgroundColor: ColorsTheme.primaryColor,
-                          color: ColorsTheme.white,
-                          strokeWidth: 2,
-                          onRefresh: pullRefresh,
-                          child: Container(
-                              height: h,
-                              width: w,
-                              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                              child:
-                              GridView.builder(
-                                key: PageStorageKey(widget.key),
-                                itemCount: fileController.allStatusImages.length,
-                                physics: BouncingScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 5,
-                                    crossAxisSpacing: 5,
-                                    childAspectRatio: 0.75
-                                ),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Obx(()=> InkWell(
-                                    onTap: () {
-                                      Get.to(() => StatusImageDetailScreen(indexNo: index));
-                                    },
-                                    child:
-                                    ReusingWidgets.getSavedData(
-                                      tag: fileController.allStatusImages.elementAt(index).filePath,
-                                      context: context,
-                                      file: File(fileController.allStatusImages.elementAt(index).filePath),
-                                      showPlayIcon: true,
-                                      bgColor: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                      ColorsTheme.primaryColor : ColorsTheme.doneColor,
-                                      icon:
-                                      fileController.allStatusImages.elementAt(index).isSaved == false
-                                          ? Icons.save_alt : Icons.done,
-                                      color: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                      ColorsTheme.white : ColorsTheme.doneColor,
-                                      onDownloadDeletePress: fileController.allStatusImages.elementAt(index).isSaved == false ?
-                                          () {
-
-
-                                        _activeAppController.activeApp.value == 1 ?
-                                        GallerySaver.saveImage(Uri.parse(
-                                            fileController.allStatusImages.elementAt(index).filePath).path,
-                                            albumName: "StatusSaver",
-                                            toDcim: true).then((value) {
-                                          fileController.allStatusImages.elementAt(index).isSaved = true;
-                                          fileController.allStatusImages.refresh();
-                                        }) :
-                                        GallerySaver.saveImage(Uri.parse(
-                                            fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "),
-                                            albumName: "StatusSaverBusiness",
-                                            toDcim: true).then((value) {
-                                          fileController.allStatusImages.elementAt(index).isSaved = true;
-                                          fileController.allStatusImages.refresh();
-                                        });
-                                        ReusingWidgets.snackBar(text: "Image Saved",context: context);
-                                      }
-                                          : () {
-                                        ReusingWidgets.snackBar(text: "Image Already Saved",context: context);
-                                      },
-                                      onSharePress: () {
-                                        // Share.shareXFiles(
-                                        // text: "Have a look on this Status",
-                                        // [XFile(Uri.parse(
-                                        //     fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," "))
-                                        // ],
-                                        // );
-                                        Share.shareFiles(
-                                          [Uri.parse(fileController.allStatusImages.elementAt(index).filePath).path.replaceAll("%20"," ")],
-                                          text: 'Have a look on this Status',
-                                        );
-                                        ReusingWidgets.snackBar(context: context, text: "Please Wait...");
-                                      },
-                                    ),
-                                  ));
-                                },
-                              )),
-                        );
-                      }
-                      else{
-                        print("Empty data BWA");
-                        return ReusingWidgets.emptyData(context: context);
-                      }
-                    }
-                    else{
-                      log("Permission Not Given BWA ${_permissionController.permissionGrantedBusinessWhatsApp.value} **************");
-
-                      return ReusingWidgets().permissionDialogue(
-                          context: context,
-                          title: "Allow Permission",
-                          buttonText: "Allow permission BWA",
-                          titleColor: ColorsTheme.primaryColor,
-                          width: w,
-                          height: h,
-                          onPress: () {
-                            setState(() {
-                              checkAndroidVersion(2);
-                            });
-                          }
-                      );
-                    }
-
-                  }
-                  else{
-                    print("Empty data");
-                    return ReusingWidgets.emptyData(context: context);
-                  }
-                }
-
-                else{
-                  print("Empty data");
-                  return ReusingWidgets.emptyData(context: context);
-                }
-
               }
-              else if (snapshot.data == 2){
-                print("snapshot.data == 2");
+              else if (snapshot.data == 3){
+                print("snapshot.data == 3");
                 return ReusingWidgets().permissionDialogue(
                     context: context,
                     title: "Permission Denied",

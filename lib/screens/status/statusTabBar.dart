@@ -61,10 +61,10 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
     createFolderBusiness();
     getPrefs();
 
+    saf = _activeAppController.activeApp.value == 1  ? Saf(Constant.whatsAppPath) : Saf(Constant.businessWhatsAppPath);
 
+    // checkAndroidVersion(_activeAppController.activeApp.value);
     print("Status Tab Screen");
-
-
 
   }
 
@@ -285,7 +285,7 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
               }
             }
             else {
-              ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+              ReusingWidgets.snackBar(text: "No Business WhatsApp Found",context: context);
             }
           }
           catch (e) {
@@ -295,7 +295,7 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
         catch (e) {
           print("Error is $e");
           if (context.mounted) {
-            ReusingWidgets.snackBar(text: "No WhatsApp Found",context: context);
+            ReusingWidgets.snackBar(text: "No Business WhatsApp Found",context: context);
             // _prefs.setInt("statusValue", 2);
           }
         }
@@ -328,10 +328,63 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
     imageList =directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg')).toList(growable: false);
     videoList = directoryPath.listSync().map((item) => item.path).where((item) => item.endsWith('.mp4')).toList(growable: false);
     savedList = savedDirectory.listSync().map((item) => item.path).where((item) => item.endsWith('.jpg') || item.endsWith('.mp4')).toList(growable: false);
-    // getImageData();
-    // getVideoData();
+    getImageData();
+    getVideoData();
     getSync();
 
+  }
+
+  getImageData() {
+    fileController.allStatusImages.value = [];
+    if (imageList.isNotEmpty) {
+      for (var element in imageList) {
+        if (_activeAppController.activeApp.value == 1){
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+          }
+          else {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
+        else if(_activeAppController.activeApp.value == 2){
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: true));
+          }
+          else {
+            fileController.allStatusImages.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
+
+      }
+    }
+  }
+
+  getVideoData() {
+    fileController.allStatusVideos.value = [];
+    if (videoList.isNotEmpty) {
+      for (var element in videoList) {
+        if (_activeAppController.activeApp.value == 1){
+          if (savedList.map((e) => e.split("StatusSaver/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+          }
+          else {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
+        else if(_activeAppController.activeApp.value == 2){
+          if (savedList.map((e) => e.split("StatusSaverBusiness/").last.split(".").first.toString()).
+          contains(element.split(".Statuses/").last.split(".").first)) {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: true));
+          }
+          else {
+            fileController.allStatusVideos.add(FileModel(filePath: element, isSaved: false));
+          }
+        }
+      }
+    }
   }
 
   getSync() async{
@@ -572,20 +625,22 @@ class _StatusTabScreenState extends State<StatusTabScreen> with TickerProviderSt
                 onSelected: (value) async {
 
                   if (value == 1) {
-                    setState(() {
-                      _activeAppController.activeApp.value = 1;
+                    // setState(() async {
+                    //   _activeAppController.activeApp.value = 1;
                       // getPermissionsWhatsApp();
+                      await checkAndroidVersion(1);
                       // getSelectedDetails();
-                    });
-                    await checkAndroidVersion(1);
+                    // });
+
                   }
                   else if (value == 2) {
-                    setState(() {
-                      _activeAppController.activeApp.value = 2;
+                    // setState(() async {
+                    //   _activeAppController.activeApp.value = 2;
                       // getPermissionsWhatsApp();
                       // getSelectedDetails();
-                    });
-                     await checkAndroidVersion(2);
+                      await checkAndroidVersion(2);
+                    // });
+
                   }
                 },
               )
